@@ -10,6 +10,7 @@ import { Input } from '@agenthub/ui/input';
 import { Textarea } from '@agenthub/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@agenthub/ui/card';
 import { Badge } from '@agenthub/ui/badge';
+import { ImageUpload, ScreenshotsUpload } from '@agenthub/ui/image-upload';
 import { agentApi, AgentCategory, Agent } from '@/lib/api';
 import { useAuthStore } from '@/stores/auth-store';
 import { slugify, cn } from '@/lib/utils';
@@ -47,6 +48,12 @@ const agentFormSchema = z.object({
 
 type AgentFormData = z.infer<typeof agentFormSchema>;
 
+interface ScreenshotItem {
+  id: string;
+  url: string;
+  caption?: string;
+}
+
 export default function EditAgentPage() {
   const router = useRouter();
   const params = useParams();
@@ -72,6 +79,8 @@ export default function EditAgentPage() {
     docsUrl: '',
     status: 'draft',
   });
+  const [screenshots, setScreenshots] = useState<ScreenshotItem[]>([]);
+  const [newScreenshots, setNewScreenshots] = useState<ScreenshotItem[]>([]);
 
   // Check auth and fetch agent
   useEffect(() => {

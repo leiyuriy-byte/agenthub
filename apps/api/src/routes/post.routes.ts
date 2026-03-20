@@ -2,7 +2,7 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { postService } from '../services/post.service.js';
 import { postSchemas } from '@agenthub/validators';
 import { ZodError } from 'zod';
-import { parseInteger } from '../../utils/validators.js';
+import { parseInteger } from '../utils/validators.js';
 
 interface PostParams {
   id: string;

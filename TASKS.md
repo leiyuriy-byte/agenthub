@@ -1,72 +1,70 @@
-# TASKS.md - AgentHub 开发任务
+# AgentHub 开发任务 - 第 1 轮迭代
 
-## 第 1-3 轮任务
-详见 git 历史，全部已完成 ✅
+> 上次更新：2026-03-20 20:01
 
----
+## 已完成（第 0 轮）
+- 全部 Phase 1 基础功能（见 PROGRESS.md）✅
 
-## 第 4 轮任务（2026-03-20 完成）
+## 优化项（高优先级）
 
-### ✅ 已完成 - 全部任务
+### 1. UI 质感提升（进行中）
+当前 UI 基本功能可用，但距离 Linear/Notion 的商用质感有差距。需要：
+- ~~Agent 卡片：hover 效果增强（阴影、微位移）~~ ✅
+- **首页 Hero 区域**：增加渐变背景、微动画、更精致的 CTA 按钮样式
+- **讨论区帖子列表**：增加预览摘要、更好的视觉层次
+- **全局**：统一间距节奏（4px 基准）、优化字体层级、增加过渡动画
+- **空状态**：所有列表页空状态需要配图/插图，不能只有文字
+- **移动端**：重点检查 navbar 汉堡菜单、Agent 卡片堆叠、帖子阅读体验、底部导航
 
-1. **后台管理系统** ✅
-   - 路由：`/admin`（仅 admin/moderator 角色可访问）
-   - 仪表盘：用户总数、Agent总数、帖子总数、今日活跃
-   - 用户管理：/admin/users（列表、搜索、角色修改、删除）
-   - Agent 管理：/admin/agents（列表、搜索、状态管理、精选、删除）
-   - 帖子管理：/admin/posts（列表、搜索、置顶、删除）
-   - 评论管理：/admin/comments（列表、搜索、删除）
-   - 后端：admin.service.ts + admin.routes.ts
+### 2. 安全加固（已完成）✅
+- ~~**速率限制**：确认注册/登录/发帖 API 的 rate-limit 配置合理~~ ✅
+  - 登录接口：每分钟 5 次
+  - 注册接口：每小时 3 次
+- ~~**输入校验**：检查所有 API 端点的 Zod schema 覆盖完整~~ ✅ （已确认完整）
+- ~~**XSS 防护**：Markdown 渲染确认已做 sanitize~~ ✅
+  - 已添加 rehype-sanitize 到讨论详情页、评论列表、Markdown 编辑器
+- **文件上传**：如果支持头像/截图上传，需限制文件类型和大小（待实现）
 
-2. **私信功能** ✅
-   - 后端：message.service.ts + message.routes.ts（完善）
-   - 前端：/messages 列表、/messages/[id] 聊天页、/messages/new 新建对话
-   - 未读消息计数（navbar badge + API）
-   - useAuth hook 修复（修复 useAuth 缺失）
+### 3. 错误处理统一（已完成）✅
+- ~~API 错误响应格式统一（code + message + details）~~ ✅ （已有基础）
+- ~~前端全局错误边界 + Toast 提示（不用 alert）~~ ✅ （已配置 Toaster）
+- ~~401/403 自动跳转登录页~~ ✅ （已添加到 API 客户端）
 
-3. **全局搜索功能** ✅
-   - 后端：search.service.ts（统一搜索 Agent/Post/User）
-   - 后端：search.routes.ts
-   - 前端：/search 页面（分类筛选、分页）
-   - 导航栏搜索框接入真实 API
+## 新功能（按优先级）
 
-4. **Markdown 编辑器增强** ✅
-   - 组件：components/markdown/markdown-editor.tsx
-   - 工具栏：加粗、斜体、代码、链接、图片、列表、引用、标题
-   - 实时预览（内置切换按钮）
-   - 键盘快捷键（Ctrl+B/I/K）
-   - 已集成到 /discussions/new
+### 1. Agent 截图/Logo 上传（核心体验）
+- 支持拖拽/点击上传图片
+- 前端预览 + 裁剪
+- 后端存储（本地文件系统即可）
+- 限制：最多 5 张截图，单张 ≤ 2MB，jpg/png/webp
 
-5. **SEO 优化** ✅
-   - 全局 metadata（title、description、og tags）
-   - sitemap.ts 自动生成站点地图
-   - robots.txt 配置爬虫规则
+### 2. 忘记密码 / 重置密码流程（用户体验）
+- 邮箱发送重置链接
+- 新密码设置页面
+- Token 过期处理（24h）
 
-6. **加载状态与空状态** ✅
-   - skeleton.tsx（AgentCardSkeleton、PostCardSkeleton、UserCardSkeleton、TableRowSkeleton 等）
-   - empty-state.tsx（AgentsEmptyState、PostsEmptyState、UsersEmptyState、MessagesEmptyState 等）
+### 3. 用户动态 Feed 页面（核心功能）
+- `/feed` 页面，展示关注用户的最新动态
+- 包括：发布 Agent、发帖、评论
+- 时间线样式，分页加载
 
----
+### 4. Agent 详情页增强（体验提升）
+- 添加「相关 Agent 推荐」模块
+- 添加「同类 Agent」侧边栏
+- 浏览量统计展示
 
-## 待开发（第 5 轮）
+## 优先级排序
+1. ~~UI 质感提升 + 移动端适配~~（部分完成，卡片效果增强）
+2. ~~安全加固~~（已完成：XSS防护 + 速率限制）
+3. ~~错误处理统一~~（已完成：401/403/429处理）
+4. Agent 截图上传（核心体验）
+5. 忘记密码流程（用户体验）
+6. 用户动态 Feed（核心功能）
+7. Agent 详情页增强（体验提升）
 
-### 高优先级
-- 移动端适配优化（体验基础）
-- 页面加载性能优化（Next.js 静态生成、图片懒加载）
-- 实时通讯（WebSocket）推送
-
-### 中优先级
-- 用户积分与等级系统
-- OAuth 第三方登录（GitHub/Google）
-- 邮件通知
-- 数据统计图表
-
-### 低优先级
-- 搜索功能优化（MeiliSearch 集成）
-
----
-
-## ⚠️ 注意事项
-- 所有新页面已做好移动端适配
-- 保持代码风格一致
-- 完成后更新 PROGRESS.md
+## 验收标准
+- 所有页面在 Chrome/Safari/Firefox 最新版显示正常
+- 移动端（375px/414px）布局无溢出、按钮可点击
+- 暗色/亮色主题切换正常
+- 空状态/加载/错误三种状态全覆盖
+- Rate limit 生效（可通过工具测试）

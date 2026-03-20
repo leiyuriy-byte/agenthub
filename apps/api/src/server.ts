@@ -17,6 +17,7 @@ import { notificationRoutes } from './routes/notification.routes.js';
 import { messageRoutes } from './routes/message.routes.js';
 import { adminRoutes } from './routes/admin.routes.js';
 import { searchRoutes } from './routes/search.routes.js';
+import { uploadRoutes } from './routes/upload.routes.js';
 
 const fastify = Fastify({
   logger: {
@@ -44,6 +45,31 @@ await fastify.register(cors, {
 await fastify.register(rateLimit, {
   max: 100,
   timeWindow: '1 minute',
+  keyGenerator: (request) => {
+    // Use IP + user agent for rate limiting
+    return request.ip + (request.headers['user-agent'] || '');
+  },
+});
+
+// Stricter rate limit for auth endpoints (login/register)
+await fastify.register(rateLimit, {
+  max: 5,
+  timeWindow: '1 minute',
+  keyGenerator: (request) => {
+    return `auth:${request.ip}`;
+  },
+}, {
+  prefix: '/api/auth/login',
+});
+
+await fastify.register(rateLimit, {
+  max: 3,
+  timeWindow: '1 hour',
+  keyGenerator: (request) => {
+    return `auth:${request.ip}`;
+  },
+}, {
+  prefix: '/api/auth/register',
 });
 
 await fastify.register(jwt, {
@@ -94,6 +120,7 @@ await fastify.register(notificationRoutes, { prefix: '/api/notifications' });
 await fastify.register(messageRoutes, { prefix: '/api/messages' });
 await fastify.register(adminRoutes, { prefix: '/api/admin' });
 await fastify.register(searchRoutes, { prefix: '/api/search' });
+await fastify.register(uploadRoutes, { prefix: '/api/upload' });
 
 // Health check endpoint
 fastify.get('/health', async () => {

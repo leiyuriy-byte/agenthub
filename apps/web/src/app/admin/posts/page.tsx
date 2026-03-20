@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { adminApi, AdminPost } from '@/lib/api';
@@ -10,30 +9,16 @@ import { Button } from '@agenthub/ui/button';
 import { Card, CardContent } from '@agenthub/ui/card';
 import { Input } from '@agenthub/ui/input';
 import {
-  LayoutDashboard,
-  Users,
-  Bot,
-  FileText,
-  MessageSquare,
-  Settings,
   Loader2,
   Search,
   ChevronLeft,
   ChevronRight,
   Trash2,
   Pin,
-  LogOut,
   Eye,
 } from 'lucide-react';
 import { toast } from 'sonner';
-
-const navItems = [
-  { label: '仪表盘', href: '/admin', icon: LayoutDashboard },
-  { label: '用户管理', href: '/admin/users', icon: Users },
-  { label: 'Agent 管理', href: '/admin/agents', icon: Bot },
-  { label: '帖子管理', href: '/admin/posts', icon: FileText },
-  { label: '评论管理', href: '/admin/comments', icon: MessageSquare },
-];
+import { AdminLayout } from '@/components/layout/admin-layout';
 
 const typeLabels: Record<string, string> = {
   normal: '普通',
@@ -152,256 +137,186 @@ export default function AdminPostsPage() {
   if (!user) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="flex">
-        {/* Sidebar */}
-        <aside className="w-64 min-h-screen border-r bg-card fixed left-0 top-0">
-          <div className="p-6">
-            <Link href="/admin" className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-                <Settings className="h-5 w-5 text-primary-foreground" />
-              </div>
-              <span className="font-bold text-xl">管理后台</span>
-            </Link>
-          </div>
+    <AdminLayout onLogout={handleLogout}>
+      {/* Page Header */}
+      <div className="mb-6 md:mb-8">
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight">帖子管理</h1>
+        <p className="mt-2 text-muted-foreground">管理社区帖子</p>
+      </div>
 
-          <nav className="px-3 space-y-1">
-            {navItems.map((item) => {
-              const Icon = item.icon;
+      {/* Search */}
+      <div className="mb-6">
+        <div className="relative max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="搜索帖子..."
+            className="pl-10"
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Posts Table */}
+      <Card>
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[900px]">
+              <thead>
+                <tr className="border-b">
+                  <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    帖子
+                  </th>
+                  <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider hidden sm:table-cell">
+                    作者
+                  </th>
+                  <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider hidden md:table-cell">
+                    频道
+                  </th>
+                  <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    类型
+                  </th>
+                  <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    置顶
+                  </th>
+                  <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider hidden lg:table-cell">
+                    浏览
+                  </th>
+                  <th className="px-4 md:px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    操作
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {isLoading ? (
+                  <tr>
+                    <td colSpan={7} className="px-6 py-12 text-center">
+                      <Loader2 className="h-6 w-6 animate-spin mx-auto text-muted-foreground" />
+                    </td>
+                  </tr>
+                ) : posts.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="px-6 py-12 text-center text-muted-foreground">
+                      暂无帖子
+                    </td>
+                  </tr>
+                ) : (
+                  posts.map((post) => (
+                    <motion.tr
+                      key={post.id}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="hover:bg-muted/50"
+                    >
+                      <td className="px-4 md:px-6 py-4">
+                        <p className="font-medium line-clamp-1 max-w-[150px] md:max-w-none">{post.title}</p>
+                      </td>
+                      <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm hidden sm:table-cell">
+                        {post.author ? (
+                          <span>{post.author.displayName || post.author.username}</span>
+                        ) : (
+                          <span className="text-muted-foreground">未知</span>
+                        )}
+                      </td>
+                      <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-muted-foreground hidden md:table-cell">
+                        {post.channel?.name || '未知'}
+                      </td>
+                      <td className="px-4 md:px-6 py-4 whitespace-nowrap">
+                        <span className={`text-xs border rounded px-2 py-1 ${typeColors[post.type]}`}>
+                          {typeLabels[post.type] || post.type}
+                        </span>
+                      </td>
+                      <td className="px-4 md:px-6 py-4 whitespace-nowrap">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleTogglePin(post.id, post.isPinned)}
+                          disabled={actionLoading === post.id}
+                          className={post.isPinned ? 'text-primary' : 'text-muted-foreground'}
+                        >
+                          <Pin className={`h-4 w-4 ${post.isPinned ? 'fill-current' : ''}`} />
+                        </Button>
+                      </td>
+                      <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-muted-foreground hidden lg:table-cell">
+                        {post.viewCount.toLocaleString()}
+                      </td>
+                      <td className="px-4 md:px-6 py-4 whitespace-nowrap text-right">
+                        <div className="flex items-center justify-end gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => router.push(`/discussions/${post.id}`)}
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDeletePost(post.id)}
+                            disabled={actionLoading === post.id}
+                            className="text-destructive hover:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </td>
+                    </motion.tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-sm text-muted-foreground">
+            共 {total} 条记录，第 {page}/{totalPages} 页
+          </p>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage(p => p - 1)}
+              disabled={page === 1}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              const pageNum = i + 1;
               return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                <Button
+                  key={pageNum}
+                  variant={page === pageNum ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setPage(pageNum)}
                 >
-                  <Icon className="h-5 w-5" />
-                  {item.label}
-                </Link>
+                  {pageNum}
+                </Button>
               );
             })}
-          </nav>
-
-          <div className="absolute bottom-0 left-0 right-0 p-4 border-t">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="text-sm font-medium">{user.displayName?.charAt(0) || user.username.charAt(0)}</span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{user.displayName || user.username}</p>
-                <p className="text-xs text-muted-foreground capitalize">{user.role}</p>
-              </div>
-            </div>
-            <Button variant="outline" className="w-full" onClick={handleLogout}>
-              <LogOut className="h-4 w-4 mr-2" />
-              退出登录
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage(p => p + 1)}
+              disabled={page === totalPages}
+            >
+              <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
-        </aside>
-
-        {/* Main Content */}
-        <main className="flex-1 ml-64 p-8">
-          <div className="max-w-7xl mx-auto">
-            {/* Page Header */}
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold tracking-tight">帖子管理</h1>
-              <p className="mt-2 text-muted-foreground">管理社区帖子</p>
-            </div>
-
-            {/* Search */}
-            <div className="mb-6">
-              <div className="relative max-w-md">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="搜索帖子..."
-                  className="pl-10"
-                  value={search}
-                  onChange={(e) => {
-                    setSearch(e.target.value);
-                    setPage(1);
-                  }}
-                />
-              </div>
-            </div>
-
-            {/* Posts Table */}
-            <Card>
-              <CardContent className="p-0">
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b">
-                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                          帖子
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                          作者
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                          频道
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                          类型
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                          置顶
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                          浏览
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                          评论
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                          创建时间
-                        </th>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                          操作
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-border">
-                      {isLoading ? (
-                        <tr>
-                          <td colSpan={9} className="px-6 py-12 text-center">
-                            <Loader2 className="h-6 w-6 animate-spin mx-auto text-muted-foreground" />
-                          </td>
-                        </tr>
-                      ) : posts.length === 0 ? (
-                        <tr>
-                          <td colSpan={9} className="px-6 py-12 text-center text-muted-foreground">
-                            暂无帖子
-                          </td>
-                        </tr>
-                      ) : (
-                        posts.map((post) => (
-                          <motion.tr
-                            key={post.id}
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="hover:bg-muted/50"
-                          >
-                            <td className="px-6 py-4">
-                              <Link href={`/discussions/${post.id}`} className="hover:text-primary">
-                                <p className="font-medium line-clamp-1">{post.title}</p>
-                              </Link>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm">
-                              {post.author ? (
-                                <Link
-                                  href={`/users/${post.authorId}`}
-                                  className="hover:text-primary"
-                                >
-                                  {post.author.displayName || post.author.username}
-                                </Link>
-                              ) : (
-                                <span className="text-muted-foreground">未知</span>
-                              )}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
-                              {post.channel?.name || '未知'}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <span className={`text-xs border rounded px-2 py-1 ${typeColors[post.type]}`}>
-                                {typeLabels[post.type] || post.type}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleTogglePin(post.id, post.isPinned)}
-                                disabled={actionLoading === post.id}
-                                className={post.isPinned ? 'text-primary' : 'text-muted-foreground'}
-                              >
-                                <Pin className={`h-4 w-4 ${post.isPinned ? 'fill-current' : ''}`} />
-                              </Button>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
-                              {post.viewCount.toLocaleString()}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
-                              {post.commentCount.toLocaleString()}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
-                              {new Date(post.createdAt).toLocaleDateString('zh-CN')}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-right">
-                              <div className="flex items-center justify-end gap-1">
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => router.push(`/discussions/${post.id}`)}
-                                >
-                                  <Eye className="h-4 w-4" />
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => handleDeletePost(post.id)}
-                                  disabled={actionLoading === post.id}
-                                  className="text-destructive hover:text-destructive"
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </td>
-                          </motion.tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="mt-6 flex items-center justify-between">
-                <p className="text-sm text-muted-foreground">
-                  共 {total} 条记录，第 {page}/{totalPages} 页
-                </p>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setPage(p => p - 1)}
-                    disabled={page === 1}
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
-                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                    const pageNum = i + 1;
-                    return (
-                      <Button
-                        key={pageNum}
-                        variant={page === pageNum ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => setPage(pageNum)}
-                      >
-                        {pageNum}
-                      </Button>
-                    );
-                  })}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setPage(p => p + 1)}
-                    disabled={page === totalPages}
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            )}
-          </div>
-        </main>
-      </div>
-    </div>
+        </div>
+      )}
+    </AdminLayout>
   );
 }

@@ -2,6 +2,8 @@
  * API client for communicating with the backend
  */
 
+import { toast } from 'sonner';
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 interface ApiResponse<T> {
@@ -60,6 +62,30 @@ class ApiClient {
       const data = await response.json();
 
       if (!response.ok) {
+        // Handle authentication errors
+        if (response.status === 401) {
+          // Clear token and redirect to login
+          if (typeof window !== 'undefined') {
+            this.setToken(null);
+            // Only redirect if not already on login/register page
+            if (!window.location.pathname.includes('/login') && 
+                !window.location.pathname.includes('/register')) {
+              toast.error('登录已过期，请重新登录');
+              setTimeout(() => {
+                window.location.href = '/login';
+              }, 1000);
+            }
+          }
+        } else if (response.status === 403) {
+          if (typeof window !== 'undefined') {
+            toast.error('没有权限执行此操作');
+          }
+        } else if (response.status === 429) {
+          if (typeof window !== 'undefined') {
+            toast.error('请求过于频繁，请稍后再试');
+          }
+        }
+        
         return {
           success: false,
           error: data.error || 'Request failed',
@@ -72,9 +98,14 @@ class ApiClient {
         data: data.data,
       };
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : '网络错误，请检查您的网络连接';
+      // Show toast for network errors
+      if (typeof window !== 'undefined') {
+        toast.error(errorMessage);
+      }
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Network error',
+        error: errorMessage,
       };
     }
   }
@@ -284,6 +315,76 @@ export const agentApi = {
         user?: User;
       })[];
     }>(`/api/agents/${id}/ratings?${query}`);
+  },
+
+  // Screenshot management
+  addScreenshot: (agentId: string, data: { url: string; caption?: string }) =>
+    api.post<AgentScreenshot>(`/api/agents/${agentId}/screenshots`, data),
+
+  deleteScreenshot: (agentId: string, screenshotId: string) =>
+    api.delete(`/api/agents/${agentId}/screenshots/${screenshotId}`),
+
+  reorderScreenshots: (agentId: string, screenshotIds: string[]) =>
+    api.put(`/api/agents/${agentId}/screenshots/reorder`, { screenshotIds }),
+};
+
+// Upload API
+export interface UploadResponse {
+  url: string;
+  filename: string;
+  size: number;
+  mimetype: string;
+}
+
+export const uploadApi = {
+  uploadImage: async (file: File): Promise<UploadResponse> => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const token = api.getToken();
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/upload/image`, {
+      method: 'POST',
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      body: formData,
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.error || 'Upload failed');
+    }
+    return data.data;
+  },
+
+  uploadAvatar: async (file: File): Promise<UploadResponse> => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const token = api.getToken();
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/upload/avatar`, {
+      method: 'POST',
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      body: formData,
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.error || 'Upload failed');
+    }
+    return data.data;
+  },
+
+  deleteImage: async (filename: string): Promise<void> => {
+    const token = api.getToken();
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/upload/image`, {
+      method: 'DELETE',
+      headers: token ? { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ filename }),
+    });
+
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.error || 'Delete failed');
+    }
   },
 };
 

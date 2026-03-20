@@ -4,7 +4,7 @@ import { db, schema } from '@agenthub/db';
 import { agentService } from '../services/agent.service.js';
 import { agentSchemas } from '@agenthub/validators';
 import { ZodError } from 'zod';
-import { isInteger, parseInteger } from '../../utils/validators.js';
+import { isInteger, parseInteger } from '../utils/validators.js';
 
 // Types for route params
 interface AgentParams {
@@ -515,6 +515,211 @@ export async function agentRoutes(fastify: FastifyInstance) {
           stats,
           ratings,
         },
+      });
+    } catch (error) {
+      request.log.error(error);
+      return reply.code(500).send({
+        success: false,
+        error: 'Internal server error',
+      });
+    }
+  });
+
+  /**
+   * POST /api/agents/:id/screenshots - Add a screenshot
+   */
+  fastify.post('/:id/screenshots', async (
+    request: FastifyRequest<{ Params: AgentParams }>,
+    reply: FastifyReply
+  ) => {
+    // Require authentication
+    if (!request.userId) {
+      return reply.code(401).send({
+        success: false,
+        error: 'Authentication required',
+      });
+    }
+
+    try {
+      const { id } = request.params;
+      const { url, caption } = request.body as { url: string; caption?: string };
+
+      if (!url) {
+        return reply.code(400).send({
+          success: false,
+          error: 'Screenshot URL is required',
+        });
+      }
+
+      // Check agent ownership
+      const [agent] = await db.select()
+        .from(schema.agents)
+        .where(eq(schema.agents.id, id))
+        .limit(1);
+
+      if (!agent) {
+        return reply.code(404).send({
+          success: false,
+          error: 'Agent not found',
+        });
+      }
+
+      if (agent.ownerId !== request.userId) {
+        return reply.code(403).send({
+          success: false,
+          error: 'Not authorized to modify this agent',
+        });
+      }
+
+      // Check current screenshot count
+      const existingScreenshots = await db.select()
+        .from(schema.agentScreenshots)
+        .where(eq(schema.agentScreenshots.agentId, id));
+
+      if (existingScreenshots.length >= 5) {
+        return reply.code(400).send({
+          success: false,
+          error: 'Maximum 5 screenshots allowed',
+        });
+      }
+
+      // Get max sort order
+      const maxOrder = existingScreenshots.reduce((max, s) => Math.max(max, s.sortOrder), 0);
+
+      // Create screenshot
+      const { nanoid } = await import('nanoid');
+      const [screenshot] = await db.insert(schema.agentScreenshots).values({
+        id: nanoid(),
+        agentId: id,
+        url,
+        caption: caption || null,
+        sortOrder: maxOrder + 1,
+      }).returning();
+
+      return reply.code(201).send({
+        success: true,
+        data: screenshot,
+      });
+    } catch (error) {
+      request.log.error(error);
+      return reply.code(500).send({
+        success: false,
+        error: 'Internal server error',
+      });
+    }
+  });
+
+  /**
+   * DELETE /api/agents/:id/screenshots/:screenshotId - Delete a screenshot
+   */
+  fastify.delete('/:id/screenshots/:screenshotId', async (
+    request: FastifyRequest<{ Params: AgentParams & { screenshotId: string } }>,
+    reply: FastifyReply
+  ) => {
+    // Require authentication
+    if (!request.userId) {
+      return reply.code(401).send({
+        success: false,
+        error: 'Authentication required',
+      });
+    }
+
+    try {
+      const { id, screenshotId } = request.params;
+
+      // Check agent ownership
+      const [agent] = await db.select()
+        .from(schema.agents)
+        .where(eq(schema.agents.id, id))
+        .limit(1);
+
+      if (!agent) {
+        return reply.code(404).send({
+          success: false,
+          error: 'Agent not found',
+        });
+      }
+
+      if (agent.ownerId !== request.userId) {
+        return reply.code(403).send({
+          success: false,
+          error: 'Not authorized to modify this agent',
+        });
+      }
+
+      // Delete screenshot
+      await db.delete(schema.agentScreenshots)
+        .where(eq(schema.agentScreenshots.id, screenshotId));
+
+      return reply.send({
+        success: true,
+        message: 'Screenshot deleted',
+      });
+    } catch (error) {
+      request.log.error(error);
+      return reply.code(500).send({
+        success: false,
+        error: 'Internal server error',
+      });
+    }
+  });
+
+  /**
+   * PUT /api/agents/:id/screenshots/reorder - Reorder screenshots
+   */
+  fastify.put('/:id/screenshots/reorder', async (
+    request: FastifyRequest<{ Params: AgentParams }>,
+    reply: FastifyReply
+  ) => {
+    // Require authentication
+    if (!request.userId) {
+      return reply.code(401).send({
+        success: false,
+        error: 'Authentication required',
+      });
+    }
+
+    try {
+      const { id } = request.params;
+      const { screenshotIds } = request.body as { screenshotIds: string[] };
+
+      if (!Array.isArray(screenshotIds)) {
+        return reply.code(400).send({
+          success: false,
+          error: 'screenshotIds must be an array',
+        });
+      }
+
+      // Check agent ownership
+      const [agent] = await db.select()
+        .from(schema.agents)
+        .where(eq(schema.agents.id, id))
+        .limit(1);
+
+      if (!agent) {
+        return reply.code(404).send({
+          success: false,
+          error: 'Agent not found',
+        });
+      }
+
+      if (agent.ownerId !== request.userId) {
+        return reply.code(403).send({
+          success: false,
+          error: 'Not authorized to modify this agent',
+        });
+      }
+
+      // Update sort orders
+      for (let i = 0; i < screenshotIds.length; i++) {
+        await db.update(schema.agentScreenshots)
+          .set({ sortOrder: i + 1 })
+          .where(eq(schema.agentScreenshots.id, screenshotIds[i]));
+      }
+
+      return reply.send({
+        success: true,
+        message: 'Screenshots reordered',
       });
     } catch (error) {
       request.log.error(error);

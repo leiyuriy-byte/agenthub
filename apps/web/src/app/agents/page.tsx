@@ -168,11 +168,12 @@ export default function AgentsPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
+                  whileHover={{ y: -4 }}
                 >
-                  <Card className="overflow-hidden transition-all hover:shadow-lg hover:border-primary/50">
+                  <Card className="overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-primary/50 hover:shadow-primary/10">
                     <Link href={`/agents/${agent.id}`}>
                       {/* Cover Image */}
-                      <div className="aspect-video relative bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                      <div className="aspect-video relative bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center group">
                         {agent.logo ? (
                           <img
                             src={agent.logo}

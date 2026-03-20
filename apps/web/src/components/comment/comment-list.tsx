@@ -21,6 +21,7 @@ import {
   Reply,
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import rehypeSanitize from 'rehype-sanitize';
 
 interface CommentItemProps {
   comment: Comment;
@@ -120,7 +121,7 @@ function CommentItem({
 
           {/* Content */}
           <div className="mt-1.5 text-sm prose prose-sm dark:prose-invert max-w-none">
-            <ReactMarkdown>{comment.content}</ReactMarkdown>
+            <ReactMarkdown rehypePlugins={[rehypeSanitize]}>{comment.content}</ReactMarkdown>
           </div>
 
           {/* Actions */}

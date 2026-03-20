@@ -11,6 +11,7 @@ import { Textarea } from '@agenthub/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@agenthub/ui/card';
 import { Badge } from '@agenthub/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@agenthub/ui/avatar';
+import { ImageUpload, ScreenshotsUpload } from '@agenthub/ui/image-upload';
 import { agentApi, AgentCategory } from '@/lib/api';
 import { useAuthStore } from '@/stores/auth-store';
 import { slugify, cn } from '@/lib/utils';
@@ -35,7 +36,7 @@ const agentFormSchema = z.object({
   slug: z.string().min(1, 'slug 不能为空').max(100).regex(/^[a-z0-9-]+$/, 'slug 只能包含小写字母、数字和连字符'),
   tagline: z.string().max(200, '一句话描述不能超过200字符').optional(),
   description: z.string().optional(),
-  logo: z.string().url('请输入有效的 URL').optional().or(z.literal('')),
+  logo: z.string().optional().or(z.literal('')),
   categoryId: z.string().optional(),
   tags: z.array(z.string()).max(10).optional(),
   demoUrl: z.string().url('请输入有效的 URL').optional().or(z.literal('')),
@@ -44,6 +45,12 @@ const agentFormSchema = z.object({
 });
 
 type AgentFormData = z.infer<typeof agentFormSchema>;
+
+interface ScreenshotItem {
+  id: string;
+  url: string;
+  caption?: string;
+}
 
 export default function NewAgentPage() {
   const router = useRouter();
@@ -64,6 +71,7 @@ export default function NewAgentPage() {
     githubUrl: '',
     docsUrl: '',
   });
+  const [screenshots, setScreenshots] = useState<ScreenshotItem[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isDraft, setIsDraft] = useState(true);
 
@@ -141,6 +149,15 @@ export default function NewAgentPage() {
       });
 
       if (response.success && response.data) {
+        // Save screenshots if any
+        if (screenshots.length > 0) {
+          for (const screenshot of screenshots) {
+            await agentApi.addScreenshot(response.data.id, {
+              url: screenshot.url,
+              caption: screenshot.caption,
+            });
+          }
+        }
         toast.success('草稿已保存');
         router.push(`/agents/${response.data.id}`);
       } else {
@@ -170,6 +187,16 @@ export default function NewAgentPage() {
         toast.error(createResponse.error || '创建失败');
         setIsLoading(false);
         return;
+      }
+
+      // Save screenshots if any
+      if (screenshots.length > 0) {
+        for (const screenshot of screenshots) {
+          await agentApi.addScreenshot(createResponse.data.id, {
+            url: screenshot.url,
+            caption: screenshot.caption,
+          });
+        }
       }
 
       // Publish
@@ -235,22 +262,24 @@ export default function NewAgentPage() {
               <CardDescription>Agent 的名称、标识和简介</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Logo Preview */}
+              {/* Logo Upload */}
               <div className="flex items-center gap-4">
-                <div className="relative">
-                  <div className="h-20 w-20 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center overflow-hidden border-2 border-dashed border-muted-foreground/20">
-                    {formData.logo ? (
-                      <img src={formData.logo} alt="Logo" className="h-full w-full object-cover" />
-                    ) : (
-                      <ImageIcon className="h-8 w-8 text-muted-foreground" />
-                    )}
-                  </div>
+                <div className="w-24">
+                  <ImageUpload
+                    value={formData.logo}
+                    onChange={(url) => setFormData((prev) => ({ ...prev, logo: url }))}
+                    aspectRatio="square"
+                    placeholder="上传 Logo"
+                  />
                 </div>
                 <div className="flex-1 space-y-2">
-                  <label className="text-sm font-medium">Logo URL</label>
+                  <label className="text-sm font-medium">Logo</label>
+                  <p className="text-xs text-muted-foreground">
+                    推荐使用正方形图片，支持 JPG、PNG、WebP 格式，最大 2MB
+                  </p>
                   <Input
-                    placeholder="https://example.com/logo.png"
-                    value={formData.logo}
+                    placeholder="或者输入图片 URL"
+                    value={formData.logo || ''}
                     onChange={(e) => setFormData((prev) => ({ ...prev, logo: e.target.value }))}
                     className={errors.logo ? 'border-destructive' : ''}
                   />
@@ -416,6 +445,21 @@ export default function NewAgentPage() {
                 />
                 {errors.docsUrl && <p className="text-xs text-destructive">{errors.docsUrl}</p>}
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Screenshots */}
+          <Card>
+            <CardHeader>
+              <CardTitle>截图展示</CardTitle>
+              <CardDescription>上传你的 Agent 界面截图（最多 5 张）</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ScreenshotsUpload
+                value={screenshots}
+                onChange={setScreenshots}
+                max={5}
+              />
             </CardContent>
           </Card>
 

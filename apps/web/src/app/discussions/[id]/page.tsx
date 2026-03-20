@@ -33,6 +33,7 @@ import {
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
+import rehypeSanitize from 'rehype-sanitize';
 import 'highlight.js/styles/github-dark.css';
 import { CommentList, CommentForm } from '@/components/comment/comment-list';
 
@@ -453,7 +454,7 @@ export default function PostDetailPage() {
               <div className="mt-8 prose prose-sm dark:prose-invert max-w-none">
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
-                  rehypePlugins={[rehypeHighlight]}
+                  rehypePlugins={[rehypeHighlight, rehypeSanitize]}
                 >
                   {post.content}
                 </ReactMarkdown>

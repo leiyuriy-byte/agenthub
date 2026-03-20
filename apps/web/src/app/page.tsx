@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { agentApi, Agent, AgentCategory } from '@/lib/api';
+import { agentApi, postApi, Agent, AgentCategory, Post } from '@/lib/api';
+import { formatRelativeTime } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -57,6 +58,7 @@ const itemVariants = {
 export default function HomePage() {
   const [featuredAgents, setFeaturedAgents] = useState<Agent[]>([]);
   const [categories, setCategories] = useState<AgentCategory[]>([]);
+  const [hotPosts, setHotPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -64,9 +66,10 @@ export default function HomePage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [featuredRes, categoriesRes] = await Promise.all([
+        const [featuredRes, categoriesRes, postsRes] = await Promise.all([
           agentApi.getFeatured(6),
           agentApi.getCategories(),
+          postApi.list({ limit: 4, sortBy: 'likeCount', sortOrder: 'desc' }),
         ]);
 
         if (featuredRes.success && featuredRes.data) {
@@ -74,6 +77,9 @@ export default function HomePage() {
         }
         if (categoriesRes.success && categoriesRes.data) {
           setCategories(categoriesRes.data);
+        }
+        if (postsRes.success && postsRes.data) {
+          setHotPosts(postsRes.data.posts);
         }
       } catch (error) {
         console.error('Failed to fetch data:', error);
@@ -92,46 +98,6 @@ export default function HomePage() {
       window.location.href = `/agents?search=${encodeURIComponent(searchQuery.trim())}`;
     }
   };
-
-  // Mock hot discussions data (since post API not implemented yet)
-  const hotDiscussions = [
-    {
-      id: '1',
-      title: '如何构建一个高效的 RAG 系统？',
-      author: { username: 'TechWizard', avatar: null },
-      channel: { name: '技术分享' },
-      likeCount: 42,
-      commentCount: 15,
-      createdAt: '2小时前',
-    },
-    {
-      id: '2',
-      title: '分享我的第一个商用 Agent 经验',
-      author: { username: 'AgentDev', avatar: null },
-      channel: { name: 'Agent展示' },
-      likeCount: 38,
-      commentCount: 22,
-      createdAt: '5小时前',
-    },
-    {
-      id: '3',
-      title: '求助：LangChain vs AutoGen 哪个更适合初学者？',
-      author: { username: 'NewbieCoder', avatar: null },
-      channel: { name: '求助问答' },
-      likeCount: 25,
-      commentCount: 31,
-      createdAt: '8小时前',
-    },
-    {
-      id: '4',
-      title: '2026 年 AI Agent 发展趋势展望',
-      author: { username: 'AIResearcher', avatar: null },
-      channel: { name: '行业资讯' },
-      likeCount: 56,
-      commentCount: 18,
-      createdAt: '1天前',
-    },
-  ];
 
   // Get icon for category
   const getCategoryIcon = (slug: string) => {
@@ -253,9 +219,9 @@ export default function HomePage() {
               className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
             >
               {featuredAgents.map((agent) => (
-                <motion.div key={agent.id} variants={itemVariants}>
+                <motion.div key={agent.id} variants={itemVariants} whileHover={{ y: -4 }} transition={{ duration: 0.2 }}>
                   <Link href={`/agents/${agent.id}`}>
-                    <Card className="h-full hover:border-primary/50 transition-colors group">
+                    <Card className="h-full transition-all duration-300 hover:shadow-xl hover:border-primary/50 hover:shadow-primary/10 group">
                       <CardHeader className="flex flex-row items-start gap-4 pb-2">
                         <div className="h-14 w-14 rounded-xl overflow-hidden bg-muted flex-shrink-0">
                           {agent.logo ? (
@@ -434,54 +400,63 @@ export default function HomePage() {
           </div>
 
           <div className="grid md:grid-cols-2 gap-4">
-            {hotDiscussions.map((discussion, index) => (
-              <motion.div
-                key={discussion.id}
-                initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Link href={`/discussions/${discussion.id}`}>
-                  <Card className="hover:border-primary/50 transition-colors group">
-                    <CardContent className="p-4">
-                      <div className="flex items-start gap-3">
-                        <Avatar className="h-9 w-9">
-                          <AvatarImage src={discussion.author.avatar} />
-                          <AvatarFallback className="text-xs">
-                            {discussion.author.username.slice(0, 2).toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-medium truncate group-hover:text-primary transition-colors">
-                            {discussion.title}
-                          </h3>
-                          <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
-                            <span>{discussion.author.username}</span>
-                            <span>·</span>
-                            <span className="px-1.5 py-0.5 bg-muted rounded">
-                              {discussion.channel.name}
+            {hotPosts.length > 0 ? (
+              hotPosts.map((post, index) => (
+                <motion.div
+                  key={post.id}
+                  initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <Link href={`/discussions/${post.id}`}>
+                    <Card className="hover:border-primary/50 transition-colors group">
+                      <CardContent className="p-4">
+                        <div className="flex items-start gap-3">
+                          <Avatar className="h-9 w-9">
+                            <AvatarImage src={post.author?.avatar} />
+                            <AvatarFallback className="text-xs">
+                              {(post.author?.displayName || post.author?.username || '??').slice(0, 2).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-medium truncate group-hover:text-primary transition-colors">
+                              {post.title}
+                            </h3>
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
+                              <span>{post.author?.displayName || post.author?.username}</span>
+                              <span>·</span>
+                              {post.channel && (
+                                <span className="px-1.5 py-0.5 bg-muted rounded">
+                                  {post.channel.icon} {post.channel.name}
+                                </span>
+                              )}
+                              <span>·</span>
+                              <span>{formatRelativeTime(post.createdAt)}</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                            <span className="flex items-center gap-1">
+                              <Star className="h-3.5 w-3.5" />
+                              {post.likeCount}
                             </span>
-                            <span>·</span>
-                            <span>{discussion.createdAt}</span>
+                            <span className="flex items-center gap-1">
+                              <MessageSquare className="h-3.5 w-3.5" />
+                              {post.commentCount}
+                            </span>
                           </div>
                         </div>
-                        <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                          <span className="flex items-center gap-1">
-                            <Star className="h-3.5 w-3.5" />
-                            {discussion.likeCount}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <MessageSquare className="h-3.5 w-3.5" />
-                            {discussion.commentCount}
-                          </span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              </motion.div>
-            ))}
+                      </CardContent>
+                    </Card>
+                  </Link>
+                </motion.div>
+              ))
+            ) : (
+              <div className="col-span-2 text-center py-12 text-muted-foreground">
+                <MessageSquare className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p>暂无热门讨论</p>
+              </div>
+            )}
           </div>
         </div>
       </section>
