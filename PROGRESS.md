@@ -80,6 +80,7 @@
 ### UI 质感提升
 - Agent 卡片添加悬停微位移效果（whileHover: y: -4）
 - Agent 卡片添加阴影过渡动画（hover:shadow-xl）
+- 首页 Hero 区域增强：渐变背景球体动画、网格背景、改进搜索框样式、精致的CTA按钮动画、信任指标
 - 首页 Agent 卡片样式增强
 
 ### 安全加固
@@ -97,6 +98,29 @@
 - 401 自动清除 token 并跳转登录页
 - 403 显示"没有权限"提示
 - 429 显示"请求过于频繁"提示
+
+### 密码重置流程
+- 后端 forgot-password 和 reset-password routes 已存在
+- Token 24h 有效期（原为1h）
+- 控制台输出完整重置链接（开发模式）
+- 前端 forgot-password 页面完整
+- 前端 reset-password 页面新建完成
+
+### Agent 截图上传
+- 后端 upload.routes.ts 实现图片上传（本地存储）
+- 前端 ScreenshotsUpload 组件已完整（最多5张，单张≤2MB，jpg/png/webp）
+- 已集成到 Agent 创建页
+
+### 用户动态 Feed
+- 后端 feed.routes.ts + feed.service.ts 实现
+- 修复 return reply.send() 格式问题
+- 前端 /feed 页面完整（时间线样式，分页加载）
+
+### Agent 详情页增强
+- 添加「相关 Agent 推荐」模块（最多6个同分类Agent）
+- 后端新增 /api/agents/:id/related 端点
+- 后端新增 agentService.getRelatedAgents() 方法
+- 浏览量统计展示（已有，后端每次请求递增）
 
 ## 待开发 📋（Phase 2）
 - 实时通讯（WebSocket）推送
