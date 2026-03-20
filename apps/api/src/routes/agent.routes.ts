@@ -103,6 +103,42 @@ export async function agentRoutes(fastify: FastifyInstance) {
   });
 
   /**
+   * GET /api/agents/:id/related - Get related agents
+   */
+  fastify.get('/:id/related', async (
+    request: FastifyRequest<{ Params: AgentParams }>,
+    reply: FastifyReply
+  ) => {
+    try {
+      const { id } = request.params;
+      const limit = request.query['limit'] ? parseInteger(request.query['limit'] as string) : 6;
+
+      // Get the agent first to find its category
+      const agent = await agentService.findById(id);
+      
+      if (!agent) {
+        return reply.code(404).send({
+          success: false,
+          error: 'Agent not found',
+        });
+      }
+
+      const relatedAgents = await agentService.getRelatedAgents(id, agent.categoryId, limit);
+
+      return reply.send({
+        success: true,
+        data: relatedAgents,
+      });
+    } catch (error) {
+      request.log.error(error);
+      return reply.code(500).send({
+        success: false,
+        error: 'Internal server error',
+      });
+    }
+  });
+
+  /**
    * GET /api/agents/:id - Get agent details
    */
   fastify.get('/:id', async (

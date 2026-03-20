@@ -248,7 +248,7 @@ export const authService = {
     const id = nanoid();
     const token = nanoid(32);
     const expiresAt = new Date();
-    expiresAt.setHours(expiresAt.getHours() + 1); // 1 hour
+    expiresAt.setHours(expiresAt.getHours() + 24); // 24 hours
 
     await db.insert(schema.passwordResets).values({
       id,
@@ -259,6 +259,10 @@ export const authService = {
 
     // In production, send email with reset link
     // For now, just return the token (development only!)
+    const resetUrl = `http://localhost:3000/reset-password?token=${token}`;
+    console.log(`\n🔐 Password Reset Link for ${email}:`);
+    console.log(`   ${resetUrl}\n`);
+    
     return {
       success: true,
       // DEBUG: Remove in production!

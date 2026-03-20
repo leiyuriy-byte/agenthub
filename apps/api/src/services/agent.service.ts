@@ -557,6 +557,87 @@ export const agentService = {
   },
 
   /**
+   * Get related agents (same category, excluding current agent)
+   */
+  async getRelatedAgents(agentId: string, categoryId: string | null, limit = 6) {
+    // If no category, return recent agents
+    if (!categoryId) {
+      const agents = await db.select()
+        .from(schema.agents)
+        .where(
+          and(
+            eq(schema.agents.status, 'published'),
+            sql`${schema.agents.id} != ${agentId}`
+          )
+        )
+        .orderBy(desc(schema.agents.createdAt))
+        .limit(limit);
+
+      return Promise.all(
+        agents.map(async (agent) => {
+          const [owner] = await db.select({
+            id: schema.users.id,
+            username: schema.users.username,
+            displayName: schema.users.displayName,
+            avatar: schema.users.avatar,
+          })
+            .from(schema.users)
+            .where(eq(schema.users.id, agent.ownerId))
+            .limit(1);
+
+          return { ...agent, owner };
+        })
+      );
+    }
+
+    // Get agents from same category
+    const agents = await db.select()
+      .from(schema.agents)
+      .where(
+        and(
+          eq(schema.agents.status, 'published'),
+          eq(schema.agents.categoryId, categoryId),
+          sql`${schema.agents.id} != ${agentId}`
+        )
+      )
+      .orderBy(desc(schema.agents.avgRating))
+      .limit(limit);
+
+    // If not enough in same category, get recent agents to fill
+    if (agents.length < limit) {
+      const recentAgents = await db.select()
+        .from(schema.agents)
+        .where(
+          and(
+            eq(schema.agents.status, 'published'),
+            sql`${schema.agents.id} NOT IN (${sql.raw(agents.map(a => `'${a.id}'`).join(',')) || "''"})`,
+            sql`${schema.agents.id} != ${agentId}`
+          )
+        )
+        .orderBy(desc(schema.agents.createdAt))
+        .limit(limit - agents.length);
+
+      agents.push(...recentAgents);
+    }
+
+    return Promise.all(
+      agents.map(async (agent) => {
+        const [owner] = await db.select({
+          id: schema.users.id,
+          username: schema.users.username,
+          displayName: schema.users.displayName,
+          avatar: schema.users.avatar,
+        })
+          .from(schema.users)
+          .where(eq(schema.users.id, agent.ownerId))
+          .limit(1);
+
+        return { ...agent, owner };
+      })
+    );
+  },
+
+  /**
    * Create agent category (for seeding)
    */
   async createCategory(name: string, slug: string, description?: string, icon?: string) {

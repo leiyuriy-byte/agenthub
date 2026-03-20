@@ -13,6 +13,7 @@ import { agentApi, Agent, AgentCategory, User } from '@/lib/api';
 import { formatRelativeTime, formatNumber, cn } from '@/lib/utils';
 import {
   ArrowLeft,
+  ArrowRight,
   Star,
   Eye,
   Heart,
@@ -27,6 +28,8 @@ import {
   Users,
   CheckCircle,
   AlertCircle,
+  Sparkles,
+  Bot,
 } from 'lucide-react';
 
 // Extended types for agent detail
@@ -77,6 +80,8 @@ export default function AgentDetailPage() {
   const [showRatingForm, setShowRatingForm] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [ratingSuccess, setRatingSuccess] = useState(false);
+  const [relatedAgents, setRelatedAgents] = useState<Agent[]>([]);
+  const [isLoadingRelated, setIsLoadingRelated] = useState(false);
 
   // Check auth status
   useEffect(() => {
@@ -108,6 +113,26 @@ export default function AgentDetailPage() {
   useEffect(() => {
     fetchAgent();
   }, [fetchAgent]);
+
+  // Fetch related agents when agent is loaded
+  useEffect(() => {
+    if (agent?.id) {
+      const fetchRelated = async () => {
+        setIsLoadingRelated(true);
+        try {
+          const res = await agentApi.getRelated(agent.id, 6);
+          if (res.success && res.data) {
+            setRelatedAgents(res.data);
+          }
+        } catch (err) {
+          console.error('Failed to fetch related agents:', err);
+        } finally {
+          setIsLoadingRelated(false);
+        }
+      };
+      fetchRelated();
+    }
+  }, [agent?.id]);
 
   // Handle favorite toggle
   const handleFavorite = async () => {
@@ -709,6 +734,88 @@ export default function AgentDetailPage() {
             )}
           </div>
         </div>
+
+        {/* Related Agents Section */}
+        {(relatedAgents.length > 0 || isLoadingRelated) && (
+          <div className="mt-12 pt-8 border-t">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-primary" />
+                相关 Agent 推荐
+              </h2>
+              <Link href="/agents">
+                <Button variant="ghost" size="sm" className="gap-1">
+                  查看全部
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
+
+            {isLoadingRelated ? (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[...Array(3)].map((_, i) => (
+                  <Card key={i} className="animate-pulse">
+                    <CardHeader className="h-32 bg-muted" />
+                    <CardContent className="pt-4">
+                      <div className="h-6 bg-muted rounded w-3/4 mb-2" />
+                      <div className="h-4 bg-muted rounded w-1/2" />
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {relatedAgents.slice(0, 6).map((relatedAgent) => (
+                  <motion.div
+                    key={relatedAgent.id}
+                    whileHover={{ y: -4 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Link href={`/agents/${relatedAgent.id}`}>
+                      <Card className="h-full transition-all duration-300 hover:shadow-xl hover:border-primary/50 group">
+                        <CardHeader className="flex flex-row items-start gap-4 pb-2">
+                          <div className="h-14 w-14 rounded-xl overflow-hidden bg-muted flex-shrink-0">
+                            {relatedAgent.logo ? (
+                              <img
+                                src={relatedAgent.logo}
+                                alt={relatedAgent.name}
+                                className="h-full w-full object-cover"
+                              />
+                            ) : (
+                              <div className="h-full w-full flex items-center justify-center bg-gradient-to-br from-indigo-500/20 to-purple-500/20">
+                                <Bot className="h-6 w-6 text-muted-foreground" />
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold truncate group-hover:text-primary transition-colors">
+                              {relatedAgent.name}
+                            </h3>
+                            <p className="text-sm text-muted-foreground truncate">
+                              {relatedAgent.tagline || '暂无描述'}
+                            </p>
+                          </div>
+                        </CardHeader>
+                        <CardFooter className="text-sm text-muted-foreground">
+                          <div className="flex items-center gap-4">
+                            <span className="flex items-center gap-1">
+                              <Star className="h-4 w-4 text-yellow-500" />
+                              {relatedAgent.avgRating?.toFixed(1) || '0.0'}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Eye className="h-4 w-4" />
+                              {relatedAgent.viewCount || 0}
+                            </span>
+                          </div>
+                        </CardFooter>
+                      </Card>
+                    </Link>
+                  </motion.div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </main>
 
       {/* Footer */}

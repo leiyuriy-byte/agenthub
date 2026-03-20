@@ -18,6 +18,7 @@ import { messageRoutes } from './routes/message.routes.js';
 import { adminRoutes } from './routes/admin.routes.js';
 import { searchRoutes } from './routes/search.routes.js';
 import { uploadRoutes } from './routes/upload.routes.js';
+import { feedRoutes } from './routes/feed.routes.js';
 
 const fastify = Fastify({
   logger: {
@@ -121,6 +122,7 @@ await fastify.register(messageRoutes, { prefix: '/api/messages' });
 await fastify.register(adminRoutes, { prefix: '/api/admin' });
 await fastify.register(searchRoutes, { prefix: '/api/search' });
 await fastify.register(uploadRoutes, { prefix: '/api/upload' });
+await fastify.register(feedRoutes, { prefix: '/api/feed' });
 
 // Health check endpoint
 fastify.get('/health', async () => {

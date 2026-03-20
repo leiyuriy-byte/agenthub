@@ -296,6 +296,8 @@ export const agentApi = {
 
   getFeatured: (limit?: number) => api.get<Agent[]>(`/api/agents/featured?limit=${limit || 10}`),
 
+  getRelated: (id: string, limit?: number) => api.get<Agent[]>(`/api/agents/${id}/related?limit=${limit || 6}`),
+
   getRatings: (id: string, params?: { limit?: number; offset?: number }) => {
     const query = new URLSearchParams(params as Record<string, string>);
     return api.get<{
@@ -779,6 +781,58 @@ export interface AdminChannel {
   isDefault: boolean;
   sortOrder: number;
 }
+
+// Feed API
+export interface FeedItem {
+  id: string;
+  type: 'agent' | 'post' | 'comment';
+  createdAt: string;
+  user: {
+    id: string;
+    username: string;
+    displayName: string;
+    avatar: string | null;
+  };
+  data: {
+    // Agent data
+    agentId?: string;
+    agentName?: string;
+    agentTagline?: string;
+    agentLogo?: string;
+    // Post data
+    postId?: string;
+    postTitle?: string;
+    postExcerpt?: string;
+    channelName?: string;
+    channelIcon?: string;
+    // Comment data
+    commentId?: string;
+    commentContent?: string;
+    targetType?: 'agent' | 'post';
+    targetId?: string;
+    targetTitle?: string;
+  };
+}
+
+export interface FeedResponse {
+  feed: FeedItem[];
+  pagination: {
+    limit: number;
+    offset: number;
+    hasMore: boolean;
+  };
+}
+
+export const feedApi = {
+  getFeed: (params?: {
+    limit?: number;
+    offset?: number;
+    type?: 'following' | 'global';
+  }) => {
+    const query = new URLSearchParams(params as Record<string, string>);
+    return api.get<FeedResponse>(`/api/feed?${query}`);
+  },
+};
 
 export const adminApi = {
   // Dashboard

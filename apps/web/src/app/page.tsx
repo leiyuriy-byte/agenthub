@@ -107,73 +107,165 @@ export default function HomePage() {
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="relative overflow-hidden py-20 md:py-28">
-        {/* Background Effects */}
+      <section className="relative overflow-hidden py-20 md:py-32">
+        {/* Enhanced Background Effects */}
         <div className="absolute inset-0 -z-10">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-gradient-to-b from-indigo-500/20 via-purple-500/10 to-transparent rounded-full blur-3xl" />
-          <div className="absolute bottom-0 right-0 w-[600px] h-[400px] bg-gradient-to-t from-pink-500/10 to-transparent rounded-full blur-3xl" />
+          {/* Main gradient orb */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[700px] bg-gradient-to-b from-indigo-500/30 via-purple-500/15 to-transparent rounded-full blur-3xl animate-pulse" />
+          {/* Secondary gradient */}
+          <div className="absolute bottom-0 right-0 w-[700px] h-[500px] bg-gradient-to-t from-pink-500/20 via-fuchsia-500/10 to-transparent rounded-full blur-3xl" />
+          {/* Tertiary accent */}
+          <div className="absolute top-1/4 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-cyan-500/10 to-transparent rounded-full blur-3xl" />
+          {/* Grid pattern overlay */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]" />
         </div>
 
         <div className="container relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.6, ease: 'easeOut' }}
             className="mx-auto max-w-3xl text-center"
           >
-            <Badge variant="secondary" className="mb-4 gap-1">
-              <Sparkles className="h-3 w-3" />
-              已有 {featuredAgents.length || '100+'} 个优秀 Agent
-            </Badge>
+            {/* Animated Badge */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2, duration: 0.4 }}
+            >
+              <Badge 
+                variant="secondary" 
+                className="mb-6 gap-1.5 px-4 py-1.5 text-sm bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border-indigo-500/20"
+              >
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+                >
+                  <Sparkles className="h-3.5 w-3.5 text-indigo-500" />
+                </motion.div>
+                已有 {featuredAgents.length || '100+'} 个优秀 Agent
+              </Badge>
+            </motion.div>
             
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
-              <span className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+            {/* Animated Headline */}
+            <motion.h1 
+              className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-8"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.5 }}
+            >
+              <span className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient">
                 发现、创造、分享
               </span>
               <br />
-              你的 AI Agent
-            </h1>
+              <span className="text-foreground">你的 AI Agent</span>
+            </motion.h1>
             
-            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
+            <motion.p 
+              className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-12 leading-relaxed"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.5 }}
+            >
               面向 AI Agent 开发者、研究者和爱好者的综合性社区平台。
               在这里展示你的作品，与同行交流，共同推动 AI 时代的发展。
-            </p>
+            </motion.p>
 
-            {/* Search Box */}
-            <form onSubmit={handleSearch} className="max-w-xl mx-auto mb-10">
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <input
-                  type="text"
-                  placeholder="搜索 Agent、项目或话题..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full h-14 pl-12 pr-32 rounded-xl border bg-background/80 backdrop-blur focus:border-primary focus:ring-1 focus:ring-primary transition-all text-base"
-                />
-                <Button
-                  type="submit"
-                  className="absolute right-2 top-1/2 -translate-y-1/2"
-                >
-                  搜索
-                </Button>
+            {/* Enhanced Search Box */}
+            <motion.form 
+              onSubmit={handleSearch} 
+              className="max-w-xl mx-auto mb-12"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.5 }}
+            >
+              <div className="relative group">
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl blur opacity-30 group-hover:opacity-50 transition duration-200" />
+                <div className="relative flex items-center">
+                  <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                  <input
+                    type="text"
+                    placeholder="搜索 Agent、项目或话题..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full h-14 pl-14 pr-36 rounded-xl border-0 bg-background/95 backdrop-blur shadow-lg focus:ring-2 focus:ring-primary/50 transition-all text-base"
+                  />
+                  <Button
+                    type="submit"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg px-6"
+                  >
+                    搜索
+                  </Button>
+                </div>
               </div>
-            </form>
+            </motion.form>
 
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/agents/new">
-                <Button size="lg" className="gap-2 text-base">
-                  <Zap className="h-4 w-4" />
+            {/* Enhanced CTA Buttons */}
+            <motion.div 
+              className="flex flex-col sm:flex-row items-center justify-center gap-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.5 }}
+            >
+              <Link href="/agents/new" className="group">
+                <Button 
+                  size="lg" 
+                  className="gap-2 text-base px-8 h-12 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 transition-all duration-300"
+                >
+                  <motion.div
+                    whileHover={{ rotate: 15 }}
+                    transition={{ type: 'spring', stiffness: 400 }}
+                  >
+                    <Zap className="h-4 w-4" />
+                  </motion.div>
                   创建你的 Agent
+                  <motion.div
+                    className="ml-1"
+                    whileHover={{ x: 3 }}
+                    transition={{ type: 'spring', stiffness: 400 }}
+                  >
+                    <ArrowRight className="h-4 w-4" />
+                  </motion.div>
                 </Button>
               </Link>
-              <Link href="/agents">
-                <Button variant="outline" size="lg" className="text-base">
+              <Link href="/agents" className="group">
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="text-base px-8 h-12 border-2 hover:bg-primary/5 hover:border-primary/50 transition-all duration-300"
+                >
                   探索更多
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <motion.div
+                    className="ml-2"
+                    whileHover={{ x: 3 }}
+                    transition={{ type: 'spring', stiffness: 400 }}
+                  >
+                    <ArrowRight className="h-4 w-4" />
+                  </motion.div>
                 </Button>
               </Link>
-            </div>
+            </motion.div>
+
+            {/* Trust indicators */}
+            <motion.div 
+              className="mt-16 flex flex-wrap items-center justify-center gap-8 text-sm text-muted-foreground"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.8, duration: 0.5 }}
+            >
+              <div className="flex items-center gap-2">
+                <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                <span>全天候服务</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="h-2 w-2 rounded-full bg-indigo-500 animate-pulse" style={{ animationDelay: '0.5s' }} />
+                <span>活跃社区</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="h-2 w-2 rounded-full bg-purple-500 animate-pulse" style={{ animationDelay: '1s' }} />
+                <span>持续更新</span>
+              </div>
+            </motion.div>
           </motion.div>
         </div>
       </section>
