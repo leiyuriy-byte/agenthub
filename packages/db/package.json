@@ -10,12 +10,11 @@
   },
   "dependencies": {
     "drizzle-orm": "^0.30.4",
-    "better-sqlite3": "^9.4.3"
+    "@libsql/client": "^0.6.0"
   },
   "devDependencies": {
     "typescript": "^5.3.3",
     "@types/node": "^20.11.0",
-    "@types/better-sqlite3": "^7.6.9",
     "drizzle-kit": "^0.20.14"
   }
 }

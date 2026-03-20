@@ -8,8 +8,8 @@ import { Button } from '@agenthub/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@agenthub/ui/card';
 import { Badge } from '@agenthub/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@agenthub/ui/avatar';
-import { Input } from '@agenthub/ui/input';
-import { postApi, Post, channelApi, Channel } from '@/lib/api';
+import { Textarea } from '@agenthub/ui/textarea';
+import { postApi, Post, channelApi, Channel, commentApi, Comment } from '@/lib/api';
 import { formatRelativeTime, formatNumber, cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/auth-store';
 import { toast } from 'sonner';
@@ -24,8 +24,6 @@ import {
   Bookmark,
   Loader2,
   ChevronRight,
-  MoreHorizontal,
-  Flag,
   Edit,
   Trash2,
   Pin,
@@ -36,6 +34,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import 'highlight.js/styles/github-dark.css';
+import { CommentList, CommentForm } from '@/components/comment/comment-list';
 
 export default function PostDetailPage() {
   const params = useParams();
@@ -49,7 +48,11 @@ export default function PostDetailPage() {
   const [isVoting, setIsVoting] = useState(false);
   const [isFavoriting, setIsFavoriting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [commentText, setCommentText] = useState('');
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [isLoadingComments, setIsLoadingComments] = useState(false);
+  const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  const [commentContent, setCommentContent] = useState('');
 
   // Fetch post
   const fetchPost = useCallback(async () => {
@@ -83,6 +86,30 @@ export default function PostDetailPage() {
     };
     fetchChannels();
   }, []);
+
+  // Fetch comments
+  const fetchComments = useCallback(async () => {
+    if (!post) return;
+
+    setIsLoadingComments(true);
+    try {
+      const response = await commentApi.list(post.id, {
+        sortBy: post.type === 'question' ? 'likeCount' : 'createdAt',
+        sortOrder: 'desc',
+      });
+
+      if (response.success && response.data) {
+        setComments(response.data.comments);
+      }
+    } catch {
+      toast.error('获取评论失败');
+    }
+    setIsLoadingComments(false);
+  }, [post]);
+
+  useEffect(() => {
+    fetchComments();
+  }, [fetchComments]);
 
   // Handle vote
   const handleVote = async (type: 'like' | 'dislike') => {
@@ -194,17 +221,93 @@ export default function PostDetailPage() {
   };
 
   // Handle comment submit
-  const handleCommentSubmit = async () => {
+  const handleCommentSubmit = async (content: string, parentId?: string) => {
     if (!user) {
       router.push('/login');
       return;
     }
 
-    if (!commentText.trim()) return;
+    if (!post || !content.trim()) return;
 
-    // TODO: Implement comment API
-    toast.info('评论功能即将上线');
-    setCommentText('');
+    setIsSubmittingComment(true);
+    try {
+      const response = await commentApi.create({
+        postId: post.id,
+        content,
+        parentId,
+      });
+
+      if (response.success && response.data) {
+        toast.success(parentId ? '回复成功' : '评论成功');
+        setCommentContent('');
+        setReplyingTo(null);
+        // Refresh comments
+        fetchComments();
+        // Update comment count
+        setPost((prev) => prev ? { ...prev, commentCount: prev.commentCount + 1 } : null);
+      } else {
+        toast.error(response.error || '评论失败');
+      }
+    } catch {
+      toast.error('评论失败');
+    }
+    setIsSubmittingComment(false);
+  };
+
+  // Handle delete comment
+  const handleDeleteComment = async (commentId: string) => {
+    if (!confirm('确定要删除这条评论吗？')) return;
+
+    try {
+      const response = await commentApi.delete(commentId);
+      if (response.success) {
+        toast.success('评论已删除');
+        // Refresh comments
+        fetchComments();
+        // Update comment count
+        setPost((prev) => prev ? { ...prev, commentCount: Math.max(0, prev.commentCount - 1) } : null);
+      } else {
+        toast.error(response.error || '删除失败');
+      }
+    } catch {
+      toast.error('删除失败');
+    }
+  };
+
+  // Handle like comment
+  const handleLikeComment = async (commentId: string) => {
+    if (!user) {
+      router.push('/login');
+      return;
+    }
+
+    try {
+      const response = await commentApi.like(commentId);
+      if (response.success) {
+        // Refresh comments to get updated like counts
+        fetchComments();
+      }
+    } catch {
+      toast.error('操作失败');
+    }
+  };
+
+  // Handle accept answer
+  const handleAcceptComment = async (commentId: string) => {
+    if (!user || !post) return;
+
+    try {
+      const response = await commentApi.accept(commentId);
+      if (response.success) {
+        toast.success('已采纳该答案');
+        // Refresh comments
+        fetchComments();
+      } else {
+        toast.error(response.error || '操作失败');
+      }
+    } catch {
+      toast.error('操作失败');
+    }
   };
 
   // Get type badge
@@ -244,6 +347,7 @@ export default function PostDetailPage() {
 
   const typeBadge = getTypeBadge(post.type);
   const isOwner = user?.id === post.authorId;
+  const isQuestion = post.type === 'question';
 
   return (
     <div className="min-h-screen bg-background">
@@ -447,12 +551,17 @@ export default function PostDetailPage() {
                       <div className="flex-1 space-y-2">
                         <Textarea
                           placeholder="写下你的评论..."
-                          value={commentText}
-                          onChange={(e) => setCommentText(e.target.value)}
+                          value={commentContent}
+                          onChange={(e) => setCommentContent(e.target.value)}
                           className="min-h-[80px]"
                         />
                         <div className="flex justify-end">
-                          <Button size="sm" onClick={handleCommentSubmit}>
+                          <Button 
+                            size="sm" 
+                            onClick={() => handleCommentSubmit(commentContent)}
+                            disabled={isSubmittingComment || !commentContent.trim()}
+                          >
+                            {isSubmittingComment && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
                             发布评论
                           </Button>
                         </div>
@@ -460,18 +569,31 @@ export default function PostDetailPage() {
                     </div>
                   ) : (
                     <div className="text-center py-4">
-                      <p className="text-muted-foreground mb-2}>登录后参与评论</p>
+                      <p className="text-muted-foreground mb-2">登录后参与评论</p>
                       <Link href="/login">
                         <Button variant="outline" size="sm">登录</Button>
                       </Link>
                     </div>
                   )}
 
-                  {/* Placeholder for comments */}
-                  <div className="text-center py-8 text-muted-foreground">
-                    <MessageSquare className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                    <p>评论功能即将上线</p>
-                  </div>
+                  {/* Comments List */}
+                  {isLoadingComments ? (
+                    <div className="flex items-center justify-center py-8">
+                      <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                    </div>
+                  ) : (
+                    <CommentList
+                      comments={comments}
+                      postAuthorId={post.authorId}
+                      isPostAuthor={isOwner}
+                      isQuestion={isQuestion}
+                      onReply={handleCommentSubmit}
+                      onDelete={handleDeleteComment}
+                      onLike={handleLikeComment}
+                      onAccept={isQuestion ? handleAcceptComment : undefined}
+                      isSubmitting={isSubmittingComment}
+                    />
+                  )}
                 </CardContent>
               </Card>
             </section>

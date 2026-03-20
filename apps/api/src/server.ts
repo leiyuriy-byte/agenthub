@@ -12,6 +12,11 @@ import { authRoutes } from './routes/auth.routes.js';
 import { agentRoutes } from './routes/agent.routes.js';
 import { channelRoutes } from './routes/channel.routes.js';
 import { postRoutes } from './routes/post.routes.js';
+import { commentRoutes } from './routes/comment.routes.js';
+import { notificationRoutes } from './routes/notification.routes.js';
+import { messageRoutes } from './routes/message.routes.js';
+import { adminRoutes } from './routes/admin.routes.js';
+import { searchRoutes } from './routes/search.routes.js';
 
 const fastify = Fastify({
   logger: {
@@ -84,6 +89,11 @@ await fastify.register(authRoutes, { prefix: '/api/auth' });
 await fastify.register(agentRoutes, { prefix: '/api/agents' });
 await fastify.register(channelRoutes, { prefix: '/api/channels' });
 await fastify.register(postRoutes, { prefix: '/api/posts' });
+await fastify.register(commentRoutes, { prefix: '/api/comments' });
+await fastify.register(notificationRoutes, { prefix: '/api/notifications' });
+await fastify.register(messageRoutes, { prefix: '/api/messages' });
+await fastify.register(adminRoutes, { prefix: '/api/admin' });
+await fastify.register(searchRoutes, { prefix: '/api/search' });
 
 // Health check endpoint
 fastify.get('/health', async () => {

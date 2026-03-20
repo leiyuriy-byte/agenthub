@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAuthStore, User } from '@/lib/api';
+import { useAuthStore, User, notificationApi, messageApi } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -19,6 +19,8 @@ import {
   LogOut,
   ChevronDown,
   LogIn,
+  Loader2,
+  MessageCircle,
 } from 'lucide-react';
 
 export function Navbar() {
@@ -28,12 +30,50 @@ export function Navbar() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [messageUnreadCount, setMessageUnreadCount] = useState(0);
+  const [isLoadingNotifications, setIsLoadingNotifications] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
+  const notificationRef = useRef<HTMLDivElement>(null);
 
   // Check auth on mount
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
+
+  // Fetch unread notification count
+  const fetchUnreadCount = useCallback(async () => {
+    if (!user) {
+      setUnreadCount(0);
+      setMessageUnreadCount(0);
+      return;
+    }
+
+    setIsLoadingNotifications(true);
+    try {
+      const [notifRes, msgRes] = await Promise.all([
+        notificationApi.getUnreadCount(),
+        messageApi.getUnreadCount(),
+      ]);
+      
+      if (notifRes.success && notifRes.data) {
+        setUnreadCount(notifRes.data.count);
+      }
+      if (msgRes.success && msgRes.data) {
+        setMessageUnreadCount(msgRes.data.count);
+      }
+    } catch {
+      // Silently fail
+    }
+    setIsLoadingNotifications(false);
+  }, [user]);
+
+  useEffect(() => {
+    fetchUnreadCount();
+    // Poll every 60 seconds
+    const interval = setInterval(fetchUnreadCount, 60000);
+    return () => clearInterval(interval);
+  }, [fetchUnreadCount]);
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -56,7 +96,7 @@ export function Navbar() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      router.push(`/agents?search=${encodeURIComponent(searchQuery.trim())}`);
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
     }
   };
 
@@ -66,6 +106,11 @@ export function Navbar() {
     setIsUserMenuOpen(false);
     router.push('/');
   }, [logout, router]);
+
+  // Handle notification click
+  const handleNotificationClick = () => {
+    router.push('/notifications');
+  };
 
   // Get initials for avatar fallback
   const getInitials = (user: User) => {
@@ -122,7 +167,7 @@ export function Navbar() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
-              placeholder="搜索 Agent..."
+              placeholder="搜索..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 bg-muted/50 border-transparent focus:border-primary focus:bg-background transition-all"
@@ -134,7 +179,7 @@ export function Navbar() {
         <div className="flex items-center gap-2">
           {/* Search Button - Mobile */}
           <button
-            onClick={() => router.push('/agents')}
+            onClick={() => router.push('/search')}
             className="md:hidden p-2 text-muted-foreground hover:text-foreground"
           >
             <Search className="h-5 w-5" />
@@ -154,10 +199,36 @@ export function Navbar() {
               </Link>
 
               {/* Notifications */}
-              <button className="relative p-2 text-muted-foreground hover:text-foreground transition-colors">
-                <Bell className="h-5 w-5" />
-                <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full" />
+              <button
+                onClick={handleNotificationClick}
+                className="relative p-2 text-muted-foreground hover:text-foreground transition-colors"
+                title="通知"
+              >
+                {isLoadingNotifications ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <Bell className="h-5 w-5" />
+                )}
+                {unreadCount > 0 && (
+                  <span className="absolute top-1 right-1 h-5 w-5 min-w-[20px] px-1 flex items-center justify-center bg-red-500 text-white text-xs font-medium rounded-full">
+                    {unreadCount > 99 ? '99+' : unreadCount}
+                  </span>
+                )}
               </button>
+
+              {/* Messages */}
+              <Link
+                href="/messages"
+                className="relative p-2 text-muted-foreground hover:text-foreground transition-colors"
+                title="私信"
+              >
+                <MessageCircle className="h-5 w-5" />
+                {messageUnreadCount > 0 && (
+                  <span className="absolute top-1 right-1 h-5 w-5 min-w-[20px] px-1 flex items-center justify-center bg-[#10b981] text-white text-xs font-medium rounded-full">
+                    {messageUnreadCount > 99 ? '99+' : messageUnreadCount}
+                  </span>
+                )}
+              </Link>
 
               {/* User Menu */}
               <div className="relative" ref={userMenuRef}>
@@ -188,6 +259,14 @@ export function Navbar() {
                         <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                       </div>
                       <div className="p-1">
+                        <Link
+                          href="/messages"
+                          className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-accent transition-colors"
+                          onClick={() => setIsUserMenuOpen(false)}
+                        >
+                          <MessageCircle className="h-4 w-4" />
+                          私信
+                        </Link>
                         <Link
                           href={`/users/${user.id}`}
                           className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-accent transition-colors"

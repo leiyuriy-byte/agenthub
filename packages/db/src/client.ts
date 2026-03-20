@@ -1,26 +1,32 @@
-import Database from 'better-sqlite3';
-import { drizzle } from 'drizzle-orm/better-sqlite3';
+import { createClient, type Client } from '@libsql/client';
+import { drizzle, type DrizzleSQLiteConfig } from 'drizzle-orm/libsql';
 import * as schema from './schema';
 
-// Create SQLite database connection
-const sqlite = new Database(process.env.DATABASE_URL || './data/agenthub.db');
+// Database file path
+const DB_PATH = process.env.DATABASE_URL || 'libsql:file:./data/agenthub.db';
 
-// Enable WAL mode for better performance
-sqlite.pragma('journal_mode = WAL');
+// Create libsql client
+const client: Client = createClient({
+  url: DB_PATH,
+  authToken: process.env.DATABASE_AUTH_TOKEN,
+});
 
-// Create Drizzle instance
-export const db = drizzle(sqlite, { schema });
+// Create Drizzle instance with libsql
+export const db = drizzle(client, { schema } as DrizzleSQLiteConfig);
 
 // Export schema for type-safe queries
 export { schema };
 
-// Export sqlite instance for raw queries if needed
-export { sqlite };
+// Export client for raw queries if needed
+export { client };
 
 // Database initialization function
 export async function initializeDatabase() {
-  // Ensure tables exist
-  sqlite.exec(`
+  // Ensure data directory exists (for file-based libsql)
+  const dbUrl = process.env.DATABASE_URL || 'libsql:file:./data/agenthub.db';
+  
+  // Create tables using raw SQL
+  await client.execute(`
     CREATE TABLE IF NOT EXISTS users (
       id TEXT PRIMARY KEY,
       email TEXT NOT NULL UNIQUE,
@@ -36,42 +42,60 @@ export async function initializeDatabase() {
       last_login_at INTEGER,
       created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000),
       updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000)
-    );
+    )
+  `);
 
-    CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
-    CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
-    CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
+  await client.execute(`
+    CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)
+  `);
 
+  await client.execute(`
+    CREATE INDEX IF NOT EXISTS idx_users_username ON users(username)
+  `);
+
+  await client.execute(`
+    CREATE INDEX IF NOT EXISTS idx_users_role ON users(role)
+  `);
+
+  await client.execute(`
     CREATE TABLE IF NOT EXISTS user_social_links (
       id TEXT PRIMARY KEY,
       user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       platform TEXT NOT NULL,
       url TEXT NOT NULL,
       created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000)
-    );
+    )
+  `);
 
+  await client.execute(`
     CREATE TABLE IF NOT EXISTS user_tags (
       id TEXT PRIMARY KEY,
       user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       tag TEXT NOT NULL,
       created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000)
-    );
+    )
+  `);
 
+  await client.execute(`
     CREATE TABLE IF NOT EXISTS follows (
       id TEXT PRIMARY KEY,
       follower_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       following_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000),
       UNIQUE(follower_id, following_id)
-    );
+    )
+  `);
 
+  await client.execute(`
     CREATE TABLE IF NOT EXISTS user_badges (
       id TEXT PRIMARY KEY,
       user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       badge TEXT NOT NULL,
       earned_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000)
-    );
+    )
+  `);
 
+  await client.execute(`
     CREATE TABLE IF NOT EXISTS sessions (
       id TEXT PRIMARY KEY,
       user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -80,16 +104,20 @@ export async function initializeDatabase() {
       user_agent TEXT,
       expires_at INTEGER NOT NULL,
       created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000)
-    );
+    )
+  `);
 
+  await client.execute(`
     CREATE TABLE IF NOT EXISTS email_verifications (
       id TEXT PRIMARY KEY,
       user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       token TEXT NOT NULL UNIQUE,
       expires_at INTEGER NOT NULL,
       created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000)
-    );
+    )
+  `);
 
+  await client.execute(`
     CREATE TABLE IF NOT EXISTS password_resets (
       id TEXT PRIMARY KEY,
       user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -97,8 +125,10 @@ export async function initializeDatabase() {
       expires_at INTEGER NOT NULL,
       used_at INTEGER,
       created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000)
-    );
+    )
+  `);
 
+  await client.execute(`
     CREATE TABLE IF NOT EXISTS agent_categories (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
@@ -108,8 +138,10 @@ export async function initializeDatabase() {
       parent_id TEXT REFERENCES agent_categories(id),
       sort_order INTEGER NOT NULL DEFAULT 0,
       created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000)
-    );
+    )
+  `);
 
+  await client.execute(`
     CREATE TABLE IF NOT EXISTS agents (
       id TEXT PRIMARY KEY,
       owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -133,20 +165,35 @@ export async function initializeDatabase() {
       rating_count INTEGER NOT NULL DEFAULT 0,
       created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000),
       updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000)
-    );
+    )
+  `);
 
-    CREATE INDEX IF NOT EXISTS idx_agents_owner ON agents(owner_id);
-    CREATE INDEX IF NOT EXISTS idx_agents_slug ON agents(slug);
-    CREATE INDEX IF NOT EXISTS idx_agents_status ON agents(status);
-    CREATE INDEX IF NOT EXISTS idx_agents_category ON agents(category_id);
+  await client.execute(`
+    CREATE INDEX IF NOT EXISTS idx_agents_owner ON agents(owner_id)
+  `);
 
+  await client.execute(`
+    CREATE INDEX IF NOT EXISTS idx_agents_slug ON agents(slug)
+  `);
+
+  await client.execute(`
+    CREATE INDEX IF NOT EXISTS idx_agents_status ON agents(status)
+  `);
+
+  await client.execute(`
+    CREATE INDEX IF NOT EXISTS idx_agents_category ON agents(category_id)
+  `);
+
+  await client.execute(`
     CREATE TABLE IF NOT EXISTS agent_tags (
       id TEXT PRIMARY KEY,
       agent_id TEXT NOT NULL REFERENCES agents(id) ON DELETE CASCADE,
       tag TEXT NOT NULL,
       created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000)
-    );
+    )
+  `);
 
+  await client.execute(`
     CREATE TABLE IF NOT EXISTS agent_screenshots (
       id TEXT PRIMARY KEY,
       agent_id TEXT NOT NULL REFERENCES agents(id) ON DELETE CASCADE,
@@ -154,8 +201,10 @@ export async function initializeDatabase() {
       caption TEXT,
       sort_order INTEGER NOT NULL DEFAULT 0,
       created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000)
-    );
+    )
+  `);
 
+  await client.execute(`
     CREATE TABLE IF NOT EXISTS agent_versions (
       id TEXT PRIMARY KEY,
       agent_id TEXT NOT NULL REFERENCES agents(id) ON DELETE CASCADE,
@@ -163,8 +212,10 @@ export async function initializeDatabase() {
       changelog TEXT,
       download_url TEXT,
       created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000)
-    );
+    )
+  `);
 
+  await client.execute(`
     CREATE TABLE IF NOT EXISTS agent_ratings (
       id TEXT PRIMARY KEY,
       agent_id TEXT NOT NULL REFERENCES agents(id) ON DELETE CASCADE,
@@ -179,16 +230,20 @@ export async function initializeDatabase() {
       created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000),
       updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000),
       UNIQUE(agent_id, user_id)
-    );
+    )
+  `);
 
+  await client.execute(`
     CREATE TABLE IF NOT EXISTS agent_favorites (
       id TEXT PRIMARY KEY,
       agent_id TEXT NOT NULL REFERENCES agents(id) ON DELETE CASCADE,
       user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000),
       UNIQUE(agent_id, user_id)
-    );
+    )
+  `);
 
+  await client.execute(`
     CREATE TABLE IF NOT EXISTS channels (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
@@ -199,8 +254,10 @@ export async function initializeDatabase() {
       is_default INTEGER NOT NULL DEFAULT 0,
       sort_order INTEGER NOT NULL DEFAULT 0,
       created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000)
-    );
+    )
+  `);
 
+  await client.execute(`
     CREATE TABLE IF NOT EXISTS posts (
       id TEXT PRIMARY KEY,
       author_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -216,19 +273,31 @@ export async function initializeDatabase() {
       comment_count INTEGER NOT NULL DEFAULT 0,
       created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000),
       updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000)
-    );
+    )
+  `);
 
-    CREATE INDEX IF NOT EXISTS idx_posts_author ON posts(author_id);
-    CREATE INDEX IF NOT EXISTS idx_posts_channel ON posts(channel_id);
-    CREATE INDEX IF NOT EXISTS idx_posts_type ON posts(type);
+  await client.execute(`
+    CREATE INDEX IF NOT EXISTS idx_posts_author ON posts(author_id)
+  `);
 
+  await client.execute(`
+    CREATE INDEX IF NOT EXISTS idx_posts_channel ON posts(channel_id)
+  `);
+
+  await client.execute(`
+    CREATE INDEX IF NOT EXISTS idx_posts_type ON posts(type)
+  `);
+
+  await client.execute(`
     CREATE TABLE IF NOT EXISTS post_tags (
       id TEXT PRIMARY KEY,
       post_id TEXT NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
       tag TEXT NOT NULL,
       created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000)
-    );
+    )
+  `);
 
+  await client.execute(`
     CREATE TABLE IF NOT EXISTS post_votes (
       id TEXT PRIMARY KEY,
       post_id TEXT NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
@@ -236,16 +305,20 @@ export async function initializeDatabase() {
       value INTEGER NOT NULL,
       created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000),
       UNIQUE(post_id, user_id)
-    );
+    )
+  `);
 
+  await client.execute(`
     CREATE TABLE IF NOT EXISTS post_favorites (
       id TEXT PRIMARY KEY,
       post_id TEXT NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
       user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000),
       UNIQUE(post_id, user_id)
-    );
+    )
+  `);
 
+  await client.execute(`
     CREATE TABLE IF NOT EXISTS comments (
       id TEXT PRIMARY KEY,
       post_id TEXT NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
@@ -256,11 +329,18 @@ export async function initializeDatabase() {
       like_count INTEGER NOT NULL DEFAULT 0,
       created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000),
       updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000)
-    );
+    )
+  `);
 
-    CREATE INDEX IF NOT EXISTS idx_comments_post ON comments(post_id);
-    CREATE INDEX IF NOT EXISTS idx_comments_parent ON comments(parent_id);
+  await client.execute(`
+    CREATE INDEX IF NOT EXISTS idx_comments_post ON comments(post_id)
+  `);
 
+  await client.execute(`
+    CREATE INDEX IF NOT EXISTS idx_comments_parent ON comments(parent_id)
+  `);
+
+  await client.execute(`
     CREATE TABLE IF NOT EXISTS comment_votes (
       id TEXT PRIMARY KEY,
       comment_id TEXT NOT NULL REFERENCES comments(id) ON DELETE CASCADE,
@@ -268,8 +348,10 @@ export async function initializeDatabase() {
       value INTEGER NOT NULL DEFAULT 1,
       created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000),
       UNIQUE(comment_id, user_id)
-    );
+    )
+  `);
 
+  await client.execute(`
     CREATE TABLE IF NOT EXISTS polls (
       id TEXT PRIMARY KEY,
       post_id TEXT NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
@@ -278,15 +360,19 @@ export async function initializeDatabase() {
       is_multi_select INTEGER NOT NULL DEFAULT 0,
       ends_at INTEGER,
       created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000)
-    );
+    )
+  `);
 
+  await client.execute(`
     CREATE TABLE IF NOT EXISTS poll_options (
       id TEXT PRIMARY KEY,
       poll_id TEXT NOT NULL REFERENCES polls(id) ON DELETE CASCADE,
       text TEXT NOT NULL,
       sort_order INTEGER NOT NULL DEFAULT 0
-    );
+    )
+  `);
 
+  await client.execute(`
     CREATE TABLE IF NOT EXISTS poll_votes (
       id TEXT PRIMARY KEY,
       poll_id TEXT NOT NULL REFERENCES polls(id) ON DELETE CASCADE,
@@ -294,8 +380,10 @@ export async function initializeDatabase() {
       user_id TEXT REFERENCES users(id) ON DELETE CASCADE,
       ip_address TEXT,
       created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000)
-    );
+    )
+  `);
 
+  await client.execute(`
     CREATE TABLE IF NOT EXISTS notifications (
       id TEXT PRIMARY KEY,
       user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -305,24 +393,35 @@ export async function initializeDatabase() {
       link TEXT,
       is_read INTEGER NOT NULL DEFAULT 0,
       created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000)
-    );
+    )
+  `);
 
-    CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id);
-    CREATE INDEX IF NOT EXISTS idx_notifications_read ON notifications(is_read);
+  await client.execute(`
+    CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id)
+  `);
 
+  await client.execute(`
+    CREATE INDEX IF NOT EXISTS idx_notifications_read ON notifications(is_read)
+  `);
+
+  await client.execute(`
     CREATE TABLE IF NOT EXISTS conversations (
       id TEXT PRIMARY KEY,
       created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000)
-    );
+    )
+  `);
 
+  await client.execute(`
     CREATE TABLE IF NOT EXISTS conversation_participants (
       id TEXT PRIMARY KEY,
       conversation_id TEXT NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
       user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       last_read_at INTEGER,
       created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000)
-    );
+    )
+  `);
 
+  await client.execute(`
     CREATE TABLE IF NOT EXISTS messages (
       id TEXT PRIMARY KEY,
       conversation_id TEXT NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
@@ -331,8 +430,10 @@ export async function initializeDatabase() {
       type TEXT NOT NULL DEFAULT 'text',
       metadata TEXT,
       created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000)
-    );
+    )
+  `);
 
+  await client.execute(`
     CREATE TABLE IF NOT EXISTS reports (
       id TEXT PRIMARY KEY,
       reporter_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -344,7 +445,7 @@ export async function initializeDatabase() {
       resolution TEXT,
       created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000),
       resolved_at INTEGER
-    );
+    )
   `);
 
   console.log('✅ Database initialized successfully');

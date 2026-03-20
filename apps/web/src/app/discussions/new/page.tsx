@@ -7,7 +7,6 @@ import { motion } from 'framer-motion';
 import { z } from 'zod';
 import { Button } from '@agenthub/ui/button';
 import { Input } from '@agenthub/ui/input';
-import { Textarea } from '@agenthub/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@agenthub/ui/card';
 import { Badge } from '@agenthub/ui/badge';
 import { channelApi, Channel, postApi } from '@/lib/api';
@@ -23,12 +22,8 @@ import {
   BarChart2,
   Share2,
   X,
-  Eye,
 } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import rehypeHighlight from 'rehype-highlight';
-import 'highlight.js/styles/github-dark.css';
+import { MarkdownEditor } from '@/components/markdown/markdown-editor';
 
 const postTypes = [
   { key: 'normal', label: '讨论', icon: MessageSquare, description: '发起一般性讨论' },
@@ -55,7 +50,6 @@ export default function NewPostPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [tagInput, setTagInput] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [showPreview, setShowPreview] = useState(false);
   const [formData, setFormData] = useState<PostFormData>({
     channelId: '',
     title: '',
@@ -160,14 +154,6 @@ export default function NewPostPage() {
             <h1 className="text-lg font-semibold">发布帖子</h1>
           </div>
           <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowPreview(!showPreview)}
-            >
-              <Eye className="h-4 w-4 mr-2" />
-              {showPreview ? '编辑' : '预览'}
-            </Button>
             <Button size="sm" onClick={handleSubmit} disabled={isLoading}>
               {isLoading ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -267,11 +253,12 @@ export default function NewPostPage() {
               <CardDescription>使用 Markdown 格式编写内容</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <Textarea
-                placeholder="## 背景&#10;&#10;描述一下你的问题或分享内容...&#10;&#10;## 详情&#10;&#10;..."
+              <MarkdownEditor
                 value={formData.content}
-                onChange={(e) => setFormData((prev) => ({ ...prev, content: e.target.value }))}
-                className={cn('min-h-[300px] font-mono text-sm', errors.content && 'border-destructive')}
+                onChange={(value) => setFormData((prev) => ({ ...prev, content: value }))}
+                placeholder="## 背景&#10;&#10;描述一下你的问题或分享内容...&#10;&#10;## 详情&#10;&#10;..."
+                minHeight="300px"
+                error={!!errors.content}
               />
               {errors.content && <p className="text-xs text-destructive">{errors.content}</p>}
 
@@ -303,30 +290,6 @@ export default function NewPostPage() {
               </div>
             </CardContent>
           </Card>
-
-          {/* Preview */}
-          {showPreview && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Eye className="h-4 w-4" /> 预览
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="p-4 rounded-lg border bg-muted/30">
-                  <h2 className="text-xl font-bold">{formData.title || '帖子标题'}</h2>
-                  <div className="mt-4 prose prose-sm dark:prose-invert max-w-none">
-                    <ReactMarkdown
-                      remarkPlugins={[remarkGfm]}
-                      rehypePlugins={[rehypeHighlight]}
-                    >
-                      {formData.content || '*内容预览...*'}
-                    </ReactMarkdown>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
 
           {/* Actions */}
           <div className="flex items-center justify-end gap-4 pb-8">
