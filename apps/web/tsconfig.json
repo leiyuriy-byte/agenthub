@@ -1,0 +1,22 @@
+{
+  "extends": "@agenthub/config/tsconfig/nextjs.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@agenthub/ui": ["../../packages/ui/src"],
+      "@agenthub/config": ["../../packages/config/src"],
+      "@agenthub/validators": ["../../packages/validators/src"]
+    },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}

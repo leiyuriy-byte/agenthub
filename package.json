@@ -1,0 +1,26 @@
+{
+  "name": "agenthub",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@9.0.0",
+  "scripts": {
+    "dev": "pnpm -r --parallel dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "lint:fix": "pnpm -r lint:fix",
+    "format": "pnpm -r format",
+    "clean": "pnpm -r clean",
+    "typecheck": "pnpm -r typecheck",
+    "db:generate": "pnpm --filter @agenthub/server db:generate",
+    "db:migrate": "pnpm --filter @agenthub/server db:migrate",
+    "db:seed": "pnpm --filter @agenthub/server db:seed"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  }
+}

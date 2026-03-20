@@ -1,0 +1,566 @@
+'use client';
+
+import { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
+import { useParams, useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
+import { Button } from '@agenthub/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@agenthub/ui/card';
+import { Badge } from '@agenthub/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@agenthub/ui/avatar';
+import { Input } from '@agenthub/ui/input';
+import { postApi, Post, channelApi, Channel } from '@/lib/api';
+import { formatRelativeTime, formatNumber, cn } from '@/lib/utils';
+import { useAuthStore } from '@/stores/auth-store';
+import { toast } from 'sonner';
+import {
+  ArrowLeft,
+  ThumbsUp,
+  ThumbsDown,
+  Eye,
+  Clock,
+  MessageSquare,
+  Share2,
+  Bookmark,
+  Loader2,
+  ChevronRight,
+  MoreHorizontal,
+  Flag,
+  Edit,
+  Trash2,
+  Pin,
+  Star,
+  AlertCircle,
+} from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeHighlight from 'rehype-highlight';
+import 'highlight.js/styles/github-dark.css';
+
+export default function PostDetailPage() {
+  const params = useParams();
+  const router = useRouter();
+  const id = params?.id as string;
+  const { user } = useAuthStore();
+  const [post, setPost] = useState<Post | null>(null);
+  const [channels, setChannels] = useState<Channel[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isVoting, setIsVoting] = useState(false);
+  const [isFavoriting, setIsFavoriting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [commentText, setCommentText] = useState('');
+
+  // Fetch post
+  const fetchPost = useCallback(async () => {
+    if (!id) return;
+
+    setIsLoading(true);
+    setError(null);
+
+    const response = await postApi.get(id);
+
+    if (response.success && response.data) {
+      setPost(response.data as Post);
+    } else {
+      setError(response.error || '帖子未找到');
+    }
+
+    setIsLoading(false);
+  }, [id]);
+
+  useEffect(() => {
+    fetchPost();
+  }, [fetchPost]);
+
+  // Fetch channels for sidebar
+  useEffect(() => {
+    const fetchChannels = async () => {
+      const response = await channelApi.list();
+      if (response.success && response.data) {
+        setChannels(response.data);
+      }
+    };
+    fetchChannels();
+  }, []);
+
+  // Handle vote
+  const handleVote = async (type: 'like' | 'dislike') => {
+    if (!user) {
+      router.push('/login');
+      return;
+    }
+
+    if (!post) return;
+
+    setIsVoting(true);
+    try {
+      if (type === 'like') {
+        const response = await postApi.like(post.id);
+        if (response.success && response.data) {
+          setPost((prev) => prev ? {
+            ...prev,
+            likeCount: response.data.liked
+              ? prev.likeCount + 1
+              : prev.likeCount - 1,
+            dislikeCount: prev.userVote === -1 ? prev.dislikeCount - 1 : prev.dislikeCount,
+            userVote: response.data.liked ? 1 : 0,
+          } : null);
+        }
+      } else {
+        const response = await postApi.dislike(post.id);
+        if (response.success && response.data) {
+          setPost((prev) => prev ? {
+            ...prev,
+            dislikeCount: response.data.disliked
+              ? prev.dislikeCount + 1
+              : prev.dislikeCount - 1,
+            likeCount: prev.userVote === 1 ? prev.likeCount - 1 : prev.likeCount,
+            userVote: response.data.disliked ? -1 : 0,
+          } : null);
+        }
+      }
+    } catch {
+      toast.error('操作失败');
+    }
+    setIsVoting(false);
+  };
+
+  // Handle favorite
+  const handleFavorite = async () => {
+    if (!user) {
+      router.push('/login');
+      return;
+    }
+
+    if (!post) return;
+
+    setIsFavoriting(true);
+    try {
+      if (post.isFavorited) {
+        const response = await postApi.unfavorite(post.id);
+        if (response.success) {
+          setPost((prev) => prev ? { ...prev, isFavorited: false } : null);
+          toast.success('已取消收藏');
+        }
+      } else {
+        const response = await postApi.favorite(post.id);
+        if (response.success) {
+          setPost((prev) => prev ? { ...prev, isFavorited: true } : null);
+          toast.success('已收藏');
+        }
+      }
+    } catch {
+      toast.error('操作失败');
+    }
+    setIsFavoriting(false);
+  };
+
+  // Handle delete
+  const handleDelete = async () => {
+    if (!confirm('确定要删除这个帖子吗？此操作不可撤销。')) return;
+
+    setIsDeleting(true);
+    try {
+      const response = await postApi.delete(id);
+      if (response.success) {
+        toast.success('帖子已删除');
+        router.push('/discussions');
+      } else {
+        toast.error(response.error || '删除失败');
+      }
+    } catch {
+      toast.error('删除失败');
+    }
+    setIsDeleting(false);
+  };
+
+  // Handle share
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: post?.title,
+          text: post?.content?.slice(0, 100),
+          url: window.location.href,
+        });
+      } catch {
+        // User cancelled
+      }
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast.success('链接已复制');
+    }
+  };
+
+  // Handle comment submit
+  const handleCommentSubmit = async () => {
+    if (!user) {
+      router.push('/login');
+      return;
+    }
+
+    if (!commentText.trim()) return;
+
+    // TODO: Implement comment API
+    toast.info('评论功能即将上线');
+    setCommentText('');
+  };
+
+  // Get type badge
+  const getTypeBadge = (type: string) => {
+    switch (type) {
+      case 'question':
+        return { label: '问答', className: 'bg-blue-500/20 text-blue-600' };
+      case 'poll':
+        return { label: '投票', className: 'bg-purple-500/20 text-purple-600' };
+      case 'share':
+        return { label: '分享', className: 'bg-green-500/20 text-green-600' };
+      default:
+        return { label: '讨论', className: '' };
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (error || !post) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center">
+        <AlertCircle className="h-12 w-12 text-destructive mb-4" />
+        <h2 className="text-xl font-semibold mb-2">帖子未找到</h2>
+        <p className="text-muted-foreground mb-4">{error}</p>
+        <Link href="/discussions">
+          <Button variant="outline">返回讨论区</Button>
+        </Link>
+      </div>
+    );
+  }
+
+  const typeBadge = getTypeBadge(post.type);
+  const isOwner = user?.id === post.authorId;
+
+  return (
+    <div className="min-h-screen bg-background">
+      <main className="container py-8">
+        <div className="flex gap-8">
+          {/* Main Content */}
+          <div className="flex-1 min-w-0 max-w-4xl">
+            {/* Breadcrumb */}
+            <nav className="flex items-center gap-2 text-sm mb-6">
+              <Link href="/discussions" className="flex items-center gap-1 text-muted-foreground hover:text-foreground">
+                <ArrowLeft className="h-4 w-4" />
+                返回
+              </Link>
+              {post.channel && (
+                <>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                  <Link
+                    href={`/discussions?channelId=${post.channelId}`}
+                    className="flex items-center gap-1 text-muted-foreground hover:text-foreground"
+                  >
+                    <span>{post.channel.icon}</span>
+                    {post.channel.name}
+                  </Link>
+                </>
+              )}
+            </nav>
+
+            {/* Post Header */}
+            <article>
+              {/* Badges */}
+              <div className="flex flex-wrap items-center gap-2 mb-4">
+                {(post.isPinned || post.isFeatured) && (
+                  <>
+                    {post.isPinned && (
+                      <Badge className="bg-orange-500/20 text-orange-600 gap-1">
+                        <Pin className="h-3 w-3" /> 置顶
+                      </Badge>
+                    )}
+                    {post.isFeatured && (
+                      <Badge className="bg-yellow-500/20 text-yellow-600 gap-1">
+                        <Star className="h-3 w-3" /> 精华
+                      </Badge>
+                    )}
+                  </>
+                )}
+                <Badge className={cn('text-xs', typeBadge.className)}>
+                  {typeBadge.label}
+                </Badge>
+              </div>
+
+              {/* Title */}
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{post.title}</h1>
+
+              {/* Meta */}
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-4 text-sm text-muted-foreground">
+                {/* Author */}
+                <Link
+                  href={`/users/${post.authorId}`}
+                  className="flex items-center gap-2 hover:text-foreground"
+                >
+                  <Avatar className="h-6 w-6">
+                    <AvatarImage src={post.author?.avatar} />
+                    <AvatarFallback className="text-xs">
+                      {post.author?.username?.charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="font-medium">
+                    {post.author?.displayName || post.author?.username}
+                  </span>
+                </Link>
+
+                {/* Time */}
+                <span className="flex items-center gap-1">
+                  <Clock className="h-4 w-4" />
+                  {formatRelativeTime(post.createdAt)}
+                </span>
+
+                {/* Views */}
+                <span className="flex items-center gap-1">
+                  <Eye className="h-4 w-4" />
+                  {formatNumber(post.viewCount)} 浏览
+                </span>
+
+                {/* Comments */}
+                <span className="flex items-center gap-1">
+                  <MessageSquare className="h-4 w-4" />
+                  {formatNumber(post.commentCount)} 评论
+                </span>
+              </div>
+
+              {/* Tags */}
+              {post.tags && post.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-4">
+                  {post.tags.map((tag) => (
+                    <Badge key={tag} variant="secondary" className="text-xs">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+
+              {/* Content */}
+              <div className="mt-8 prose prose-sm dark:prose-invert max-w-none">
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[rehypeHighlight]}
+                >
+                  {post.content}
+                </ReactMarkdown>
+              </div>
+
+              {/* Action Bar */}
+              <div className="flex flex-wrap items-center justify-between gap-4 mt-8 pt-6 border-t">
+                <div className="flex items-center gap-2">
+                  {/* Like */}
+                  <Button
+                    variant={post.userVote === 1 ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => handleVote('like')}
+                    disabled={isVoting}
+                    className="gap-1"
+                  >
+                    <ThumbsUp className={cn('h-4 w-4', post.userVote === 1 && 'fill-current')} />
+                    {formatNumber(post.likeCount)}
+                  </Button>
+
+                  {/* Dislike */}
+                  <Button
+                    variant={post.userVote === -1 ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => handleVote('dislike')}
+                    disabled={isVoting}
+                    className="gap-1"
+                  >
+                    <ThumbsDown className={cn('h-4 w-4', post.userVote === -1 && 'fill-current')} />
+                    {formatNumber(post.dislikeCount)}
+                  </Button>
+
+                  {/* Favorite */}
+                  <Button
+                    variant={post.isFavorited ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={handleFavorite}
+                    disabled={isFavoriting}
+                    className="gap-1"
+                  >
+                    <Bookmark className={cn('h-4 w-4', post.isFavorited && 'fill-current')} />
+                    收藏
+                  </Button>
+
+                  {/* Share */}
+                  <Button variant="outline" size="sm" onClick={handleShare} className="gap-1">
+                    <Share2 className="h-4 w-4" />
+                    分享
+                  </Button>
+                </div>
+
+                {/* Owner Actions */}
+                {isOwner && (
+                  <div className="flex items-center gap-2">
+                    <Link href={`/discussions/${id}/edit`}>
+                      <Button variant="outline" size="sm" className="gap-1">
+                        <Edit className="h-4 w-4" />
+                        编辑
+                      </Button>
+                    </Link>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleDelete}
+                      disabled={isDeleting}
+                      className="text-destructive hover:text-destructive gap-1"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      删除
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </article>
+
+            {/* Comments Section */}
+            <section className="mt-8">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <MessageSquare className="h-5 w-5" />
+                    评论 ({post.commentCount})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* Comment Input */}
+                  {user ? (
+                    <div className="flex gap-3">
+                      <Avatar className="h-8 w-8 shrink-0">
+                        <AvatarImage src={user.avatar} />
+                        <AvatarFallback>
+                          {user.username?.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 space-y-2">
+                        <Textarea
+                          placeholder="写下你的评论..."
+                          value={commentText}
+                          onChange={(e) => setCommentText(e.target.value)}
+                          className="min-h-[80px]"
+                        />
+                        <div className="flex justify-end">
+                          <Button size="sm" onClick={handleCommentSubmit}>
+                            发布评论
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-4">
+                      <p className="text-muted-foreground mb-2}>登录后参与评论</p>
+                      <Link href="/login">
+                        <Button variant="outline" size="sm">登录</Button>
+                      </Link>
+                    </div>
+                  )}
+
+                  {/* Placeholder for comments */}
+                  <div className="text-center py-8 text-muted-foreground">
+                    <MessageSquare className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                    <p>评论功能即将上线</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </section>
+          </div>
+
+          {/* Right Sidebar */}
+          <aside className="w-64 shrink-0 hidden lg:block">
+            <div className="sticky top-24 space-y-4">
+              {/* Channel Info */}
+              {post.channel && (
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <span>{post.channel.icon}</span>
+                      {post.channel.name}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {post.channel.description && (
+                      <p className="text-sm text-muted-foreground">
+                        {post.channel.description}
+                      </p>
+                    )}
+                    <Link href={`/discussions?channelId=${post.channelId}`}>
+                      <Button variant="outline" size="sm" className="w-full mt-3">
+                        查看更多
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Author Card */}
+              {post.author && (
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base">发布者</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Link
+                      href={`/users/${post.authorId}`}
+                      className="flex items-center gap-3 hover:opacity-80"
+                    >
+                      <Avatar className="h-12 w-12">
+                        <AvatarImage src={post.author.avatar} />
+                        <AvatarFallback>
+                          {post.author.username?.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="font-medium">
+                          {post.author.displayName || post.author.username}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          @{post.author.username}
+                        </p>
+                      </div>
+                    </Link>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Popular Channels */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base">热门频道</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  {channels.slice(0, 5).map((channel) => (
+                    <Link
+                      key={channel.id}
+                      href={`/discussions?channelId=${channel.id}`}
+                      className="flex items-center justify-between py-1 text-sm hover:text-primary"
+                    >
+                      <span className="flex items-center gap-2">
+                        <span>{channel.icon}</span>
+                        {channel.name}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {channel.postCount} 帖
+                      </span>
+                    </Link>
+                  ))}
+                </CardContent>
+              </Card>
+            </div>
+          </aside>
+        </div>
+      </main>
+    </div>
+  );
+}
