@@ -7,3 +7,6 @@ dist/
 .next/
 *.tsbuildinfo
 node_modules/.cache/
+*.js
+*.d.ts
+*.d.ts.map
