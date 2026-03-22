@@ -1,5 +1,5 @@
 # AgentHub 开发进度
-最后更新：2026-03-22 12:00
+最后更新：2026-03-22 22:30
 
 ## 已完成 ✅
 
@@ -115,10 +115,10 @@
   - user.service.ts：`follow()` → 被关注者通知
 
 ## 进行中 🔨
-- Phase 3 开发中：Q&A增强/举报管理/Agent版本选择器/移动端优化/性能优化
+- Phase 3 收尾：采纳答案置顶高亮 / 移动端hamburger抽屉 / API缓存 / Lighthouse优化
 
 ## 待开发 📋（Phase 3 收尾）
-详见 [TASKS.md](./TASKS.md) 第 5 轮任务
+详见 [TASKS.md](./TASKS.md) 第 6 轮任务
 
 ### Phase 3 已完成功能 ✅
 - ~~移动端适配完善~~ → ✅ navbar响应式 + agents列表页图片懒加载
