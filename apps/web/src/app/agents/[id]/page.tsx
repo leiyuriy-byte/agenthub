@@ -33,6 +33,7 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   ZoomIn,
   Flag,
 } from 'lucide-react';
@@ -93,6 +94,9 @@ export default function AgentDetailPage() {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
 
+  // Version selector state
+  const [selectedVersion, setSelectedVersion] = useState<string | null>(null);
+
   // Report state
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportReason, setReportReason] = useState('');
@@ -118,6 +122,10 @@ export default function AgentDetailPage() {
       setAgent(response.data as AgentDetail);
       if (response.data.screenshots?.length) {
         setSelectedScreenshot(response.data.screenshots[0].url);
+      }
+      // Set default selected version to latest
+      if (response.data.versions?.length) {
+        setSelectedVersion(response.data.versions[0].version);
       }
     } else {
       setError(response.error || 'Failed to load agent');
@@ -814,6 +822,53 @@ export default function AgentDetailPage() {
                       </div>
                     </div>
                   </Link>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Version Selector */}
+            {agent.versions && agent.versions.length > 0 && (
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Clock className="h-4 w-4" />
+                    版本历史
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {/* Version Dropdown */}
+                  <div className="relative">
+                    <select
+                      value={selectedVersion || ''}
+                      onChange={(e) => setSelectedVersion(e.target.value)}
+                      className="w-full appearance-none rounded-md border border-input bg-background px-3 py-2 pr-8 text-sm"
+                    >
+                      {agent.versions.map((v) => (
+                        <option key={v.id} value={v.version}>
+                          v{v.version}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                  </div>
+                  
+                  {/* Selected Version Changelog */}
+                  {selectedVersion && (
+                    <>
+                      {(() => {
+                        const ver = agent.versions.find((v) => v.version === selectedVersion);
+                        return ver ? (
+                          <div className="text-xs text-muted-foreground">
+                            <p className="font-medium text-foreground mb-1">更新日志:</p>
+                            <p className="leading-relaxed">{ver.changelog || '暂无更新日志'}</p>
+                            <p className="mt-2 text-muted-foreground/70">
+                              {formatRelativeTime(ver.createdAt)}
+                            </p>
+                          </div>
+                        ) : null;
+                      })()}
+                    </>
+                  )}
                 </CardContent>
               </Card>
             )}

@@ -18,6 +18,7 @@ import {
   X,
   Loader2,
   BarChart3,
+  Flag,
 } from 'lucide-react';
 
 const navItems = [
@@ -27,6 +28,7 @@ const navItems = [
   { label: 'Agent 管理', href: '/admin/agents', icon: Bot },
   { label: '帖子管理', href: '/admin/posts', icon: FileText },
   { label: '评论管理', href: '/admin/comments', icon: MessageSquare },
+  { label: '举报管理', href: '/admin/reports', icon: Flag },
 ];
 
 interface AdminLayoutProps {

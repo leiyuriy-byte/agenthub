@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Input } from '@agenthub/ui/input';
 import { Badge } from '@agenthub/ui/badge';
@@ -175,10 +176,12 @@ export default function AgentsPage() {
                       {/* Cover Image */}
                       <div className="aspect-video relative bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center group">
                         {agent.logo ? (
-                          <img
+                          <Image
                             src={agent.logo}
                             alt={agent.name}
-                            className="h-full w-full object-cover"
+                            fill
+                            className="object-cover"
+                            loading="lazy"
                           />
                         ) : (
                           <div className="h-16 w-16 rounded-xl bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center">

@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@agenthub/ui/card';
 import { Badge } from '@agenthub/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@agenthub/ui/avatar';
 import { Textarea } from '@agenthub/ui/textarea';
-import { postApi, Post, channelApi, Channel, commentApi, Comment } from '@/lib/api';
+import { postApi, Post, channelApi, Channel, commentApi, Comment, reportApi } from '@/lib/api';
 import { formatRelativeTime, formatNumber, cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/auth-store';
 import { toast } from 'sonner';
@@ -29,6 +29,11 @@ import {
   Pin,
   Star,
   AlertCircle,
+  Sparkles,
+  ArrowRight,
+  HelpCircle,
+  Flag,
+  CheckCircle,
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -56,6 +61,12 @@ export default function PostDetailPage() {
   const [commentContent, setCommentContent] = useState('');
   const [similarPosts, setSimilarPosts] = useState<Post[]>([]);
   const [isLoadingSimilar, setIsLoadingSimilar] = useState(false);
+
+  // Report state
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportReason, setReportReason] = useState('');
+  const [isReporting, setIsReporting] = useState(false);
+  const [reportSuccess, setReportSuccess] = useState(false);
 
   // Fetch post
   const fetchPost = useCallback(async () => {
@@ -102,7 +113,20 @@ export default function PostDetailPage() {
       });
 
       if (response.success && response.data) {
-        setComments(response.data.comments);
+        // For questions, sort accepted answer to top
+        if (post.type === 'question') {
+          const comments = response.data.comments;
+          const sorted = [...comments].sort((a, b) => {
+            // Accepted answer always first
+            if (a.isAccepted && !b.isAccepted) return -1;
+            if (!a.isAccepted && b.isAccepted) return 1;
+            // Then by like count
+            return b.likeCount - a.likeCount;
+          });
+          setComments(sorted);
+        } else {
+          setComments(response.data.comments);
+        }
       }
     } catch {
       toast.error('获取评论失败');
@@ -113,6 +137,24 @@ export default function PostDetailPage() {
   useEffect(() => {
     fetchComments();
   }, [fetchComments]);
+
+  // Fetch similar posts for questions
+  const fetchSimilarPosts = useCallback(async () => {
+    if (!post || post.type !== 'question') return;
+
+    try {
+      const response = await postApi.getSimilar(post.id, 5);
+      if (response.success && response.data) {
+        setSimilarPosts(response.data);
+      }
+    } catch {
+      // Silently fail for similar posts
+    }
+  }, [post]);
+
+  useEffect(() => {
+    fetchSimilarPosts();
+  }, [fetchSimilarPosts]);
 
   // Handle vote
   const handleVote = async (type: 'like' | 'dislike') => {
@@ -221,6 +263,40 @@ export default function PostDetailPage() {
       navigator.clipboard.writeText(window.location.href);
       toast.success('链接已复制');
     }
+  };
+
+  // Handle report
+  const handleReport = async () => {
+    if (!user) {
+      router.push('/login');
+      return;
+    }
+
+    if (!reportReason.trim() || reportReason.length < 10) {
+      toast.error('请填写至少 10 个字符的举报原因');
+      return;
+    }
+
+    setIsReporting(true);
+    try {
+      const response = await reportApi.create({
+        targetType: 'post',
+        targetId: id,
+        reason: reportReason,
+      });
+
+      if (response.success) {
+        setReportSuccess(true);
+        setShowReportModal(false);
+        setReportReason('');
+        toast.success('举报已提交，感谢您的反馈');
+      } else {
+        toast.error(response.error || '举报提交失败');
+      }
+    } catch {
+      toast.error('举报提交失败');
+    }
+    setIsReporting(false);
   };
 
   // Handle comment submit
@@ -506,6 +582,25 @@ export default function PostDetailPage() {
                     <Share2 className="h-4 w-4" />
                     分享
                   </Button>
+
+                  {/* Report */}
+                  {!isOwner && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        if (!user) {
+                          router.push('/login');
+                          return;
+                        }
+                        setShowReportModal(true);
+                      }}
+                      className="gap-1 text-muted-foreground hover:text-red-500"
+                    >
+                      <Flag className="h-4 w-4" />
+                      举报
+                    </Button>
+                  )}
                 </div>
 
                 {/* Owner Actions */}
@@ -682,10 +777,125 @@ export default function PostDetailPage() {
                   ))}
                 </CardContent>
               </Card>
+
+              {/* Similar Questions (only for questions) */}
+              {isQuestion && similarPosts.length > 0 && (
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <HelpCircle className="h-4 w-4 text-blue-500" />
+                      相似问题
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    {similarPosts.slice(0, 5).map((sp) => (
+                      <Link
+                        key={sp.id}
+                        href={`/discussions/${sp.id}`}
+                        className="block py-1 text-sm hover:text-primary"
+                      >
+                        <span className="line-clamp-2">{sp.title}</span>
+                        <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+                          <MessageSquare className="h-3 w-3" />
+                          <span>{sp.commentCount || 0}</span>
+                          <span className="flex items-center gap-1">
+                            <ThumbsUp className="h-3 w-3" />
+                            {sp.likeCount || 0}
+                          </span>
+                        </div>
+                      </Link>
+                    ))}
+                  </CardContent>
+                </Card>
+              )}
             </div>
           </aside>
         </div>
       </main>
+
+      {/* Report Modal */}
+      {showReportModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-background rounded-xl shadow-xl max-w-md w-full mx-4"
+          >
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold flex items-center gap-2">
+                  <Flag className="h-5 w-5 text-red-500" />
+                  举报帖子
+                </h3>
+                <button
+                  onClick={() => setShowReportModal(false)}
+                  className="p-1 hover:bg-muted rounded"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              {reportSuccess ? (
+                <div className="text-center py-6">
+                  <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
+                  <h4 className="font-semibold mb-2">举报已提交</h4>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    感谢您的反馈，我们会尽快处理
+                  </p>
+                  <Button onClick={() => setShowReportModal(false)}>
+                    关闭
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    请选择举报原因（至少 10 个字符）
+                  </p>
+
+                  {/* Quick select reasons */}
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {['垃圾信息', '不当内容', '抄袭', '其他'].map((reason) => (
+                      <button
+                        key={reason}
+                        onClick={() => setReportReason(reason)}
+                        className={cn(
+                          'px-3 py-1.5 text-sm rounded-full border transition-colors',
+                          reportReason === reason
+                            ? 'border-primary bg-primary/10 text-primary'
+                            : 'border-input hover:bg-muted'
+                        )}
+                      >
+                        {reason}
+                      </button>
+                    ))}
+                  </div>
+
+                  <Textarea
+                    placeholder="请详细描述举报原因..."
+                    value={reportReason}
+                    onChange={(e) => setReportReason(e.target.value)}
+                    className="mb-4 min-h-[100px]"
+                  />
+
+                  <div className="flex justify-end gap-2">
+                    <Button variant="outline" onClick={() => setShowReportModal(false)}>
+                      取消
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      onClick={handleReport}
+                      disabled={isReporting || reportReason.length < 10}
+                    >
+                      {isReporting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                      提交举报
+                    </Button>
+                  </div>
+                </>
+              )}
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }
