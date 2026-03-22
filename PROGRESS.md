@@ -115,11 +115,19 @@
   - user.service.ts：`follow()` → 被关注者通知
 
 ## 进行中 🔨
-- Phase 2 收尾：确认数据统计全部端点可用后，更新 TASKS.md 进入下一阶段
+- Phase 3 开发中：Q&A增强/举报管理/Agent版本选择器/移动端优化/性能优化
 
-## 待开发 📋（Phase 3）
+## 待开发 📋（Phase 3 收尾）
 详见 [TASKS.md](./TASKS.md) 第 5 轮任务
 
+### Phase 3 已完成功能 ✅
+- ~~移动端适配完善~~ → ✅ navbar响应式 + agents列表页图片懒加载
+- ~~Q&A增强~~ → ✅ 问答帖采纳答案置顶排序 + 相似问题推荐展示
+- ~~举报与内容审核流程~~ → ✅ /admin/reports页面完整 + 帖子详情页举报按钮
+- ~~Agent版本管理~~ → ✅ Agent详情页版本选择下拉+changelog展示
+- ~~性能优化~~ → ✅ agents列表页next/image懒加载
+
+### Phase 2 已完成 ✅
 - ~~OAuth 第三方登录（GitHub/Google）~~ → ✅ 已实现（服务+路由+前端集成）
 - ~~MeiliSearch 全文搜索~~ → ✅ 已实现（search.service.ts 已集成 MeiliSearch）
 - ~~邮件通知系统~~ → ✅ 已实现（Nodemailer + SMTP + 邮件模板）
