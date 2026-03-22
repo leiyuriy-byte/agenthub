@@ -2,6 +2,7 @@ import { eq, and, desc } from 'drizzle-orm';
 import { db, schema } from '@agenthub/db';
 import { nanoid } from 'nanoid';
 import bcrypt from 'bcrypt';
+import { notificationService } from './notification.service.js';
 
 export interface CreateUserData {
   email: string;
@@ -198,6 +199,24 @@ export const userService = {
       followerId,
       followingId,
     }).onConflictDoNothing().returning();
+
+    // Send notification to the followed user
+    if (follow) {
+      // Get follower info for notification
+      const [follower] = await db.select({ displayName: schema.users.displayName })
+        .from(schema.users)
+        .where(eq(schema.users.id, followerId))
+        .limit(1);
+
+      notificationService.notifyNewFollower(
+        followingId,
+        followerId,
+        follower?.displayName || '有人'
+      ).catch(err => {
+        console.error('Failed to send follow notification:', err);
+      });
+    }
+
     return follow || null;
   },
 

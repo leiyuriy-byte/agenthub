@@ -20,6 +20,7 @@ interface AuthState {
     password: string;
     displayName?: string;
   }) => Promise<boolean>;
+  oauthLogin: (token: string) => Promise<void>;
   logout: () => void;
   checkAuth: () => Promise<void>;
   clearError: () => void;
@@ -74,6 +75,24 @@ export const useAuthStore = create<AuthState>()(
       logout: () => {
         api.setToken(null);
         set({ user: null, token: null, error: null });
+      },
+
+      oauthLogin: async (token: string) => {
+        set({ isLoading: true, error: null });
+        
+        // Set the token
+        api.setToken(token);
+        
+        // Fetch user info
+        const response = await authApi.me();
+        
+        if (response.success && response.data) {
+          set({ user: response.data, token, isLoading: false });
+        } else {
+          // Token is invalid
+          api.setToken(null);
+          set({ user: null, token: null, isLoading: false, error: 'OAuth 登录失败' });
+        }
       },
 
       checkAuth: async () => {

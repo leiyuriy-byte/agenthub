@@ -4,10 +4,11 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAuthStore, User, notificationApi, messageApi } from '@/lib/api';
+import { useAuthStore, User, notificationApi, messageApi, pointsApi } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { toast } from 'sonner';
 import {
   Search,
   Plus,
@@ -21,6 +22,9 @@ import {
   LogIn,
   Loader2,
   MessageCircle,
+  Calendar,
+  Flame,
+  Trophy,
 } from 'lucide-react';
 
 export function Navbar() {
@@ -33,6 +37,9 @@ export function Navbar() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [messageUnreadCount, setMessageUnreadCount] = useState(0);
   const [isLoadingNotifications, setIsLoadingNotifications] = useState(false);
+  const [checkedIn, setCheckedIn] = useState(false);
+  const [isCheckingIn, setIsCheckingIn] = useState(false);
+  const [userPoints, setUserPoints] = useState<{ points: number; level: number; levelName: string } | null>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const notificationRef = useRef<HTMLDivElement>(null);
 
@@ -68,12 +75,45 @@ export function Navbar() {
     setIsLoadingNotifications(false);
   }, [user]);
 
+  // Fetch check-in status and user points
+  const fetchCheckinStatus = useCallback(async () => {
+    if (!user) {
+      setCheckedIn(false);
+      setUserPoints(null);
+      return;
+    }
+
+    try {
+      const [checkinRes, pointsRes] = await Promise.all([
+        pointsApi.hasCheckedIn(),
+        pointsApi.getMyPoints(),
+      ]);
+
+      if (checkinRes.success && checkinRes.data) {
+        setCheckedIn(checkinRes.data.checkedIn);
+      }
+      if (pointsRes.success && pointsRes.data) {
+        setUserPoints({
+          points: pointsRes.data.points,
+          level: pointsRes.data.level,
+          levelName: pointsRes.data.levelName,
+        });
+      }
+    } catch {
+      // Silently fail
+    }
+  }, [user]);
+
   useEffect(() => {
     fetchUnreadCount();
     // Poll every 60 seconds
     const interval = setInterval(fetchUnreadCount, 60000);
     return () => clearInterval(interval);
   }, [fetchUnreadCount]);
+
+  useEffect(() => {
+    fetchCheckinStatus();
+  }, [fetchCheckinStatus]);
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -106,6 +146,29 @@ export function Navbar() {
     setIsUserMenuOpen(false);
     router.push('/');
   }, [logout, router]);
+
+  // Handle daily check-in
+  const handleCheckin = useCallback(async () => {
+    if (!user || isCheckingIn || checkedIn) return;
+
+    setIsCheckingIn(true);
+    try {
+      const response = await pointsApi.checkin();
+      if (response.success && response.data) {
+        if (response.data.success) {
+          setCheckedIn(true);
+          setUserPoints((prev) => prev ? { ...prev, points: prev.points + (response.data?.points || 0) } : null);
+          toast.success(`签到成功！+${response.data.points} 积分`);
+        } else {
+          toast.info(response.data.message || '今日已签到');
+        }
+      }
+    } catch (error) {
+      toast.error('签到失败，请稍后重试');
+    }
+    setIsCheckingIn(false);
+    setIsUserMenuOpen(false);
+  }, [user, isCheckingIn, checkedIn, router]);
 
   // Handle notification click
   const handleNotificationClick = () => {

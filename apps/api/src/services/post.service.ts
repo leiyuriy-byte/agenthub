@@ -1,6 +1,8 @@
 import { eq, and, desc, asc, like, sql, or } from 'drizzle-orm';
 import { db, schema } from '@agenthub/db';
 import { nanoid } from 'nanoid';
+import { awardPointsForAction } from './points.service.js';
+import { notificationService } from './notification.service.js';
 
 export interface CreatePostData {
   authorId: string;
@@ -36,6 +38,7 @@ export interface PostListParams {
 export const postService = {
   /**
    * Create a new post
+   * Awards 10 points to the author upon creation
    */
   async create(data: CreatePostData) {
     const id = nanoid();
@@ -58,6 +61,14 @@ export const postService = {
           tag,
         });
       }
+    }
+
+    // Award points for post creation
+    try {
+      await awardPointsForAction(data.authorId, 'post_created', id);
+    } catch (error) {
+      // Log error but don't fail the post creation
+      console.error('Failed to award points for post creation:', error);
     }
 
     return this.findById(id);
@@ -215,6 +226,121 @@ export const postService = {
   },
 
   /**
+   * Get similar posts (for Q&A recommendations)
+   * Finds posts with matching tags or in the same channel, excluding current post
+   */
+  async getSimilar(postId: string, limit = 5) {
+    // Get current post's tags and channel
+    const [currentPost] = await db.select({
+      channelId: schema.posts.channelId,
+      type: schema.posts.type,
+    })
+      .from(schema.posts)
+      .where(eq(schema.posts.id, postId))
+      .limit(1);
+
+    if (!currentPost) {
+      return [];
+    }
+
+    // Get tags for current post
+    const postTags = await db.select()
+      .from(schema.postTags)
+      .where(eq(schema.postTags.postId, postId));
+    const tagList = postTags.map(t => t.tag);
+
+    // Find posts with similar tags or same channel
+    // Priority: same tags > same channel > recent
+    let similarPosts: typeof postsWithDetails = [];
+
+    if (tagList.length > 0) {
+      // Get posts with matching tags
+      const postsWithMatchingTags = await db.select({
+        postId: schema.postTags.postId,
+        tag: schema.postTags.tag,
+      })
+        .from(schema.postTags)
+        .where(
+          tagList.length > 0 
+            ? or(...tagList.map(tag => like(schema.postTags.tag, `%${tag}%`)))
+            : undefined
+        );
+
+      const relatedPostIds = [...new Set(postsWithMatchingTags
+        .map(p => p.postId)
+        .filter(id => id !== postId)
+      )];
+
+      if (relatedPostIds.length > 0) {
+        similarPosts = await db.select()
+          .from(schema.posts)
+          .where(
+            and(
+              eq(schema.posts.channelId, currentPost.channelId),
+              ...relatedPostIds.slice(0, 10).map(id => 
+                sql`${schema.posts.id} != ${id}`
+              )
+            )
+          )
+          .orderBy(desc(schema.posts.viewCount))
+          .limit(limit);
+      }
+    }
+
+    // If not enough similar posts, add recent posts from same channel
+    if (similarPosts.length < limit) {
+      const existingIds = new Set(similarPosts.map(p => p.id));
+      existingIds.add(postId);
+
+      const recentFromChannel = await db.select()
+        .from(schema.posts)
+        .where(
+          and(
+            eq(schema.posts.channelId, currentPost.channelId),
+            sql`${schema.posts.id} NOT IN (${sql.join(Array.from(existingIds), sql`, `)})`
+          )
+        )
+        .orderBy(desc(schema.posts.createdAt))
+        .limit(limit - similarPosts.length);
+
+      similarPosts = [...similarPosts, ...recentFromChannel];
+    }
+
+    // Get author and channel info for each post
+    const similarWithDetails = await Promise.all(
+      similarPosts.slice(0, limit).map(async (post) => {
+        const [author] = await db.select({
+          id: schema.users.id,
+          username: schema.users.username,
+          displayName: schema.users.displayName,
+          avatar: schema.users.avatar,
+        })
+          .from(schema.users)
+          .where(eq(schema.users.id, post.authorId))
+          .limit(1);
+
+        const [channel] = await db.select()
+          .from(schema.channels)
+          .where(eq(schema.channels.id, post.channelId))
+          .limit(1);
+
+        const tags = await db.select()
+          .from(schema.postTags)
+          .where(eq(schema.postTags.postId, post.id));
+
+        return {
+          ...post,
+          author,
+          channel,
+          tags: tags.map(t => t.tag),
+        };
+      })
+    );
+
+    return similarWithDetails;
+  },
+
+  /**
    * Update a post
    */
   async update(id: string, data: UpdatePostData, authorId: string) {
@@ -293,8 +419,19 @@ export const postService = {
 
   /**
    * Like a post
+   * Awards 2 points to the post author when receiving a like
    */
   async like(postId: string, userId: string) {
+    // Get the post to find the author
+    const [post] = await db.select()
+      .from(schema.posts)
+      .where(eq(schema.posts.id, postId))
+      .limit(1);
+
+    if (!post) {
+      throw new Error('Post not found');
+    }
+
     // Check if already liked
     const [existing] = await db.select()
       .from(schema.postVotes)
@@ -305,6 +442,8 @@ export const postService = {
         )
       )
       .limit(1);
+
+    let isNewLike = false;
 
     if (existing) {
       if (existing.value === 1) {
@@ -326,21 +465,49 @@ export const postService = {
             dislikeCount: sql`${schema.posts.dislikeCount} - 1`,
           })
           .where(eq(schema.posts.id, postId));
-        return { success: true, liked: true };
+        isNewLike = true;
       }
+    } else {
+      const id = nanoid();
+      await db.insert(schema.postVotes).values({
+        id,
+        postId,
+        userId,
+        value: 1,
+      });
+
+      await db.update(schema.posts)
+        .set({ likeCount: sql`${schema.posts.likeCount} + 1` })
+        .where(eq(schema.posts.id, postId));
+      isNewLike = true;
     }
 
-    const id = nanoid();
-    await db.insert(schema.postVotes).values({
-      id,
-      postId,
-      userId,
-      value: 1,
-    });
+    // Award points to post author (but not if liking own post)
+    if (isNewLike && post.authorId !== userId) {
+      try {
+        await awardPointsForAction(post.authorId, 'like_received', postId);
+      } catch (error) {
+        console.error('Failed to award points for like:', error);
+      }
 
-    await db.update(schema.posts)
-      .set({ likeCount: sql`${schema.posts.likeCount} + 1` })
-      .where(eq(schema.posts.id, postId));
+      // Send notification for post like
+      // Look up liker name
+      const [liker] = await db.select({ displayName: schema.users.displayName })
+        .from(schema.users)
+        .where(eq(schema.users.id, userId))
+        .limit(1);
+
+      notificationService.notifyLike(
+        post.authorId,
+        userId,
+        liker?.displayName || '有人',
+        'post',
+        post.title.slice(0, 30),
+        `/posts/${postId}`
+      ).catch(err => {
+        console.error('Failed to send post like notification:', err);
+      });
+    }
 
     return { success: true, liked: true };
   },

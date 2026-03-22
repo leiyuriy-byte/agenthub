@@ -4,7 +4,7 @@ export const users = sqliteTable('users', {
     id: text('id').primaryKey(),
     email: text('email').notNull().unique(),
     username: text('username').notNull().unique(),
-    passwordHash: text('password_hash').notNull(),
+    passwordHash: text('password_hash'),
     displayName: text('display_name'),
     avatar: text('avatar'),
     bio: text('bio'),
@@ -13,6 +13,9 @@ export const users = sqliteTable('users', {
     points: integer('points').notNull().default(0),
     isVerified: integer('is_verified', { mode: 'boolean' }).notNull().default(false),
     lastLoginAt: integer('last_login_at', { mode: 'timestamp' }),
+    githubId: text('github_id').unique(),
+    googleId: text('google_id').unique(),
+    oauthProvider: text('oauth_provider'),
     createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql `CURRENT_TIMESTAMP`),
     updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().default(sql `CURRENT_TIMESTAMP`),
 });
@@ -269,5 +272,20 @@ export const reports = sqliteTable('reports', {
     resolution: text('resolution'),
     createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql `CURRENT_TIMESTAMP`),
     resolvedAt: integer('resolved_at', { mode: 'timestamp' }),
+});
+export const pointTransactions = sqliteTable('point_transactions', {
+    id: text('id').primaryKey(),
+    userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+    points: integer('points').notNull(),
+    reason: text('reason').notNull(),
+    referenceId: text('reference_id'),
+    createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql `CURRENT_TIMESTAMP`),
+});
+export const userCheckins = sqliteTable('user_checkins', {
+    id: text('id').primaryKey(),
+    userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+    date: text('date').notNull(),
+    points: integer('points').notNull().default(5),
+    createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql `CURRENT_TIMESTAMP`),
 });
 //# sourceMappingURL=schema.js.map

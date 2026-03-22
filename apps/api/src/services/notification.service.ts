@@ -1,6 +1,12 @@
 import { eq, and, desc, asc, sql, or } from 'drizzle-orm';
 import { db, schema } from '@agenthub/db';
 import { nanoid } from 'nanoid';
+import { sendNotificationToUser } from './websocket.service.js';
+import { 
+  sendCommentNotificationEmail, 
+  sendFollowNotificationEmail, 
+  sendLikeNotificationEmail 
+} from './email.service.js';
 
 export type NotificationType = 'comment' | 'reply' | 'like' | 'follow' | 'system' | 'mention';
 
@@ -38,6 +44,21 @@ export const notificationService = {
       link: data.link || null,
       isRead: false,
     }).returning();
+
+    // Send real-time notification via WebSocket
+    try {
+      sendNotificationToUser(data.userId, {
+        id: notification.id,
+        type: notification.type,
+        title: notification.title,
+        content: notification.content || undefined,
+        link: notification.link || undefined,
+        createdAt: notification.createdAt,
+      });
+    } catch (error) {
+      // Don't fail the notification creation if WebSocket fails
+      console.error('Failed to send WebSocket notification:', error);
+    }
 
     return notification;
   },
@@ -195,19 +216,72 @@ export const notificationService = {
   },
 
   /**
+   * Helper to get user email preferences
+   */
+  async getUserEmailPreferences(userId: string): Promise<{
+    email: string;
+    emailNotifyOnComment: boolean;
+    emailNotifyOnFollow: boolean;
+    emailNotifyOnLike: boolean;
+    emailNotifyOnMention: boolean;
+  } | null> {
+    const [user] = await db.select({
+      email: schema.users.email,
+      emailNotifyOnComment: schema.users.emailNotifyOnComment,
+      emailNotifyOnFollow: schema.users.emailNotifyOnFollow,
+      emailNotifyOnLike: schema.users.emailNotifyOnLike,
+      emailNotifyOnMention: schema.users.emailNotifyOnMention,
+    })
+      .from(schema.users)
+      .where(eq(schema.users.id, userId))
+      .limit(1);
+
+    return user || null;
+  },
+
+  /**
    * Create notification for comment on user's post
    */
   async notifyPostComment(postAuthorId: string, commentatorId: string, postTitle: string, commentContent: string, link: string) {
     // Don't notify if user is commenting on their own post
     if (postAuthorId === commentatorId) return null;
 
-    return this.create({
+    // Create in-app notification
+    const notification = await this.create({
       userId: postAuthorId,
       type: 'comment',
       title: '您的话题有新评论',
       content: `${postTitle}: ${commentContent.slice(0, 50)}...`,
       link,
     });
+
+    // Send email notification if enabled
+    try {
+      const prefs = await this.getUserEmailPreferences(postAuthorId);
+      if (prefs?.emailNotifyOnComment) {
+        const [commenter] = await db.select({
+          displayName: schema.users.displayName,
+        })
+          .from(schema.users)
+          .where(eq(schema.users.id, commentatorId))
+          .limit(1);
+
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+        await sendCommentNotificationEmail(
+          prefs.email,
+          prefs.email.split('@')[0],
+          commenter?.displayName || '某用户',
+          postTitle,
+          commentContent,
+          `${frontendUrl}${link}`
+        );
+      }
+    } catch (error) {
+      // Don't fail the notification if email fails
+      console.error('Failed to send comment email notification:', error);
+    }
+
+    return notification;
   },
 
   /**
@@ -217,26 +291,73 @@ export const notificationService = {
     // Don't notify if replying to own comment
     if (parentCommentAuthorId === replierId) return null;
 
-    return this.create({
+    // Create in-app notification
+    const notification = await this.create({
       userId: parentCommentAuthorId,
       type: 'reply',
       title: '您有新的回复',
       content: `${postTitle}: ${replyContent.slice(0, 50)}...`,
       link,
     });
+
+    // Send email notification if enabled (reuses comment notification setting)
+    try {
+      const prefs = await this.getUserEmailPreferences(parentCommentAuthorId);
+      if (prefs?.emailNotifyOnMention) {
+        const [replier] = await db.select({
+          displayName: schema.users.displayName,
+        })
+          .from(schema.users)
+          .where(eq(schema.users.id, replierId))
+          .limit(1);
+
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+        await sendCommentNotificationEmail(
+          prefs.email,
+          prefs.email.split('@')[0],
+          replier?.displayName || '某用户',
+          postTitle,
+          replyContent,
+          `${frontendUrl}${link}`
+        );
+      }
+    } catch (error) {
+      console.error('Failed to send reply email notification:', error);
+    }
+
+    return notification;
   },
 
   /**
    * Create notification for new follower
    */
   async notifyNewFollower(followedUserId: string, followerId: string, followerName: string) {
-    return this.create({
+    // Create in-app notification
+    const notification = await this.create({
       userId: followedUserId,
       type: 'follow',
       title: '新增关注',
       content: `${followerName} 关注了您`,
       link: `/users/${followerId}`,
     });
+
+    // Send email notification if enabled
+    try {
+      const prefs = await this.getUserEmailPreferences(followedUserId);
+      if (prefs?.emailNotifyOnFollow) {
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+        await sendFollowNotificationEmail(
+          prefs.email,
+          prefs.email.split('@')[0],
+          followerName,
+          `${frontendUrl}/users/${followerId}`
+        );
+      }
+    } catch (error) {
+      console.error('Failed to send follow email notification:', error);
+    }
+
+    return notification;
   },
 
   /**
@@ -246,13 +367,34 @@ export const notificationService = {
     // Don't notify if liking own content
     if (userId === likerId) return null;
 
-    return this.create({
+    // Create in-app notification
+    const notification = await this.create({
       userId,
       type: 'like',
       title: '收到点赞',
       content: `${likerName} 点赞了您的${targetType === 'post' ? '帖子' : '评论'}: ${targetTitle.slice(0, 30)}...`,
       link,
     });
+
+    // Send email notification if enabled
+    try {
+      const prefs = await this.getUserEmailPreferences(userId);
+      if (prefs?.emailNotifyOnLike) {
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+        await sendLikeNotificationEmail(
+          prefs.email,
+          prefs.email.split('@')[0],
+          likerName,
+          targetTitle,
+          `${frontendUrl}${link}`,
+          targetType
+        );
+      }
+    } catch (error) {
+      console.error('Failed to send like email notification:', error);
+    }
+
+    return notification;
   },
 };
 

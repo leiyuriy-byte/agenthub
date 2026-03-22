@@ -37,11 +37,11 @@ export declare const authSchemas: {
         token: z.ZodString;
         password: z.ZodString;
     }, "strip", z.ZodTypeAny, {
-        token: string;
         password: string;
+        token: string;
     }, {
-        token: string;
         password: string;
+        token: string;
     }>;
 };
 export declare const userSchemas: {
@@ -51,22 +51,22 @@ export declare const userSchemas: {
         avatar: z.ZodOptional<z.ZodString>;
     }, "strip", z.ZodTypeAny, {
         displayName?: string | undefined;
-        avatar?: string | undefined;
         bio?: string | undefined;
+        avatar?: string | undefined;
     }, {
         displayName?: string | undefined;
-        avatar?: string | undefined;
         bio?: string | undefined;
+        avatar?: string | undefined;
     }>;
     addSocialLink: z.ZodObject<{
         platform: z.ZodEnum<["github", "twitter", "website", "linkedin", "youtube"]>;
         url: z.ZodString;
     }, "strip", z.ZodTypeAny, {
-        platform: "github" | "twitter" | "website" | "linkedin" | "youtube";
         url: string;
+        platform: "github" | "twitter" | "website" | "linkedin" | "youtube";
     }, {
-        platform: "github" | "twitter" | "website" | "linkedin" | "youtube";
         url: string;
+        platform: "github" | "twitter" | "website" | "linkedin" | "youtube";
     }>;
     addTag: z.ZodObject<{
         tag: z.ZodString;
@@ -82,15 +82,17 @@ export declare const agentSchemas: {
         slug: z.ZodString;
         tagline: z.ZodOptional<z.ZodString>;
         description: z.ZodOptional<z.ZodString>;
-        demoUrl: z.ZodOptional<z.ZodString>;
-        githubUrl: z.ZodOptional<z.ZodString>;
-        docsUrl: z.ZodOptional<z.ZodString>;
+        logo: z.ZodUnion<[z.ZodOptional<z.ZodString>, z.ZodLiteral<"">]>;
+        demoUrl: z.ZodUnion<[z.ZodOptional<z.ZodString>, z.ZodLiteral<"">]>;
+        githubUrl: z.ZodUnion<[z.ZodOptional<z.ZodString>, z.ZodLiteral<"">]>;
+        docsUrl: z.ZodUnion<[z.ZodOptional<z.ZodString>, z.ZodLiteral<"">]>;
         categoryId: z.ZodOptional<z.ZodString>;
     }, "strip", z.ZodTypeAny, {
         name: string;
         slug: string;
-        description?: string | undefined;
         tagline?: string | undefined;
+        description?: string | undefined;
+        logo?: string | undefined;
         demoUrl?: string | undefined;
         githubUrl?: string | undefined;
         docsUrl?: string | undefined;
@@ -98,8 +100,9 @@ export declare const agentSchemas: {
     }, {
         name: string;
         slug: string;
-        description?: string | undefined;
         tagline?: string | undefined;
+        description?: string | undefined;
+        logo?: string | undefined;
         demoUrl?: string | undefined;
         githubUrl?: string | undefined;
         docsUrl?: string | undefined;
@@ -109,29 +112,32 @@ export declare const agentSchemas: {
         name: z.ZodOptional<z.ZodString>;
         tagline: z.ZodOptional<z.ZodString>;
         description: z.ZodOptional<z.ZodString>;
-        demoUrl: z.ZodOptional<z.ZodString>;
-        githubUrl: z.ZodOptional<z.ZodString>;
-        docsUrl: z.ZodOptional<z.ZodString>;
+        logo: z.ZodUnion<[z.ZodOptional<z.ZodString>, z.ZodLiteral<"">]>;
+        demoUrl: z.ZodUnion<[z.ZodOptional<z.ZodString>, z.ZodLiteral<"">]>;
+        githubUrl: z.ZodUnion<[z.ZodOptional<z.ZodString>, z.ZodLiteral<"">]>;
+        docsUrl: z.ZodUnion<[z.ZodOptional<z.ZodString>, z.ZodLiteral<"">]>;
         categoryId: z.ZodOptional<z.ZodString>;
         status: z.ZodOptional<z.ZodEnum<["draft", "published", "archived"]>>;
     }, "strip", z.ZodTypeAny, {
+        status?: "draft" | "published" | "archived" | undefined;
         name?: string | undefined;
-        description?: string | undefined;
         tagline?: string | undefined;
+        description?: string | undefined;
+        logo?: string | undefined;
         demoUrl?: string | undefined;
         githubUrl?: string | undefined;
         docsUrl?: string | undefined;
         categoryId?: string | undefined;
-        status?: "draft" | "published" | "archived" | undefined;
     }, {
+        status?: "draft" | "published" | "archived" | undefined;
         name?: string | undefined;
-        description?: string | undefined;
         tagline?: string | undefined;
+        description?: string | undefined;
+        logo?: string | undefined;
         demoUrl?: string | undefined;
         githubUrl?: string | undefined;
         docsUrl?: string | undefined;
         categoryId?: string | undefined;
-        status?: "draft" | "published" | "archived" | undefined;
     }>;
     rate: z.ZodObject<{
         overall: z.ZodNumber;

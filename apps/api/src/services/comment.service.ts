@@ -1,6 +1,8 @@
 import { eq, and, desc, asc, sql } from 'drizzle-orm';
 import { db, schema } from '@agenthub/db';
 import { nanoid } from 'nanoid';
+import { awardPointsForAction } from './points.service.js';
+import { notificationService } from './notification.service.js';
 
 export interface CreateCommentData {
   postId: string;
@@ -76,7 +78,59 @@ export const commentService = {
       .set({ commentCount: sql`${schema.posts.commentCount} + 1` })
       .where(eq(schema.posts.id, data.postId));
 
+    // Send notifications asynchronously (don't block response)
+    this.sendCreateNotifications(data, id).catch(err => {
+      console.error('Failed to send comment notifications:', err);
+    });
+
     return this.findById(id);
+  },
+
+  /**
+   * Send notifications for new comment/reply (called async)
+   */
+  async sendCreateNotifications(data: CreateCommentData, commentId: string) {
+    // Get post info for notification
+    const [post] = await db.select({
+      id: schema.posts.id,
+      title: schema.posts.title,
+      authorId: schema.posts.authorId,
+    })
+      .from(schema.posts)
+      .where(eq(schema.posts.id, data.postId))
+      .limit(1);
+
+    if (!post) return;
+
+    // Notify post author (new comment on their post)
+    if (data.parentId) {
+      // This is a reply - also notify the parent comment author
+      const [parentComment] = await db.select({
+        authorId: schema.comments.authorId,
+      })
+        .from(schema.comments)
+        .where(eq(schema.comments.id, data.parentId))
+        .limit(1);
+
+      if (parentComment) {
+        notificationService.notifyCommentReply(
+          parentComment.authorId,
+          data.authorId,
+          post.title,
+          data.content,
+          `/posts/${post.id}#comment-${commentId}`
+        );
+      }
+    }
+
+    // Notify post author (always, unless it's a self-reply handled above)
+    notificationService.notifyPostComment(
+      post.authorId,
+      data.authorId,
+      post.title,
+      data.content,
+      `/posts/${post.id}#comment-${commentId}`
+    );
   },
 
   /**
@@ -214,12 +268,19 @@ export const commentService = {
       );
     }
 
-    // If sorting by likeCount, re-sort top level
-    if (sortBy === 'likeCount') {
-      topLevelComments.sort((a, b) => 
-        (b.likeCount || 0) - (a.likeCount || 0)
-      );
-    }
+    // Sort: accepted answers always first, then by likeCount or createdAt
+    topLevelComments.sort((a, b) => {
+      // Accepted answer always at top
+      if (a.isAccepted && !b.isAccepted) return -1;
+      if (!a.isAccepted && b.isAccepted) return 1;
+      
+      // If both are accepted or both not accepted, sort by selected criteria
+      if (sortBy === 'likeCount') {
+        return (b.likeCount || 0) - (a.likeCount || 0);
+      }
+      // Default: sort by createdAt (newest first)
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
 
     return {
       comments: topLevelComments,
@@ -294,8 +355,19 @@ export const commentService = {
 
   /**
    * Like a comment
+   * Awards 2 points to the comment author when receiving a like
    */
   async like(commentId: string, userId: string) {
+    // Get the comment to find the author
+    const [comment] = await db.select()
+      .from(schema.comments)
+      .where(eq(schema.comments.id, commentId))
+      .limit(1);
+
+    if (!comment) {
+      throw new Error('Comment not found');
+    }
+
     // Check if already liked
     const [existing] = await db.select()
       .from(schema.commentVotes)
@@ -306,6 +378,8 @@ export const commentService = {
         )
       )
       .limit(1);
+
+    let isNewLike = false;
 
     if (existing) {
       if (existing.value === 1) {
@@ -324,27 +398,56 @@ export const commentService = {
         await db.update(schema.comments)
           .set({ likeCount: sql`${schema.comments.likeCount} + 1` })
           .where(eq(schema.comments.id, commentId));
-        return { success: true, liked: true };
+        isNewLike = true;
       }
+    } else {
+      const id = nanoid();
+      await db.insert(schema.commentVotes).values({
+        id,
+        commentId,
+        userId,
+        value: 1,
+      });
+
+      await db.update(schema.comments)
+        .set({ likeCount: sql`${schema.comments.likeCount} + 1` })
+        .where(eq(schema.comments.id, commentId));
+      isNewLike = true;
     }
 
-    const id = nanoid();
-    await db.insert(schema.commentVotes).values({
-      id,
-      commentId,
-      userId,
-      value: 1,
-    });
+    // Award points to comment author (but not if liking own comment)
+    if (isNewLike && comment.authorId !== userId) {
+      try {
+        await awardPointsForAction(comment.authorId, 'like_received', commentId);
+      } catch (error) {
+        console.error('Failed to award points for comment like:', error);
+      }
 
-    await db.update(schema.comments)
-      .set({ likeCount: sql`${schema.comments.likeCount} + 1` })
-      .where(eq(schema.comments.id, commentId));
+      // Send notification for comment like
+      // Look up liker name
+      const [liker] = await db.select({ displayName: schema.users.displayName })
+        .from(schema.users)
+        .where(eq(schema.users.id, userId))
+        .limit(1);
+
+      notificationService.notifyLike(
+        comment.authorId,
+        userId,
+        liker?.displayName || '有人',
+        'comment',
+        comment.content.slice(0, 30),
+        `/comments/${commentId}`
+      ).catch(err => {
+        console.error('Failed to send comment like notification:', err);
+      });
+    }
 
     return { success: true, liked: true };
   },
 
   /**
    * Accept answer (for Q&A)
+   * Awards 30 points to the comment author when their answer is accepted
    */
   async accept(commentId: string, userId: string) {
     // Get the comment
@@ -387,6 +490,26 @@ export const commentService = {
       .set({ isAccepted: true })
       .where(eq(schema.comments.id, commentId))
       .returning();
+
+    // Award points to comment author (but not if accepting own comment)
+    if (comment.authorId !== userId) {
+      try {
+        await awardPointsForAction(comment.authorId, 'answer_accepted', commentId);
+      } catch (error) {
+        console.error('Failed to award points for accepted answer:', error);
+      }
+
+      // Notify comment author that their answer was accepted
+      notificationService.create({
+        userId: comment.authorId,
+        type: 'system',
+        title: '回答被采纳',
+        content: `您的回答已被采纳：${post.title.slice(0, 30)}...`,
+        link: `/posts/${post.id}#comment-${commentId}`,
+      }).catch(err => {
+        console.error('Failed to send answer accepted notification:', err);
+      });
+    }
 
     return updated;
   },

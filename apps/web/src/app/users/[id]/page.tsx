@@ -8,7 +8,7 @@ import { Button } from '@agenthub/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@agenthub/ui/card';
 import { Badge } from '@agenthub/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@agenthub/ui/avatar';
-import { userApi, postApi, agentApi, User, Post, Agent } from '@/lib/api';
+import { userApi, postApi, agentApi, pointsApi, User, Post, Agent, UserPointsInfo } from '@/lib/api';
 import { formatRelativeTime, formatNumber, cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/auth-store';
 import { toast } from 'sonner';
@@ -34,7 +34,38 @@ import {
   Youtube,
   Bot,
   AlertCircle,
+  Trophy,
+  Zap,
+  Flame,
 } from 'lucide-react';
+
+// Level names based on level
+const levelNames: Record<number, string> = {
+  1: '入门',
+  2: '新手',
+  3: '进阶',
+  4: '熟练',
+  5: '专家',
+  6: '资深',
+  7: '大师',
+  8: '传奇',
+  9: '王者',
+  10: '神话',
+};
+
+// Level colors
+const levelColors: Record<number, string> = {
+  1: 'bg-gray-500',
+  2: 'bg-green-500',
+  3: 'bg-blue-500',
+  4: 'bg-purple-500',
+  5: 'bg-yellow-500',
+  6: 'bg-orange-500',
+  7: 'bg-red-500',
+  8: 'bg-pink-500',
+  9: 'bg-cyan-500',
+  10: 'bg-gradient-to-r from-yellow-400 via-red-500 to-purple-500',
+};
 
 type TabType = 'agents' | 'posts' | 'favorites';
 
@@ -61,6 +92,8 @@ export default function UserProfilePage() {
   const [isFollowLoading, setIsFollowLoading] = useState(false);
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
+  const [pointsInfo, setPointsInfo] = useState<UserPointsInfo | null>(null);
+  const [streak, setStreak] = useState(0);
 
   // Fetch profile
   const fetchProfile = useCallback(async () => {
@@ -85,6 +118,34 @@ export default function UserProfilePage() {
     setIsLoading(false);
   }, [usernameOrId]);
 
+  // Fetch user points info
+  const fetchPointsInfo = useCallback(async () => {
+    if (!profile?.id) return;
+
+    try {
+      const response = await pointsApi.getUserPoints(profile.id);
+      if (response.success && response.data) {
+        setPointsInfo(response.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch points info:', error);
+    }
+  }, [profile?.id]);
+
+  // Fetch user streak
+  const fetchStreak = useCallback(async () => {
+    if (!profile?.id) return;
+
+    try {
+      const response = await pointsApi.getUserPoints(profile.id);
+      if (response.success && response.data) {
+        // Streak is included in points info
+      }
+    } catch (error) {
+      console.error('Failed to fetch streak:', error);
+    }
+  }, [profile?.id]);
+
   // Fetch user content based on tab
   const fetchContent = useCallback(async () => {
     if (!profile?.id) return;
@@ -106,6 +167,13 @@ export default function UserProfilePage() {
   useEffect(() => {
     fetchProfile();
   }, [fetchProfile]);
+
+  // Fetch points info when profile loads
+  useEffect(() => {
+    if (profile) {
+      fetchPointsInfo();
+    }
+  }, [profile, fetchPointsInfo]);
 
   // Fetch content when tab changes
   useEffect(() => {
@@ -300,6 +368,67 @@ export default function UserProfilePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
           >
+            {/* Level & Points Card */}
+            {(pointsInfo || profile.points > 0) && (
+              <Card className="mb-4 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border-primary/20">
+                <CardContent className="p-4">
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    {/* Level Badge */}
+                    <div className="flex items-center gap-3">
+                      <div className={cn(
+                        "h-12 w-12 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg",
+                        levelColors[profile.level] || levelColors[1]
+                      )}>
+                        {profile.level}
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground">等级</p>
+                        <p className="font-semibold text-lg">
+                          {levelNames[profile.level] || '入门'}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Points */}
+                    <div className="flex items-center gap-2">
+                      <Zap className="h-5 w-5 text-yellow-500" />
+                      <div className="text-left">
+                        <p className="text-sm text-muted-foreground">积分</p>
+                        <p className="font-bold text-xl">{formatNumber(profile.points || 0)}</p>
+                      </div>
+                    </div>
+
+                    {/* Progress to next level */}
+                    {pointsInfo && pointsInfo.nextLevelPoints && (
+                      <div className="flex-1 max-w-xs">
+                        <div className="flex justify-between text-xs text-muted-foreground mb-1">
+                          <span>距离下一级</span>
+                          <span>{pointsInfo.nextLevelPoints - profile.points} 积分</span>
+                        </div>
+                        <div className="h-2 bg-muted rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-gradient-to-r from-primary to-primary/60 rounded-full transition-all duration-500"
+                            style={{ width: `${pointsInfo.progress}%` }}
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Streak */}
+                    {pointsInfo && pointsInfo.streak !== undefined && pointsInfo.streak > 0 && (
+                      <div className="flex items-center gap-2">
+                        <Flame className="h-5 w-5 text-orange-500" />
+                        <div className="text-left">
+                          <p className="text-xs text-muted-foreground">连续签到</p>
+                          <p className="font-bold">{pointsInfo.streak} 天</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             <div className="grid grid-cols-4 gap-4 mb-6">
               <Card className="text-center">
                 <CardContent className="p-4">

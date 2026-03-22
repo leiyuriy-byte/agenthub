@@ -479,6 +479,9 @@ export const postApi = {
   unfavorite: (id: string) => api.delete(`/api/posts/${id}/favorite`),
 
   getRecent: (limit?: number) => api.get<Post[]>(`/api/posts/recent?limit=${limit || 10}`),
+
+  getSimilar: (id: string, limit?: number) => 
+    api.get<Post[]>(`/api/posts/${id}/similar?limit=${limit || 5}`),
 };
 
 // Comment API
@@ -782,6 +785,72 @@ export interface AdminChannel {
   sortOrder: number;
 }
 
+// Admin Stats Types
+export interface TrendData {
+  date: string;
+  users: number;
+  agents: number;
+  posts: number;
+}
+
+export interface TrendsResponse {
+  trends: TrendData[];
+  summary: {
+    totalUsers: number;
+    totalAgents: number;
+    totalPosts: number;
+  };
+}
+
+export interface PopularAgent {
+  id: string;
+  name: string;
+  slug: string;
+  logo: string | null;
+  tagline: string | null;
+  viewCount: number;
+  starCount: number;
+  avgRating: number | null;
+  ratingCount: number;
+  createdAt: string;
+  ownerId: string;
+  owner?: {
+    username: string;
+    displayName: string | null;
+  };
+}
+
+export interface PopularTag {
+  name: string;
+  count: number;
+}
+
+export interface ActivityHour {
+  hour: number;
+  posts: number;
+  comments: number;
+  agents: number;
+}
+
+export interface OverviewStats {
+  totals: {
+    users: number;
+    agents: number;
+    posts: number;
+    comments: number;
+  };
+  agents: {
+    published: number;
+    draft: number;
+  };
+  last30Days: {
+    users: number;
+    posts: number;
+    comments: number;
+  };
+  averageRating: number;
+}
+
 // Feed API
 export interface FeedItem {
   id: string;
@@ -884,6 +953,22 @@ export const adminApi = {
 
   // Channels
   getChannels: () => api.get<AdminChannel[]>('/api/admin/channels'),
+
+  // Stats - Trends
+  getTrends: (days?: number) => api.get<TrendsResponse>(`/api/admin/stats/trends?days=${days || 30}`),
+
+  // Stats - Popular Agents
+  getPopularAgents: (limit?: number, sortBy?: 'views' | 'stars' | 'rating') => 
+    api.get<PopularAgent[]>(`/api/admin/stats/popular-agents?limit=${limit || 10}&sortBy=${sortBy || 'views'}`),
+
+  // Stats - Popular Tags
+  getPopularTags: (limit?: number) => api.get<PopularTag[]>(`/api/admin/stats/popular-tags?limit=${limit || 20}`),
+
+  // Stats - Activity Hours
+  getActivityHours: () => api.get<ActivityHour[]>('/api/admin/stats/activity-hours'),
+
+  // Stats - Overview
+  getOverview: () => api.get<OverviewStats>('/api/admin/stats/overview'),
 };
 
 // Search API
@@ -965,6 +1050,157 @@ export const searchApi = {
 
   quickSearch: (q: string, limit?: number) => {
     return api.get<QuickSearchResult>(`/api/search/quick?q=${encodeURIComponent(q)}&limit=${limit || 5}`);
+  },
+};
+
+// Points & Level API
+export interface UserPointsInfo {
+  points: number;
+  level: number;
+  levelName: string;
+  nextLevelPoints: number | null;
+  progress: number;
+}
+
+export interface PointTransaction {
+  id: string;
+  points: number;
+  reason: string;
+  referenceId: string | null;
+  createdAt: string;
+}
+
+export interface LeaderboardEntry {
+  rank: number;
+  id: string;
+  username: string;
+  displayName: string | null;
+  avatar: string | null;
+  points: number;
+  level: number;
+  levelName: string;
+}
+
+export interface CheckinResult {
+  success: boolean;
+  points?: number;
+  checkedIn: boolean;
+  message?: string;
+  streak?: number;
+}
+
+export const pointsApi = {
+  // Get current user's points info
+  getMyPoints: () => api.get<UserPointsInfo>('/api/points/me'),
+
+  // Get another user's points info
+  getUserPoints: (userId: string) => api.get<UserPointsInfo>(`/api/points/users/${userId}`),
+
+  // Daily check-in
+  checkin: () => api.post<CheckinResult>('/api/points/checkin'),
+
+  // Check if user has checked in today
+  hasCheckedIn: () => api.get<{ checkedIn: boolean }>('/api/points/checked-in'),
+
+  // Get point transaction history
+  getHistory: (limit?: number, offset?: number) => {
+    const query = new URLSearchParams({ limit: String(limit || 20), offset: String(offset || 0) });
+    return api.get<{ transactions: PointTransaction[]; total: number }>(`/api/points/history?${query}`);
+  },
+
+  // Get leaderboard
+  getLeaderboard: (type: 'total' | 'weekly' | 'monthly' = 'total', limit?: number) => {
+    const query = new URLSearchParams({ type, limit: String(limit || 50) });
+    return api.get<LeaderboardEntry[]>(`/api/points/leaderboard?${query}`);
+  },
+
+  // Get user's check-in streak
+  getStreak: () => api.get<{ streak: number }>('/api/points/streak'),
+};
+
+// Report API
+export interface Report {
+  id: string;
+  reporterId: string;
+  reporter?: {
+    id: string;
+    username: string;
+    displayName: string | null;
+    avatar: string | null;
+  };
+  targetType: 'agent' | 'post' | 'comment' | 'user';
+  targetId: string;
+  reason: string;
+  status: 'pending' | 'reviewed' | 'resolved' | 'rejected';
+  reviewerId?: string | null;
+  reviewer?: {
+    id: string;
+    username: string;
+    displayName: string | null;
+  };
+  resolution?: string | null;
+  createdAt: string;
+  resolvedAt?: string | null;
+  targetDetails?: {
+    type: string;
+    title: string;
+    author?: string;
+    status?: string;
+    url: string;
+  };
+}
+
+export interface ReportListResult {
+  reports: Report[];
+  total: number;
+}
+
+export const reportApi = {
+  // Create a new report
+  create: (data: {
+    targetType: 'agent' | 'post' | 'comment' | 'user';
+    targetId: string;
+    reason: string;
+  }) => {
+    return api.post<Report>('/api/reports', data);
+  },
+
+  // Get pending report count (admin)
+  getPendingCount: () => {
+    return api.get<{ count: number }>('/api/reports/pending-count');
+  },
+
+  // List reports (admin)
+  list: (params?: {
+    limit?: number;
+    offset?: number;
+    status?: 'pending' | 'reviewed' | 'resolved' | 'rejected';
+    targetType?: string;
+  }) => {
+    const query = new URLSearchParams();
+    if (params?.limit) query.set('limit', String(params.limit));
+    if (params?.offset) query.set('offset', String(params.offset));
+    if (params?.status) query.set('status', params.status);
+    if (params?.targetType) query.set('targetType', params.targetType);
+    return api.get<ReportListResult>(`/api/reports?${query}`);
+  },
+
+  // Get report by ID (admin)
+  getById: (id: string) => {
+    return api.get<Report>(`/api/reports/${id}`);
+  },
+
+  // Resolve a report (admin)
+  resolve: (id: string, data: {
+    resolution: 'ignored' | 'warning' | 'deleted' | 'banned';
+    targetAction?: string;
+  }) => {
+    return api.put<Report>(`/api/reports/${id}/resolve`, data);
+  },
+
+  // Reject a report (admin)
+  reject: (id: string) => {
+    return api.put<Report>(`/api/reports/${id}/reject`);
   },
 };
 

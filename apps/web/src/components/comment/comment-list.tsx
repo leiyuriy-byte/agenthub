@@ -73,15 +73,16 @@ function CommentItem({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       className={cn(
-        'relative',
-        comment.parentId && 'ml-8 border-l-2 border-muted pl-4'
+        'relative rounded-lg border p-4',
+        comment.parentId && 'ml-8 border-l-2 border-muted pl-4',
+        comment.isAccepted && 'border-green-500/30 bg-green-500/5'
       )}
     >
       {/* Accepted Answer Badge */}
       {comment.isAccepted && (
-        <div className="flex items-center gap-1 text-green-600 text-sm mb-2">
-          <Check className="h-4 w-4" />
-          <span className="font-medium">已采纳</span>
+        <div className="flex items-center gap-1 text-green-600 dark:text-green-400 text-sm mb-2 font-medium">
+          <Check className="h-4 w-4 fill-green-500" />
+          <span>已采纳答案</span>
         </div>
       )}
 

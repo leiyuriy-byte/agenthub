@@ -19,6 +19,10 @@ import { adminRoutes } from './routes/admin.routes.js';
 import { searchRoutes } from './routes/search.routes.js';
 import { uploadRoutes } from './routes/upload.routes.js';
 import { feedRoutes } from './routes/feed.routes.js';
+import { oauthRoutes } from './routes/oauth.routes.js';
+import { reportRoutes } from './routes/report.routes.js';
+import { initializeWebSocket } from './services/websocket.service.js';
+import { initializeEmailTransporter } from './services/email.service.js';
 
 const fastify = Fastify({
   logger: {
@@ -110,6 +114,9 @@ await fastify.register(authPlugin);
 // Initialize database
 await initializeDatabase();
 
+// Initialize email transporter
+initializeEmailTransporter();
+
 // Register routes
 await fastify.register(userRoutes, { prefix: '/api/users' });
 await fastify.register(authRoutes, { prefix: '/api/auth' });
@@ -123,11 +130,20 @@ await fastify.register(adminRoutes, { prefix: '/api/admin' });
 await fastify.register(searchRoutes, { prefix: '/api/search' });
 await fastify.register(uploadRoutes, { prefix: '/api/upload' });
 await fastify.register(feedRoutes, { prefix: '/api/feed' });
+await fastify.register(oauthRoutes, { prefix: '/api/auth' });
+await fastify.register(reportRoutes, { prefix: '/api/reports' });
 
 // Health check endpoint
 fastify.get('/health', async () => {
   return { status: 'ok', timestamp: new Date().toISOString() };
 });
+
+// Initialize WebSocket after server starts
+const initializeWebSocketServer = async () => {
+  // Wait a bit for the server to be fully ready
+  await new Promise(resolve => setTimeout(resolve, 500));
+  initializeWebSocket(fastify);
+};
 
 // Start server
 const start = async () => {
@@ -136,6 +152,9 @@ const start = async () => {
     await fastify.listen({ port, host: '0.0.0.0' });
     console.log(`🚀 Server running at http://localhost:${port}`);
     console.log(`📚 API docs at http://localhost:${port}/docs`);
+    
+    // Initialize WebSocket after server starts
+    await initializeWebSocketServer();
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);

@@ -8,7 +8,7 @@ export const users = sqliteTable('users', {
   id: text('id').primaryKey(),
   email: text('email').notNull().unique(),
   username: text('username').notNull().unique(),
-  passwordHash: text('password_hash').notNull(),
+  passwordHash: text('password_hash'),
   displayName: text('display_name'),
   avatar: text('avatar'),
   bio: text('bio'),
@@ -17,6 +17,15 @@ export const users = sqliteTable('users', {
   points: integer('points').notNull().default(0),
   isVerified: integer('is_verified', { mode: 'boolean' }).notNull().default(false),
   lastLoginAt: integer('last_login_at', { mode: 'timestamp' }),
+  // OAuth fields
+  githubId: text('github_id').unique(),
+  googleId: text('google_id').unique(),
+  oauthProvider: text('oauth_provider'), // 'github' | 'google' | null
+  // Email notification preferences
+  emailNotifyOnComment: integer('email_notify_comment', { mode: 'boolean' }).notNull().default(true),
+  emailNotifyOnFollow: integer('email_notify_follow', { mode: 'boolean' }).notNull().default(true),
+  emailNotifyOnLike: integer('email_notify_like', { mode: 'boolean' }).notNull().default(true),
+  emailNotifyOnMention: integer('email_notify_mention', { mode: 'boolean' }).notNull().default(true),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`CURRENT_TIMESTAMP`),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().default(sql`CURRENT_TIMESTAMP`),
 });
@@ -341,6 +350,27 @@ export const reports = sqliteTable('reports', {
   resolution: text('resolution'),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`CURRENT_TIMESTAMP`),
   resolvedAt: integer('resolved_at', { mode: 'timestamp' }),
+});
+
+// ============== Points & Level System ==============
+
+/** Point transactions - history of point changes */
+export const pointTransactions = sqliteTable('point_transactions', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  points: integer('points').notNull(), // positive or negative
+  reason: text('reason').notNull(), // agent_published, post_created, answer_accepted, daily_checkin, like_received
+  referenceId: text('reference_id'), // related entity ID (agent_id, post_id, etc.)
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
+/** Daily check-in records */
+export const userCheckins = sqliteTable('user_checkins', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  date: text('date').notNull(), // YYYY-MM-DD format for easy lookup
+  points: integer('points').notNull().default(5),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`CURRENT_TIMESTAMP`),
 });
 
 // ============== Type Exports ==============

@@ -11,6 +11,7 @@ import {
 } from '@agenthub/db/schema';
 import { eq, and, desc, or, sql, like } from 'drizzle-orm';
 import { randomUUID } from 'crypto';
+import { sendMessageToUser } from './websocket.service.js';
 
 export interface CreateConversationInput {
   participantIds: string[]; // 参与者ID列表（当前用户会自动加入）
@@ -341,6 +342,18 @@ export async function sendMessage(
     throw new Error('You are not a participant of this conversation');
   }
   
+  // 获取发送者信息
+  const [sender] = await db
+    .select({
+      id: users.id,
+      username: users.username,
+      displayName: users.displayName,
+    })
+    .from(users)
+    .where(eq(users.id, senderId));
+
+  const senderName = sender?.displayName || sender?.username || '用户';
+  
   const messageId = randomUUID();
   await db.insert(messages).values({
     id: messageId,
@@ -350,6 +363,31 @@ export async function sendMessage(
     type,
     metadata: metadata || null,
   });
+
+  // 获取对话的其他参与者，给他们发送 WebSocket 通知
+  const allParticipants = await db
+    .select()
+    .from(conversationParticipants)
+    .where(eq(conversationParticipants.conversationId, conversationId));
+
+  for (const p of allParticipants) {
+    if (p.userId !== senderId) {
+      try {
+        sendMessageToUser(p.userId, {
+          id: messageId,
+          conversationId,
+          senderId,
+          senderName,
+          content,
+          type,
+          createdAt: new Date().toISOString(),
+        });
+      } catch (error) {
+        // Don't fail message sending if WebSocket fails
+        console.error('Failed to send WebSocket message notification:', error);
+      }
+    }
+  }
   
   return { id: messageId };
 }

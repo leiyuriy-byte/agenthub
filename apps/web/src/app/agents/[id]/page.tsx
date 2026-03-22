@@ -9,7 +9,7 @@ import { Badge } from '@agenthub/ui/badge';
 import { Button } from '@agenthub/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@agenthub/ui/card';
 import { Input } from '@agenthub/ui/input';
-import { agentApi, Agent, AgentCategory, User } from '@/lib/api';
+import { agentApi, Agent, AgentCategory, User, reportApi } from '@/lib/api';
 import { formatRelativeTime, formatNumber, cn } from '@/lib/utils';
 import {
   ArrowLeft,
@@ -30,7 +30,13 @@ import {
   AlertCircle,
   Sparkles,
   Bot,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  ZoomIn,
+  Flag,
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 // Extended types for agent detail
 interface AgentScreenshot {
@@ -82,6 +88,16 @@ export default function AgentDetailPage() {
   const [ratingSuccess, setRatingSuccess] = useState(false);
   const [relatedAgents, setRelatedAgents] = useState<Agent[]>([]);
   const [isLoadingRelated, setIsLoadingRelated] = useState(false);
+  
+  // Lightbox state
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+
+  // Report state
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportReason, setReportReason] = useState('');
+  const [isReporting, setIsReporting] = useState(false);
+  const [reportSuccess, setReportSuccess] = useState(false);
 
   // Check auth status
   useEffect(() => {
@@ -218,6 +234,78 @@ export default function AgentDetailPage() {
       // Could show toast here
     }
   };
+
+  // Report functionality
+  const handleReport = async () => {
+    if (!isLoggedIn) {
+      window.location.href = '/login';
+      return;
+    }
+
+    if (!reportReason.trim() || reportReason.length < 10) {
+      toast.error('请填写至少 10 个字符的举报原因');
+      return;
+    }
+
+    setIsReporting(true);
+
+    const response = await reportApi.create({
+      targetType: 'agent',
+      targetId: id,
+      reason: reportReason,
+    });
+
+    if (response.success) {
+      setReportSuccess(true);
+      setShowReportModal(false);
+      setReportReason('');
+      toast.success('举报已提交，感谢您的反馈');
+    } else {
+      toast.error(response.error || '举报提交失败');
+    }
+
+    setIsReporting(false);
+  };
+
+  // Lightbox functions
+  const openLightbox = (index: number) => {
+    setLightboxIndex(index);
+    setLightboxOpen(true);
+  };
+
+  const closeLightbox = () => {
+    setLightboxOpen(false);
+  };
+
+  const prevScreenshot = () => {
+    if (agent?.screenshots) {
+      setLightboxIndex((prev) => 
+        prev === 0 ? agent.screenshots.length - 1 : prev - 1
+      );
+    }
+  };
+
+  const nextScreenshot = () => {
+    if (agent?.screenshots) {
+      setLightboxIndex((prev) => 
+        prev === agent.screenshots.length - 1 ? 0 : prev + 1
+      );
+    }
+  };
+
+  // Keyboard navigation for lightbox
+  useEffect(() => {
+    if (!lightboxOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') prevScreenshot();
+      if (e.key === 'ArrowRight') nextScreenshot();
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [lightboxOpen]);
 
   if (isLoading) {
     return (
@@ -441,22 +529,34 @@ export default function AgentDetailPage() {
               <div className="mb-8">
                 <h2 className="text-lg font-semibold mb-3">截图</h2>
                 <div className="space-y-4">
-                  {/* Main screenshot */}
-                  <div className="aspect-video rounded-lg overflow-hidden bg-muted">
+                  {/* Main screenshot - clickable */}
+                  <div 
+                    className="aspect-video rounded-lg overflow-hidden bg-muted cursor-zoom-in group relative"
+                    onClick={() => openLightbox(0)}
+                  >
                     {selectedScreenshot && (
-                      <img
-                        src={selectedScreenshot}
-                        alt="Screenshot"
-                        className="w-full h-full object-contain"
-                      />
+                      <>
+                        <img
+                          src={selectedScreenshot}
+                          alt="Screenshot"
+                          className="w-full h-full object-contain"
+                        />
+                        {/* Zoom overlay */}
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                          <ZoomIn className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg" />
+                        </div>
+                      </>
                     )}
                   </div>
                   {/* Thumbnail strip */}
                   <div className="flex gap-2 overflow-x-auto pb-2">
-                    {agent.screenshots.map((screenshot) => (
+                    {agent.screenshots.map((screenshot, index) => (
                       <button
                         key={screenshot.id}
-                        onClick={() => setSelectedScreenshot(screenshot.url)}
+                        onClick={() => {
+                          setSelectedScreenshot(screenshot.url);
+                          openLightbox(index);
+                        }}
                         className={cn(
                           'flex-shrink-0 w-24 h-16 rounded-md overflow-hidden border-2 transition-all',
                           selectedScreenshot === screenshot.url
@@ -817,6 +917,75 @@ export default function AgentDetailPage() {
           </div>
         )}
       </main>
+
+      {/* Lightbox Modal */}
+      {lightboxOpen && agent?.screenshots && agent.screenshots.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
+          onClick={closeLightbox}
+        >
+          {/* Close button */}
+          <button
+            onClick={closeLightbox}
+            className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors z-10"
+          >
+            <X className="h-6 w-6 text-white" />
+          </button>
+
+          {/* Navigation arrows */}
+          {agent.screenshots.length > 1 && (
+            <>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  prevScreenshot();
+                }}
+                className="absolute left-4 p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+              >
+                <ChevronLeft className="h-6 w-6 text-white" />
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  nextScreenshot();
+                }}
+                className="absolute right-4 p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+              >
+                <ChevronRight className="h-6 w-6 text-white" />
+              </button>
+            </>
+          )}
+
+          {/* Main image */}
+          <motion.div
+            key={lightboxIndex}
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.2 }}
+            className="max-w-[90vw] max-h-[90vh]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={agent.screenshots[lightboxIndex].url}
+              alt={agent.screenshots[lightboxIndex].caption || `Screenshot ${lightboxIndex + 1}`}
+              className="max-w-full max-h-[90vh] object-contain rounded-lg"
+            />
+            {/* Caption */}
+            {agent.screenshots[lightboxIndex].caption && (
+              <p className="text-center text-white/80 mt-4 text-sm">
+                {agent.screenshots[lightboxIndex].caption}
+              </p>
+            )}
+            {/* Counter */}
+            <p className="text-center text-white/60 mt-2 text-sm">
+              {lightboxIndex + 1} / {agent.screenshots.length}
+            </p>
+          </motion.div>
+        </motion.div>
+      )}
 
       {/* Footer */}
       <footer className="border-t py-8 mt-12">

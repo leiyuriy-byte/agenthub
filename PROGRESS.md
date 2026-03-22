@@ -1,5 +1,5 @@
 # AgentHub 开发进度
-最后更新：2026-03-20 20:01
+最后更新：2026-03-22 12:00
 
 ## 已完成 ✅
 
@@ -38,7 +38,7 @@
 - **通知列表页** /notifications（筛选、标记已读、删除）
 
 ### UI 组件
-- **全局导航栏** navbar.tsx（搜索、通知铃铛+未读badge、消息未读badge、用户菜单、移动端适配、framer-motion 动画）
+- **全局导航栏** navbar.tsx（搜索、通知铃铛+未读badge、消息未读badge、用户菜单、移动端适配、framer-motion 动画、签到按钮）
 - **全局 Footer** footer.tsx（快速链接、社交链接、版权信息）
 - **首页** page.tsx（Hero + 精选Agent + 分类入口 + 热门讨论 + CTA）
 - **评论区组件** CommentList + CommentForm（嵌套回复、点赞、采纳）
@@ -73,62 +73,59 @@
 - **Docker 部署**：Dockerfile（多阶段构建：api + web）、docker-compose.yml
 - **部署文档**：DEPLOY.md
 
+### UI 质感提升 ✅
+- Agent 卡片悬停微位移效果 + 阴影过渡动画
+- 首页 Hero 区域增强：渐变背景球体动画、网格背景、改进搜索框样式、CTA按钮动画、信任指标
+
+### 安全加固 ✅
+- XSS 防护：rehype-sanitize 集成到所有 Markdown 渲染组件
+- 速率限制：登录(5/min)、注册(3/hr)、通用API(100/min)
+
+### 错误处理统一 ✅
+- API 客户端 401/403/429 错误处理，401 自动跳转登录
+
+### 密码重置流程 ✅
+- 后端 forgot-password/reset-password routes，Token 24h 有效期
+- 前端 forgot-password + reset-password 页面完整
+
+### Agent 截图上传 ✅
+- 后端 upload.routes.ts + 前端 ScreenshotsUpload 组件（最多5张，≤2MB）
+
+### 用户动态 Feed ✅
+- 后端 feed.routes.ts + feed.service.ts，前端 /feed 页面完整
+
+### Agent 详情页增强 ✅
+- 相关 Agent 推荐模块（最多6个同分类），浏览量统计
+
+### 用户积分与等级系统 ✅
+- 数据库：point_transactions + user_checkins 表
+- points.service.ts：积分/等级/签到/排行榜/连击
+- points.routes.ts：完整 REST API
+- 后端积分获取点：agent发布/post发布/comment采纳/点赞 均已集成
+- 前端用户主页：等级徽章 + 积分 + 进度条
+- /leaderboard 排行榜（total/weekly/monthly 切换）
+- navbar 签到按钮 + 今日签到状态显示
+
+### 实时通讯 WebSocket ✅
+- **后端** websocket.service.ts（Socket.IO 服务端、认证中间件、用户房间管理）
+- **前端** useWebSocket.ts hook（自动重连、事件订阅、计数管理）
+- **通知触发点接入**：
+  - comment.service.ts：`create()` → 帖子作者通知 + 被回复者通知；`like()` → 评论作者通知；`accept()` → 评论作者通知（回答被采纳）
+  - post.service.ts：`like()` → 帖子作者通知
+  - user.service.ts：`follow()` → 被关注者通知
+
 ## 进行中 🔨
-- 第 1 轮迭代任务（详见 TASKS.md）
+- Phase 2 收尾：确认数据统计全部端点可用后，更新 TASKS.md 进入下一阶段
 
-## 已完成（本轮）✅
-### UI 质感提升
-- Agent 卡片添加悬停微位移效果（whileHover: y: -4）
-- Agent 卡片添加阴影过渡动画（hover:shadow-xl）
-- 首页 Hero 区域增强：渐变背景球体动画、网格背景、改进搜索框样式、精致的CTA按钮动画、信任指标
-- 首页 Agent 卡片样式增强
+## 待开发 📋（Phase 3）
+详见 [TASKS.md](./TASKS.md) 第 5 轮任务
 
-### 安全加固
-- **XSS 防护**：添加 rehype-sanitize 到所有 Markdown 渲染组件
-  - 讨论详情页
-  - 评论列表
-  - Markdown 编辑器预览
-- **速率限制**：
-  - 登录接口：每分钟 5 次
-  - 注册接口：每小时 3 次
-  - 通用 API：每分钟 100 次
-
-### 错误处理统一
-- API 客户端添加 401/403/429 错误处理
-- 401 自动清除 token 并跳转登录页
-- 403 显示"没有权限"提示
-- 429 显示"请求过于频繁"提示
-
-### 密码重置流程
-- 后端 forgot-password 和 reset-password routes 已存在
-- Token 24h 有效期（原为1h）
-- 控制台输出完整重置链接（开发模式）
-- 前端 forgot-password 页面完整
-- 前端 reset-password 页面新建完成
-
-### Agent 截图上传
-- 后端 upload.routes.ts 实现图片上传（本地存储）
-- 前端 ScreenshotsUpload 组件已完整（最多5张，单张≤2MB，jpg/png/webp）
-- 已集成到 Agent 创建页
-
-### 用户动态 Feed
-- 后端 feed.routes.ts + feed.service.ts 实现
-- 修复 return reply.send() 格式问题
-- 前端 /feed 页面完整（时间线样式，分页加载）
-
-### Agent 详情页增强
-- 添加「相关 Agent 推荐」模块（最多6个同分类Agent）
-- 后端新增 /api/agents/:id/related 端点
-- 后端新增 agentService.getRelatedAgents() 方法
-- 浏览量统计展示（已有，后端每次请求递增）
-
-## 待开发 📋（Phase 2）
-- 实时通讯（WebSocket）推送
-- 用户积分与等级系统
-- OAuth 第三方登录（GitHub/Google）
-- 邮件通知
-- 数据统计图表
-- 搜索功能优化（MeiliSearch 集成）
+- ~~OAuth 第三方登录（GitHub/Google）~~ → ✅ 已实现（服务+路由+前端集成）
+- ~~MeiliSearch 全文搜索~~ → ✅ 已实现（search.service.ts 已集成 MeiliSearch）
+- ~~邮件通知系统~~ → ✅ 已实现（Nodemailer + SMTP + 邮件模板）
+- ~~数据统计图表（/admin/stats）~~ → ✅ 已实现（7个图表端点：trends/popular-agents/popular-tags/activity-hours/overview 等）
 
 ## 遇到的问题 ⚠️
 - ~~better-sqlite3 native module 编译问题~~ → 已切换到 libsql 解决
+- ~~WebSocket 通知触发点未接入业务逻辑~~ → 已全部接入 ✅
+- MeiliSearch / SMTP 需配置环境变量方可启用（服务已就绪）

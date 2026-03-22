@@ -127,6 +127,32 @@ export async function postRoutes(fastify: FastifyInstance) {
   });
 
   /**
+   * GET /api/posts/:id/similar - Get similar posts
+   */
+  fastify.get('/:id/similar', async (
+    request: FastifyRequest<{ Params: PostParams; Querystring: { limit?: number } }>,
+    reply: FastifyReply
+  ) => {
+    try {
+      const { id } = request.params;
+      const limit = request.query.limit ? parseInteger(request.query.limit) : 5;
+
+      const posts = await postService.getSimilar(id, limit);
+
+      return reply.send({
+        success: true,
+        data: posts,
+      });
+    } catch (error) {
+      request.log.error(error);
+      return reply.code(500).send({
+        success: false,
+        error: 'Internal server error',
+      });
+    }
+  });
+
+  /**
    * POST /api/posts - Create new post
    */
   fastify.post('/', async (

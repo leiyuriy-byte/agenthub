@@ -1,5 +1,6 @@
 import { db, schema } from '@agenthub/db';
 import { eq, like, or, desc, count, and, sql } from 'drizzle-orm';
+import { meilisearchService, INDEX_NAMES, type MeiliAgent, type MeiliPost, type MeiliUser } from './meilisearch.service';
 
 export interface SearchResult {
   agents: SearchAgent[];
@@ -68,6 +69,104 @@ export interface SearchOptions {
 }
 
 const DEFAULT_LIMIT = 20;
+
+/**
+ * Unified search across agents, posts, and users (using MeiliSearch if available, fallback to SQL LIKE)
+ */
+export async function searchWithMeili(
+  options: SearchOptions
+): Promise<SearchResult> {
+  const { query, type = 'all', limit = DEFAULT_LIMIT, offset = 0 } = options;
+
+  if (!query || query.trim().length < 2) {
+    return {
+      agents: [],
+      posts: [],
+      users: [],
+      total: { agents: 0, posts: 0, users: 0 },
+    };
+  }
+
+  // Try MeiliSearch first
+  if (meilisearchService.isConfigured()) {
+    try {
+      const results: SearchResult = {
+        agents: [],
+        posts: [],
+        users: [],
+        total: { agents: 0, posts: 0, users: 0 },
+      };
+
+      if (type === 'all' || type === 'agents') {
+        const agentsResult = await meilisearchService.searchAgents(query, { limit, offset });
+        results.agents = agentsResult.results.map(a => ({
+          id: a.id,
+          name: a.name,
+          slug: a.slug,
+          logo: a.logo,
+          tagline: a.tagline,
+          status: a.status,
+          avgRating: a.avgRating,
+          starCount: a.starCount,
+          viewCount: a.viewCount,
+          createdAt: new Date(a.createdAt),
+          owner: {
+            username: a.ownerUsername,
+            displayName: a.ownerDisplayName,
+          },
+        }));
+        results.total.agents = agentsResult.total;
+      }
+
+      if (type === 'all' || type === 'posts') {
+        const postsResult = await meilisearchService.searchPosts(query, { limit, offset });
+        results.posts = postsResult.results.map(p => ({
+          id: p.id,
+          title: p.title,
+          content: p.content,
+          type: p.type,
+          viewCount: p.viewCount,
+          likeCount: p.likeCount,
+          commentCount: p.commentCount,
+          createdAt: new Date(p.createdAt),
+          author: {
+            username: p.authorUsername,
+            displayName: p.authorDisplayName,
+          },
+          channel: {
+            name: p.channelName,
+            slug: p.channelSlug,
+          },
+        }));
+        results.total.posts = postsResult.total;
+      }
+
+      if (type === 'all' || type === 'users') {
+        const usersResult = await meilisearchService.searchUsers(query, { limit, offset });
+        results.users = usersResult.results.map(u => ({
+          id: u.id,
+          username: u.username,
+          displayName: u.displayName,
+          avatar: u.avatar,
+          bio: u.bio,
+          role: u.role,
+          level: u.level,
+          isVerified: u.isVerified,
+          createdAt: new Date(u.createdAt),
+        }));
+        results.total.users = usersResult.total;
+      }
+
+      return results;
+    } catch (error) {
+      console.error('[Search] MeiliSearch failed, falling back to SQL:', error);
+      // Fall through to SQL search
+    }
+  }
+
+  // Fallback to SQL LIKE search (original implementation)
+  return search(options);
+}
 
 /**
  * Unified search across agents, posts, and users

@@ -54,6 +54,8 @@ export default function PostDetailPage() {
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [commentContent, setCommentContent] = useState('');
+  const [similarPosts, setSimilarPosts] = useState<Post[]>([]);
+  const [isLoadingSimilar, setIsLoadingSimilar] = useState(false);
 
   // Fetch post
   const fetchPost = useCallback(async () => {

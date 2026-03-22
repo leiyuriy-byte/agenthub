@@ -1,6 +1,7 @@
 import { eq, and, desc, asc, like, sql, or } from 'drizzle-orm';
 import { db, schema } from '@agenthub/db';
 import { nanoid } from 'nanoid';
+import { awardPointsForAction } from './points.service.js';
 
 export interface CreateAgentData {
   ownerId: string;
@@ -313,9 +314,35 @@ export const agentService = {
 
   /**
    * Publish an agent (change status from draft to published)
+   * Awards 50 points to the owner upon first publication
    */
   async publish(id: string, ownerId: string) {
-    return this.update(id, { status: 'published' }, ownerId);
+    // Check if agent is currently draft (first publication)
+    const [agent] = await db.select()
+      .from(schema.agents)
+      .where(eq(schema.agents.id, id))
+      .limit(1);
+
+    if (!agent) {
+      throw new Error('Agent not found');
+    }
+
+    const isFirstPublish = agent.status === 'draft';
+
+    // Update status to published
+    const updated = await this.update(id, { status: 'published' }, ownerId);
+
+    // Award points for first publication
+    if (isFirstPublish) {
+      try {
+        await awardPointsForAction(ownerId, 'agent_published', id);
+      } catch (error) {
+        // Log error but don't fail the publish operation
+        console.error('Failed to award points for agent publication:', error);
+      }
+    }
+
+    return updated;
   },
 
   /**

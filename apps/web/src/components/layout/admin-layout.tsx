@@ -17,10 +17,12 @@ import {
   Menu,
   X,
   Loader2,
+  BarChart3,
 } from 'lucide-react';
 
 const navItems = [
   { label: '仪表盘', href: '/admin', icon: LayoutDashboard },
+  { label: '数据统计', href: '/admin/stats', icon: BarChart3 },
   { label: '用户管理', href: '/admin/users', icon: Users },
   { label: 'Agent 管理', href: '/admin/agents', icon: Bot },
   { label: '帖子管理', href: '/admin/posts', icon: FileText },

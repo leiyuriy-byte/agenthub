@@ -31,7 +31,7 @@ export async function initializeDatabase() {
       id TEXT PRIMARY KEY,
       email TEXT NOT NULL UNIQUE,
       username TEXT NOT NULL UNIQUE,
-      password_hash TEXT NOT NULL,
+      password_hash TEXT,
       display_name TEXT,
       avatar TEXT,
       bio TEXT,
@@ -40,6 +40,13 @@ export async function initializeDatabase() {
       points INTEGER NOT NULL DEFAULT 0,
       is_verified INTEGER NOT NULL DEFAULT 0,
       last_login_at INTEGER,
+      github_id TEXT UNIQUE,
+      google_id TEXT UNIQUE,
+      oauth_provider TEXT,
+      email_notify_comment INTEGER NOT NULL DEFAULT 1,
+      email_notify_follow INTEGER NOT NULL DEFAULT 1,
+      email_notify_like INTEGER NOT NULL DEFAULT 1,
+      email_notify_mention INTEGER NOT NULL DEFAULT 1,
       created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000),
       updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000)
     )
