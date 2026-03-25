@@ -3,6 +3,7 @@
  */
 
 import { toast } from 'sonner';
+export { useAuthStore } from '@/stores/auth-store';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 

@@ -26,7 +26,7 @@ export default function Loading() {
             }}
           />
           <div className="absolute inset-0 rounded-2xl bg-background flex items-center justify-center">
-            <span className="text-xl font-bold bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">
+            <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent dark:from-indigo-400 dark:to-purple-400">
               AH
             </span>
           </div>

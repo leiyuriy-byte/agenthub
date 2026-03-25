@@ -37,11 +37,11 @@ export declare const authSchemas: {
         token: z.ZodString;
         password: z.ZodString;
     }, "strip", z.ZodTypeAny, {
-        password: string;
         token: string;
+        password: string;
     }, {
-        password: string;
         token: string;
+        password: string;
     }>;
 };
 export declare const userSchemas: {
@@ -51,22 +51,22 @@ export declare const userSchemas: {
         avatar: z.ZodOptional<z.ZodString>;
     }, "strip", z.ZodTypeAny, {
         displayName?: string | undefined;
-        bio?: string | undefined;
         avatar?: string | undefined;
+        bio?: string | undefined;
     }, {
         displayName?: string | undefined;
-        bio?: string | undefined;
         avatar?: string | undefined;
+        bio?: string | undefined;
     }>;
     addSocialLink: z.ZodObject<{
         platform: z.ZodEnum<["github", "twitter", "website", "linkedin", "youtube"]>;
         url: z.ZodString;
     }, "strip", z.ZodTypeAny, {
-        url: string;
         platform: "github" | "twitter" | "website" | "linkedin" | "youtube";
+        url: string;
     }, {
-        url: string;
         platform: "github" | "twitter" | "website" | "linkedin" | "youtube";
+        url: string;
     }>;
     addTag: z.ZodObject<{
         tag: z.ZodString;
@@ -90,9 +90,9 @@ export declare const agentSchemas: {
     }, "strip", z.ZodTypeAny, {
         name: string;
         slug: string;
-        tagline?: string | undefined;
         description?: string | undefined;
         logo?: string | undefined;
+        tagline?: string | undefined;
         demoUrl?: string | undefined;
         githubUrl?: string | undefined;
         docsUrl?: string | undefined;
@@ -100,9 +100,9 @@ export declare const agentSchemas: {
     }, {
         name: string;
         slug: string;
-        tagline?: string | undefined;
         description?: string | undefined;
         logo?: string | undefined;
+        tagline?: string | undefined;
         demoUrl?: string | undefined;
         githubUrl?: string | undefined;
         docsUrl?: string | undefined;
@@ -119,25 +119,25 @@ export declare const agentSchemas: {
         categoryId: z.ZodOptional<z.ZodString>;
         status: z.ZodOptional<z.ZodEnum<["draft", "published", "archived"]>>;
     }, "strip", z.ZodTypeAny, {
-        status?: "draft" | "published" | "archived" | undefined;
         name?: string | undefined;
-        tagline?: string | undefined;
         description?: string | undefined;
         logo?: string | undefined;
+        tagline?: string | undefined;
         demoUrl?: string | undefined;
         githubUrl?: string | undefined;
         docsUrl?: string | undefined;
         categoryId?: string | undefined;
+        status?: "draft" | "published" | "archived" | undefined;
     }, {
-        status?: "draft" | "published" | "archived" | undefined;
         name?: string | undefined;
-        tagline?: string | undefined;
         description?: string | undefined;
         logo?: string | undefined;
+        tagline?: string | undefined;
         demoUrl?: string | undefined;
         githubUrl?: string | undefined;
         docsUrl?: string | undefined;
         categoryId?: string | undefined;
+        status?: "draft" | "published" | "archived" | undefined;
     }>;
     rate: z.ZodObject<{
         overall: z.ZodNumber;

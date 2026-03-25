@@ -1,6 +1,7 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { db, schema } from '@agenthub/db';
 import { eq, desc, count, and, gte, lte, sql } from 'drizzle-orm';
+import { AnyColumn, Table } from 'drizzle-orm';
 
 interface AdminStats {
   totalUsers: number;
@@ -32,12 +33,22 @@ async function requireAdmin(request: FastifyRequest, reply: FastifyReply) {
     });
   }
 
-  if (request.user?.role !== 'admin' && request.user?.role !== 'moderator') {
+  // Get user info from database
+  const [user] = await db
+    .select({ role: schema.users.role })
+    .from(schema.users)
+    .where(eq(schema.users.id, request.userId))
+    .limit(1);
+
+  if (!user || (user.role !== 'admin' && user.role !== 'moderator')) {
     return reply.code(403).send({
       success: false,
       error: 'Admin access required',
     });
   }
+
+  // Attach user to request for later use (using type assertion)
+  (request as any).user = { role: user.role, id: request.userId };
 }
 
 export async function adminRoutes(fastify: FastifyInstance) {
@@ -677,20 +688,20 @@ export async function adminRoutes(fastify: FastifyInstance) {
 
       // Helper to get counts by date
       const getCountsByDate = async (
-        table: typeof schema.users | typeof schema.agents | typeof schema.posts,
-        dateField: typeof schema.users.createdAt
+        table: Table,
+        dateField: AnyColumn
       ) => {
         const results = await db
           .select({
             date: sql<string>`date(${dateField})`,
             count: count(),
           })
-          .from(table)
-          .where(gte(dateField, startDate))
+          .from(table as any)
+          .where(gte(dateField as any, startDate))
           .groupBy(sql`date(${dateField})`);
 
-        return results.reduce((acc, row) => {
-          acc[row.date] = row.count;
+        return results.reduce((acc, row: any) => {
+          acc[row.date as string] = row.count as number;
           return acc;
         }, {} as Record<string, number>);
       };
@@ -816,20 +827,21 @@ export async function adminRoutes(fastify: FastifyInstance) {
     try {
       const limit = Math.min(parseInt(request.query.limit || '20'), 100);
 
-      // Get all agents with tags
-      const agents = await db
-        .select({ tags: schema.agents.tags })
-        .from(schema.agents)
+      // Get all agent tags with agent info
+      const agentTagsWithAgents = await db
+        .select({
+          tagId: schema.agentTags.id,
+          tagName: schema.agentTags.name,
+        })
+        .from(schema.agentTags)
+        .innerJoin(schema.agents, eq(schema.agentTags.agentId, schema.agents.id))
         .where(eq(schema.agents.status, 'published'));
 
       // Count tags
       const tagCounts: Record<string, number> = {};
-      agents.forEach((agent) => {
-        if (agent.tags && Array.isArray(agent.tags)) {
-          agent.tags.forEach((tag) => {
-            tagCounts[tag] = (tagCounts[tag] || 0) + 1;
-          });
-        }
+      agentTagsWithAgents.forEach((item) => {
+        const tagName = item.tagName;
+        tagCounts[tagName] = (tagCounts[tagName] || 0) + 1;
       });
 
       // Sort and limit
@@ -909,13 +921,19 @@ export async function adminRoutes(fastify: FastifyInstance) {
 
       // Fill in the data
       postsByHour.forEach((row) => {
-        hourCounts[row.hour].posts = Number(row.count);
+        if (hourCounts[row.hour]) {
+          hourCounts[row.hour].posts = Number(row.count);
+        }
       });
       commentsByHour.forEach((row) => {
-        hourCounts[row.hour].comments = Number(row.count);
+        if (hourCounts[row.hour]) {
+          hourCounts[row.hour].comments = Number(row.count);
+        }
       });
       agentsByHour.forEach((row) => {
-        hourCounts[row.hour].agents = Number(row.count);
+        if (hourCounts[row.hour]) {
+          hourCounts[row.hour].agents = Number(row.count);
+        }
       });
 
       return reply.send({
@@ -957,7 +975,7 @@ export async function adminRoutes(fastify: FastifyInstance) {
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-      const [recentUsers, recentPosts, recentComments] = await Promise.all([
+      const [recentUsers, recentPosts, recentComments]: any = await Promise.all([
         db.select({ count: count() }).from(schema.users).where(gte(schema.users.createdAt, thirtyDaysAgo)),
         db.select({ count: count() }).from(schema.posts).where(gte(schema.posts.createdAt, thirtyDaysAgo)),
         db.select({ count: count() }).from(schema.comments).where(gte(schema.comments.createdAt, thirtyDaysAgo)),
@@ -970,10 +988,10 @@ export async function adminRoutes(fastify: FastifyInstance) {
         .where(sql`${schema.agents.avgRating} is not null`);
 
       // Calculate totals
-      const totalUsers = userCount?.count || 0;
-      const totalAgents = agentCount?.count || 0;
-      const totalPosts = postCount?.count || 0;
-      const totalComments = commentCount?.count || 0;
+      const totalUsers = (userCount as any)?.count || 0;
+      const totalAgents = (agentCount as any)?.count || 0;
+      const totalPosts = (postCount as any)?.count || 0;
+      const totalComments = (commentCount as any)?.count || 0;
 
       return reply.send({
         success: true,
@@ -985,13 +1003,13 @@ export async function adminRoutes(fastify: FastifyInstance) {
             comments: totalComments,
           },
           agents: {
-            published: publishedAgents?.count || 0,
-            draft: draftAgents?.count || 0,
+            published: (publishedAgents as any)?.count || 0,
+            draft: (draftAgents as any)?.count || 0,
           },
           last30Days: {
-            users: recentUsers?.count || 0,
-            posts: recentPosts?.count || 0,
-            comments: recentComments?.count || 0,
+            users: (recentUsers as any)?.count || 0,
+            posts: (recentPosts as any)?.count || 0,
+            comments: (recentComments as any)?.count || 0,
           },
           averageRating: avgRatingResult?.avg ? parseFloat(avgRatingResult.avg.toFixed(2)) : 0,
         },

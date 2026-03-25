@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, JetBrains_Mono } from 'next/font/google';
 import { ThemeProvider } from '@/providers/theme-provider';
 import { QueryProvider } from '@/providers/query-provider';
 import { Toaster } from '@/components/ui/sonner';
@@ -7,15 +6,9 @@ import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import './globals.css';
 
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-sans',
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
-  variable: '--font-mono',
-});
+// Note: Using system fonts to avoid Google Fonts network issues in restricted environments
+// For production deployment with proper network access, add: import { Inter, JetBrains_Mono } from 'next/font/google';
+// --font-sans and --font-mono are defined in globals.css
 
 export const metadata: Metadata = {
   title: {
@@ -71,7 +64,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="zh-CN" suppressHydrationWarning>
-      <body className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased`}>
+      <body className="font-sans antialiased">
         <QueryProvider>
           <ThemeProvider defaultTheme="dark" storageKey="agenthub-theme">
             <div className="flex flex-col min-h-screen">

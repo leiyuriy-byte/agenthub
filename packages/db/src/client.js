@@ -28,6 +28,10 @@ export async function initializeDatabase() {
       github_id TEXT UNIQUE,
       google_id TEXT UNIQUE,
       oauth_provider TEXT,
+      email_notify_comment INTEGER NOT NULL DEFAULT 1,
+      email_notify_follow INTEGER NOT NULL DEFAULT 1,
+      email_notify_like INTEGER NOT NULL DEFAULT 1,
+      email_notify_mention INTEGER NOT NULL DEFAULT 1,
       created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000),
       updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000)
     )
@@ -180,6 +184,7 @@ export async function initializeDatabase() {
       version TEXT NOT NULL,
       changelog TEXT,
       download_url TEXT,
+      features TEXT,
       created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000)
     )
   `);
@@ -393,6 +398,25 @@ export async function initializeDatabase() {
     )
   `);
     console.log('✅ Database initialized successfully');
+    await runMigrations();
+}
+async function runMigrations() {
+    try {
+        const result = await client.execute(`
+      PRAGMA table_info(agent_versions)
+    `);
+        const columns = result.rows || [];
+        const featuresExists = columns.some((col) => col.name === 'features');
+        if (!featuresExists) {
+            await client.execute(`
+        ALTER TABLE agent_versions ADD COLUMN features TEXT
+      `);
+            console.log('✅ Migration: Added features column to agent_versions');
+        }
+    }
+    catch (error) {
+        console.error('⚠️ Migration error:', error);
+    }
 }
 export default db;
 //# sourceMappingURL=client.js.map

@@ -16,6 +16,10 @@ export const users = sqliteTable('users', {
     githubId: text('github_id').unique(),
     googleId: text('google_id').unique(),
     oauthProvider: text('oauth_provider'),
+    emailNotifyOnComment: integer('email_notify_comment', { mode: 'boolean' }).notNull().default(true),
+    emailNotifyOnFollow: integer('email_notify_follow', { mode: 'boolean' }).notNull().default(true),
+    emailNotifyOnLike: integer('email_notify_like', { mode: 'boolean' }).notNull().default(true),
+    emailNotifyOnMention: integer('email_notify_mention', { mode: 'boolean' }).notNull().default(true),
     createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql `CURRENT_TIMESTAMP`),
     updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().default(sql `CURRENT_TIMESTAMP`),
 });
@@ -122,6 +126,7 @@ export const agentVersions = sqliteTable('agent_versions', {
     version: text('version').notNull(),
     changelog: text('changelog'),
     downloadUrl: text('download_url'),
+    features: text('features'),
     createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql `CURRENT_TIMESTAMP`),
 });
 export const agentRatings = sqliteTable('agent_ratings', {

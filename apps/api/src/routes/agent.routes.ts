@@ -58,12 +58,12 @@ export async function agentRoutes(fastify: FastifyInstance) {
   /**
    * GET /api/agents/featured - Get featured agents
    */
-  fastify.get('/featured', async (
-    request: FastifyRequest,
+  fastify.get<{ Querystring: { limit?: string } }>('/featured', async (
+    request: FastifyRequest<{ Querystring: { limit?: string } }>,
     reply: FastifyReply
   ) => {
     try {
-      const limit = request.query['limit'] ? parseInteger(request.query['limit'] as string) : 10;
+      const limit = request.query.limit ? parseInteger(request.query.limit) : 10;
       const agents = await agentService.getFeatured(limit);
 
       return reply.send({
@@ -105,13 +105,13 @@ export async function agentRoutes(fastify: FastifyInstance) {
   /**
    * GET /api/agents/:id/related - Get related agents
    */
-  fastify.get('/:id/related', async (
-    request: FastifyRequest<{ Params: AgentParams }>,
+  fastify.get<{ Params: AgentParams; Querystring: { limit?: string } }>('/:id/related', async (
+    request: FastifyRequest<{ Params: AgentParams; Querystring: { limit?: string } }>,
     reply: FastifyReply
   ) => {
     try {
       const { id } = request.params;
-      const limit = request.query['limit'] ? parseInteger(request.query['limit'] as string) : 6;
+      const limit = request.query.limit ? parseInteger(request.query.limit) : 6;
 
       // Get the agent first to find its category
       const agent = await agentService.findById(id);

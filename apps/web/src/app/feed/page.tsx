@@ -6,11 +6,11 @@ import { motion } from 'framer-motion';
 import { feedApi, FeedItem } from '@/lib/api';
 import { useAuthStore } from '@/stores/auth-store';
 import { formatRelativeTime } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@agenthub/ui/button';
+import { Card, CardContent } from '@agenthub/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@agenthub/ui/avatar';
+import { Badge } from '@agenthub/ui/badge';
+import { Tabs, TabsList, TabsTrigger } from '@agenthub/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Bot,

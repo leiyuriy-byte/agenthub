@@ -6,7 +6,16 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./button": "./src/button.tsx",
+    "./badge": "./src/badge.tsx",
+    "./card": "./src/card.tsx",
+    "./avatar": "./src/avatar.tsx",
+    "./input": "./src/input.tsx",
+    "./textarea": "./src/textarea.tsx",
+    "./dropdown-menu": "./src/dropdown-menu.tsx",
+    "./image-upload": "./src/image-upload.tsx",
+    "./tabs": "./src/tabs.tsx"
   },
   "dependencies": {
     "clsx": "^2.1.0",

@@ -823,13 +823,14 @@ export default function PostDetailPage() {
           >
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold flex items-center gap-2">
+                <h2 className="text-lg font-semibold flex items-center gap-2">
                   <Flag className="h-5 w-5 text-red-500" />
                   举报帖子
-                </h3>
+                </h2>
                 <button
                   onClick={() => setShowReportModal(false)}
                   className="p-1 hover:bg-muted rounded"
+                  aria-label="关闭举报弹窗"
                 >
                   <X className="h-5 w-5" />
                 </button>
@@ -838,7 +839,7 @@ export default function PostDetailPage() {
               {reportSuccess ? (
                 <div className="text-center py-6">
                   <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
-                  <h4 className="font-semibold mb-2">举报已提交</h4>
+                  <h3 className="font-semibold mb-2">举报已提交</h3>
                   <p className="text-sm text-muted-foreground mb-4">
                     感谢您的反馈，我们会尽快处理
                   </p>

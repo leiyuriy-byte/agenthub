@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback } from 'react';
 import { Upload, X, Image as ImageIcon, Loader2, GripVertical } from 'lucide-react';
-import { cn } from './index.js';
+import { cn } from './index';
 
 interface ImageUploadProps {
   value?: string;

@@ -101,7 +101,7 @@ export async function messageRoutes(fastify: FastifyInstance) {
    */
   fastify.get(
     '/conversations',
-    { preHandler: [authenticate] },
+    { preHandler: [fastify.authenticate] },
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
         const userId = request.user.id;
@@ -119,7 +119,7 @@ export async function messageRoutes(fastify: FastifyInstance) {
    */
   fastify.get<{ Params: ConversationParams }>(
     '/conversations/:id',
-    { preHandler: [authenticate] },
+    { preHandler: [fastify.authenticate] },
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
         const { id } = request.params;
@@ -143,7 +143,7 @@ export async function messageRoutes(fastify: FastifyInstance) {
    */
   fastify.post<{ Body: CreateConversationBody }>(
     '/conversations',
-    { preHandler: [authenticate] },
+    { preHandler: [fastify.authenticate] },
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
         const body = CreateConversationSchema.parse(request.body);
@@ -171,7 +171,7 @@ export async function messageRoutes(fastify: FastifyInstance) {
    */
   fastify.post<{ Params: { userId: string } }>(
     '/dm/:userId',
-    { preHandler: [authenticate] },
+    { preHandler: [fastify.authenticate] },
     async (request: FastifyRequest<{ Params: { userId: string } }>, reply: FastifyReply) => {
       try {
         const { userId: targetUserId } = request.params;
@@ -196,7 +196,7 @@ export async function messageRoutes(fastify: FastifyInstance) {
    */
   fastify.get<{ Params: ConversationParams; Querystring: GetMessagesQuery }>(
     '/:conversationId',
-    { preHandler: [authenticate] },
+    { preHandler: [fastify.authenticate] },
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
         const { conversationId } = request.params;
@@ -217,7 +217,7 @@ export async function messageRoutes(fastify: FastifyInstance) {
    */
   fastify.post<{ Body: SendMessageBody }>(
     '/',
-    { preHandler: [authenticate] },
+    { preHandler: [fastify.authenticate] },
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
         const body = SendMessageSchema.parse(request.body);
@@ -244,7 +244,7 @@ export async function messageRoutes(fastify: FastifyInstance) {
    */
   fastify.post<{ Params: ConversationParams }>(
     '/:conversationId/read',
-    { preHandler: [authenticate] },
+    { preHandler: [fastify.authenticate] },
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
         const { conversationId } = request.params;
@@ -264,7 +264,7 @@ export async function messageRoutes(fastify: FastifyInstance) {
    */
   fastify.get<{ Querystring: SearchMessagesQuery }>(
     '/search',
-    { preHandler: [authenticate] },
+    { preHandler: [fastify.authenticate] },
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
         const { q, limit } = request.query as SearchMessagesQuery;
@@ -284,7 +284,7 @@ export async function messageRoutes(fastify: FastifyInstance) {
    */
   fastify.delete<{ Params: ConversationParams }>(
     '/conversations/:id',
-    { preHandler: [authenticate] },
+    { preHandler: [fastify.authenticate] },
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
         const { id } = request.params;
@@ -304,7 +304,7 @@ export async function messageRoutes(fastify: FastifyInstance) {
    */
   fastify.get(
     '/unread/count',
-    { preHandler: [authenticate] },
+    { preHandler: [fastify.authenticate] },
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
         const userId = request.user.id;

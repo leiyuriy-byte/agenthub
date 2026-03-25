@@ -34,11 +34,11 @@ export function Footer() {
               <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center">
                 <span className="text-white font-bold text-sm">AH</span>
               </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">
+              <span className="text-xl font-bold text-foreground">
                 AgentHub
               </span>
             </Link>
-            <p className="text-sm text-muted-foreground leading-relaxed">
+            <p className="text-sm text-foreground leading-relaxed">
               面向 AI Agent 开发者、研究者和爱好者的综合性社区平台。集项目展示、技术交流、知识沉淀、生态对接于一体。
             </p>
             <div className="flex items-center gap-3">
@@ -48,7 +48,7 @@ export function Footer() {
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                  className="p-2 rounded-lg text-foreground hover:bg-accent transition-colors"
                   aria-label={link.label}
                 >
                   <link.icon className="h-4 w-4" />
@@ -59,13 +59,13 @@ export function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-semibold text-sm mb-4">快速链接</h4>
+            <h3 className="font-semibold text-sm mb-4">快速链接</h3>
             <ul className="space-y-2">
               {quickLinks.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    className="text-sm text-foreground transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -76,13 +76,13 @@ export function Footer() {
 
           {/* Resources */}
           <div>
-            <h4 className="font-semibold text-sm mb-4">资源</h4>
+            <h3 className="font-semibold text-sm mb-4">资源</h3>
             <ul className="space-y-2">
               {resources.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    className="text-sm text-foreground transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -93,7 +93,7 @@ export function Footer() {
 
           {/* Newsletter / CTA */}
           <div>
-            <h4 className="font-semibold text-sm mb-4">保持更新</h4>
+            <h3 className="font-semibold text-sm mb-4">保持更新</h3>
             <p className="text-sm text-muted-foreground mb-4">
               订阅我们的 newsletter，获取最新 Agent 和技术讨论。
             </p>
@@ -112,19 +112,19 @@ export function Footer() {
           <div className="flex items-center gap-6">
             <Link
               href="/privacy"
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+              className="text-xs text-foreground transition-colors"
             >
               隐私政策
             </Link>
             <Link
               href="/terms"
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+              className="text-xs text-foreground transition-colors"
             >
               服务条款
             </Link>
             <Link
               href="/api-docs"
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+              className="text-xs text-foreground transition-colors"
             >
               API 文档
             </Link>

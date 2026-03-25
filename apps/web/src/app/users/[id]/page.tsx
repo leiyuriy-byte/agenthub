@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Button } from '@agenthub/ui/button';
@@ -505,9 +506,9 @@ export default function UserProfilePage() {
                       <Card className="transition-all hover:border-primary/50 hover:shadow-md">
                         <CardContent className="p-4">
                           <div className="flex items-start gap-3">
-                            <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center overflow-hidden flex-shrink-0">
+                            <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center overflow-hidden flex-shrink-0 relative">
                               {agent.logo ? (
-                                <img src={agent.logo} alt={agent.name} className="h-full w-full object-cover" />
+                                <Image src={agent.logo} alt={agent.name} fill className="object-cover" sizes="48px" />
                               ) : (
                                 <span className="text-xl font-bold text-primary">
                                   {agent.name.charAt(0)}

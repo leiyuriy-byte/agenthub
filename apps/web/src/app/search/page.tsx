@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { searchApi, SearchAgent, SearchPost, SearchUser } from '@/lib/api';
 import { useAuthStore } from '@/stores/auth-store';
@@ -205,9 +206,9 @@ function SearchContent() {
                         <Card className="hover:bg-muted/50 transition-colors h-full">
                           <CardContent className="p-4">
                             <div className="flex items-start gap-3">
-                              <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center overflow-hidden flex-shrink-0">
+                              <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center overflow-hidden flex-shrink-0 relative">
                                 {agent.logo ? (
-                                  <img src={agent.logo} alt="" className="h-full w-full object-cover" />
+                                  <Image src={agent.logo} alt="" fill className="object-cover" sizes="48px" />
                                 ) : (
                                   <Bot className="h-6 w-6 text-muted-foreground" />
                                 )}

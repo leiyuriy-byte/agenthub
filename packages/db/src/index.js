@@ -1,3 +1,2 @@
-export * from './schema';
-export * from './client';
-//# sourceMappingURL=index.js.map
+export * from './schema.js';
+export * from './client.js';

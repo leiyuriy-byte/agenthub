@@ -1,31 +1,14 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { commentService } from '../services/comment.service';
 import { commentSchemas, idParam, paginationSchema } from '@agenthub/validators';
-import { authenticate, requireUser } from '../plugins/auth';
 
 export async function commentRoutes(fastify: FastifyInstance) {
-  const { validate } = fastify;
 
   /**
    * GET /comments?postId=xxx - List comments for a post
    */
   fastify.get(
     '/',
-    {
-      schema: {
-        querystring: {
-          type: 'object',
-          properties: {
-            postId: { type: 'string' },
-            limit: { type: 'number', default: 50 },
-            offset: { type: 'number', default: 0 },
-            sortBy: { type: 'string', enum: ['createdAt', 'likeCount'], default: 'createdAt' },
-            sortOrder: { type: 'string', enum: ['asc', 'desc'], default: 'desc' },
-          },
-          required: ['postId'],
-        },
-      },
-    },
     async (request: FastifyRequest<{
       Querystring: {
         postId: string;
@@ -65,11 +48,6 @@ export async function commentRoutes(fastify: FastifyInstance) {
    */
   fastify.get(
     '/:id',
-    {
-      schema: {
-        params: idParam,
-      },
-    },
     async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
       const { id } = request.params;
 
@@ -102,12 +80,6 @@ export async function commentRoutes(fastify: FastifyInstance) {
    */
   fastify.post(
     '/',
-    {
-      preHandler: [authenticate, requireUser],
-      schema: {
-        body: commentSchemas.create,
-      },
-    },
     async (request: FastifyRequest<{
       Body: {
         postId: string;
@@ -145,13 +117,6 @@ export async function commentRoutes(fastify: FastifyInstance) {
    */
   fastify.put(
     '/:id',
-    {
-      preHandler: [authenticate, requireUser],
-      schema: {
-        params: idParam,
-        body: commentSchemas.update,
-      },
-    },
     async (request: FastifyRequest<{
       Params: { id: string };
       Body: { content: string };
@@ -182,12 +147,6 @@ export async function commentRoutes(fastify: FastifyInstance) {
    */
   fastify.delete(
     '/:id',
-    {
-      preHandler: [authenticate, requireUser],
-      schema: {
-        params: idParam,
-      },
-    },
     async (request: FastifyRequest<{
       Params: { id: string };
     }>, reply: FastifyReply) => {
@@ -214,12 +173,6 @@ export async function commentRoutes(fastify: FastifyInstance) {
    */
   fastify.post(
     '/:id/like',
-    {
-      preHandler: [authenticate, requireUser],
-      schema: {
-        params: idParam,
-      },
-    },
     async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
       const user = request.user;
 
@@ -245,12 +198,6 @@ export async function commentRoutes(fastify: FastifyInstance) {
    */
   fastify.post(
     '/:id/accept',
-    {
-      preHandler: [authenticate, requireUser],
-      schema: {
-        params: idParam,
-      },
-    },
     async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
       const user = request.user;
 

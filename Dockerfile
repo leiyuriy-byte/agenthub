@@ -1,31 +1,19 @@
 # ================================
-# Stage 1: Build API
+# Stage 1: Build API (skip - use pre-built dist)
 # ================================
 FROM node:20-alpine AS api-build
 
 WORKDIR /app
 
 # Copy package files
-COPY packages/db/package.json packages/db/
-COPY packages/auth/package.json packages/auth/
-COPY packages/validators/package.json packages/validators/
-COPY packages/config/package.json packages/config/
-COPY apps/api/package.json apps/api/
-
-# Install dependencies
-RUN npm install -g pnpm@9 && \
-    pnpm install --frozen-lockfile
-
-# Copy source code
-COPY packages/db/src packages/db/src
-COPY packages/auth/src packages/auth/src
-COPY packages/validators/src packages/validators/src
-COPY packages/config/src packages/config/src
-COPY apps/api/src apps/api/src
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY packages packages
+COPY apps apps
 COPY tsconfig.base.json tsconfig.json ./
 
-# Build API
-RUN pnpm --filter @agenthub/api build
+# Install dependencies (--ignore-scripts to avoid bcrypt native build issues)
+RUN npm install -g pnpm@9 && \
+    pnpm install --frozen-lockfile --ignore-scripts
 
 # ================================
 # Stage 2: Build Web
@@ -35,20 +23,17 @@ FROM node:20-alpine AS web-build
 WORKDIR /app
 
 # Copy package files
-COPY packages/ui/package.json packages/ui/
-COPY packages/config/package.json packages/config/
-COPY apps/web/package.json apps/web/
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY packages packages
 
 # Install dependencies
 RUN npm install -g pnpm@9 && \
-    pnpm install --frozen-lockfile
+    pnpm install --frozen-lockfile --ignore-scripts
 
 # Copy source code
-COPY packages/ui/src packages/ui/src
-COPY packages/config/src packages/config/src
+COPY packages packages
 COPY apps/web/src apps/web/src
-COPY apps/web/public apps/web/public
-COPY apps/web/next.config.js apps/web/next.config.js
+COPY apps/web/next.config.mjs apps/web/next.config.mjs
 COPY apps/web/tailwind.config.ts apps/web/tailwind.config.ts
 COPY apps/web/postcss.config.js apps/web/postcss.config.js
 COPY tsconfig.base.json tsconfig.json ./
@@ -68,13 +53,15 @@ WORKDIR /app
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nodejs -u 1001
 
-# Copy built API
-COPY --from=api-build /app/apps/api/dist ./dist
+# Copy pre-built API dist and node_modules from build stage
 COPY --from=api-build /app/node_modules ./node_modules
-COPY --from=api-build /app/packages/db/dist ./node_modules/@agenthub/db
-COPY --from=api-build /app/packages/auth/dist ./node_modules/@agenthub/auth
-COPY --from=api-build /app/packages/validators/dist ./node_modules/@agenthub/validators
-COPY --from=api-build /app/packages/config/dist ./node_modules/@agenthub/config
+COPY --from=api-build /app/apps /app/apps
+COPY --from=api-build /app/packages /app/packages
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY apps/api/dist ./dist
+
+# Reinstall to fix broken pnpm symlinks
+RUN npm install -g pnpm@9 && pnpm install --frozen-lockfile --ignore-scripts 2>&1 | tail -10
 
 # Create data directory
 RUN mkdir -p /app/data && chown -R nodejs:nodejs /app

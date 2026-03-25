@@ -6,7 +6,7 @@ import rateLimit from '@fastify/rate-limit';
 import swagger from '@fastify/swagger';
 import swaggerUi from '@fastify/swagger-ui';
 import { initializeDatabase } from '@agenthub/db';
-import { authPlugin } from './plugins/auth.js';
+import authPlugin from './plugins/auth.js';
 import { userRoutes } from './routes/user.routes.js';
 import { authRoutes } from './routes/auth.routes.js';
 import { agentRoutes } from './routes/agent.routes.js';
@@ -25,6 +25,7 @@ import { initializeWebSocket } from './services/websocket.service.js';
 import { initializeEmailTransporter } from './services/email.service.js';
 
 const fastify = Fastify({
+  trustProxy: true,
   logger: {
     transport: {
       target: 'pino-pretty',
@@ -33,6 +34,8 @@ const fastify = Fastify({
       },
     },
   },
+  validatorCompiler: () => () => null,
+  schemaCompiler: () => null,
 });
 
 // Register plugins
@@ -48,33 +51,13 @@ await fastify.register(cors, {
 });
 
 await fastify.register(rateLimit, {
-  max: 100,
+  max: 1000,
   timeWindow: '1 minute',
   keyGenerator: (request) => {
     // Use IP + user agent for rate limiting
     return request.ip + (request.headers['user-agent'] || '');
   },
-});
-
-// Stricter rate limit for auth endpoints (login/register)
-await fastify.register(rateLimit, {
-  max: 5,
-  timeWindow: '1 minute',
-  keyGenerator: (request) => {
-    return `auth:${request.ip}`;
-  },
-}, {
-  prefix: '/api/auth/login',
-});
-
-await fastify.register(rateLimit, {
-  max: 3,
-  timeWindow: '1 hour',
-  keyGenerator: (request) => {
-    return `auth:${request.ip}`;
-  },
-}, {
-  prefix: '/api/auth/register',
+  global: true,
 });
 
 await fastify.register(jwt, {

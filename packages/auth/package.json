@@ -10,11 +10,11 @@
   },
   "dependencies": {
     "@fastify/jwt": "^8.0.0",
-    "bcrypt": "^5.1.1"
+    "bcryptjs": "^2.4.3"
   },
   "devDependencies": {
     "typescript": "^5.3.3",
     "@types/node": "^20.11.0",
-    "@types/bcrypt": "^5.0.2"
+    "@types/bcryptjs": "^2.4.6"
   }
 }

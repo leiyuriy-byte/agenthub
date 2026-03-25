@@ -263,8 +263,8 @@ export default function NewAgentPage() {
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Logo Upload */}
-              <div className="flex items-center gap-4">
-                <div className="w-24">
+              <div className="flex items-start gap-4">
+                <div className="w-24 h-24 flex-shrink-0 overflow-hidden rounded-lg">
                   <ImageUpload
                     value={formData.logo}
                     onChange={(url) => setFormData((prev) => ({ ...prev, logo: url }))}

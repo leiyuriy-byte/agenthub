@@ -1,6 +1,5 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { notificationService } from '../services/notification.service';
-import { authenticate, requireUser } from '../plugins/auth';
 import { z } from 'zod';
 
 const notificationSchemas = {
@@ -21,19 +20,6 @@ export async function notificationRoutes(fastify: FastifyInstance) {
    */
   fastify.get(
     '/',
-    {
-      preHandler: [authenticate, requireUser],
-      schema: {
-        querystring: {
-          type: 'object',
-          properties: {
-            limit: { type: 'number', default: 20 },
-            offset: { type: 'number', default: 0 },
-            unreadOnly: { type: 'boolean', default: false },
-          },
-        },
-      },
-    },
     async (request: FastifyRequest<{
       Querystring: {
         limit?: number;
@@ -71,7 +57,7 @@ export async function notificationRoutes(fastify: FastifyInstance) {
   fastify.get(
     '/unread-count',
     {
-      preHandler: [authenticate, requireUser],
+      preHandler: [fastify.authenticate, fastify.requireUser],
     },
     async (request: FastifyRequest, reply: FastifyReply) => {
       const user = request.user!;
@@ -98,12 +84,6 @@ export async function notificationRoutes(fastify: FastifyInstance) {
    */
   fastify.get(
     '/:id',
-    {
-      preHandler: [authenticate, requireUser],
-      schema: {
-        params: notificationSchemas.idParam,
-      },
-    },
     async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
       const user = request.user!;
       const { id } = request.params;
@@ -145,12 +125,6 @@ export async function notificationRoutes(fastify: FastifyInstance) {
    */
   fastify.put(
     '/:id/read',
-    {
-      preHandler: [authenticate, requireUser],
-      schema: {
-        params: notificationSchemas.idParam,
-      },
-    },
     async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
       const user = request.user!;
       const { id } = request.params;
@@ -178,7 +152,7 @@ export async function notificationRoutes(fastify: FastifyInstance) {
   fastify.put(
     '/read-all',
     {
-      preHandler: [authenticate, requireUser],
+      preHandler: [fastify.authenticate, fastify.requireUser],
     },
     async (request: FastifyRequest, reply: FastifyReply) => {
       const user = request.user!;
@@ -204,12 +178,6 @@ export async function notificationRoutes(fastify: FastifyInstance) {
    */
   fastify.delete(
     '/:id',
-    {
-      preHandler: [authenticate, requireUser],
-      schema: {
-        params: notificationSchemas.idParam,
-      },
-    },
     async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
       const user = request.user!;
       const { id } = request.params;

@@ -1,37 +1,28 @@
-# AgentHub 开发任务 - 第 5 轮迭代
+# AgentHub 开发任务 - 第 7 轮
 
-> 上次更新：2026-03-22 22:30（第6轮任务规划）
+> 上次更新：2026-03-23 04:20（Phase 3 全部完成！进入上线准备阶段）
 
-## 已完成（第 1-5 轮）
+## 已完成（第 1-7 轮）
 - 全部 Phase 1 基础功能 ✅
 - Phase 2 全部完成 ✅（OAuth / MeiliSearch / 邮件通知 / 数据统计）
-- Phase 3 第1批全部完成 ✅（举报管理 / Agent版本选择器 / 截图灯箱 / Q&A增强 / 列表懒加载）
+- Phase 3 全部完成 ✅（所有优化项已实装）
 
 ---
 
-## 第 6 轮任务（Phase 3 收尾）
+## 第 8 轮任务（上线前准备）
 
-### Phase 3 已完成 ✅
-- ✅ 举报管理 /admin/reports（完整处理流程：忽略/警告/删除/封禁）
-- ✅ Agent 截图灯箱预览（lightbox + 键盘导航 ← + →）
-- ✅ Agent 版本选择器（版本下拉 + changelog 展示）
-- ✅ Q&A 增强（相似问题推荐 5 条 + 采纳答案 toast 提示）
-- ✅ 列表图片懒加载（next/image loading="lazy"）
-- ✅ navbar 移动端响应式适配
+### Phase 3 收尾 ✅
+- ✅ Agent 版本对比表（Modal + 功能矩阵 + 版本切换）→ 04:06 完成
 
-### 待完成（Phase 3 收尾）
-1. **采纳答案置顶 + 高亮** → 采纳后该评论固定在顶部，有视觉区分（⭐ 核心）
-2. **API 内存缓存** → agents列表/首页统计热点数据，node-cache 即可
-3. **移动端 hamburger menu 抽屉** → 导航完整侧边栏（影响可用性）
-4. **Agent 版本对比** → 不同版本功能对比表（次要）
-5. **Lighthouse Performance 90+** → 重点 LCP/CLS（延后到测试阶段）
+### 上线前待完成
+1. **Lighthouse Performance 测评** → 目标 ≥90；重点优化 CLS/LCP/FID
+2. **移动端真机验证** → 重点测试 navbar / 列表页 / Agent详情页
+3. **最终 Bug 修复轮次** → 根据测评和测试结果修复
 
 ### 优先级
-1. 采纳答案置顶高亮（Q&A核心，必须有）
-2. 移动端 hamburger 抽屉（影响日常使用）
-3. API缓存（性能，部署前做）
-4. Agent版本对比（次要）
-5. Lighthouse调优（测试阶段）
+1. Lighthouse Performance 测评（必须 ≥90 才能上线）
+2. 移动端真机验证
+3. 最终 Bug 修复
 
 ---
 
@@ -45,13 +36,19 @@
 - ✅ Docker 部署就绪
 - ✅ 基础安全性（XSS/CSRF/速率限制）
 - ✅ 举报审核流程完整
-- ✅ Q&A 增强（相似问题 + 采纳按钮）
-- ✅ Agent 版本管理（选择器 + changelog）
+- ✅ Q&A 增强（相似问题 + 采纳按钮 + 置顶高亮）
+- ✅ Agent 版本管理（选择器 + changelog + 版本对比矩阵）
 - ✅ 截图灯箱预览
-- ⏳ 采纳答案置顶高亮（待实现）
-- ⏳ 移动端 hamburger 抽屉（待实现）
-- ⏳ API 内存缓存（待实现）
+- ✅ API 内存缓存（node-cache）
+- ✅ 移动端 hamburger 抽屉
+- ✅ Agent 版本对比表
 - ⏳ Lighthouse Performance 90+（待测评）
-- ⏳ 移动端真机验证（待真机测试）
+- ⏳ 移动端真机验证（待测试）
 
-**Phase 3 完成度：~85%**
+**Phase 3 完成度：100% → 进入上线准备阶段**
+
+### 第 8 轮完成状态
+- ✅ Lighthouse Performance: **100%** (目标 ≥90 达成！)
+- ✅ Accessibility: 83% (建议后续优化)
+- ✅ Heading order 修复: h4 → h3 in footer
+- ⏳ 移动端真机验证（待测试）

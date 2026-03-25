@@ -4,7 +4,7 @@
 import { eq } from 'drizzle-orm';
 import { db, schema } from '@agenthub/db';
 import { nanoid } from 'nanoid';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import type { FastifyInstance } from 'fastify';
 
 export interface OAuthUserData {

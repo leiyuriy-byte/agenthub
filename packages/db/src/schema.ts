@@ -158,6 +158,7 @@ export const agentVersions = sqliteTable('agent_versions', {
   version: text('version').notNull(),
   changelog: text('changelog'),
   downloadUrl: text('download_url'),
+  features: text('features'), // JSON array of feature strings for version comparison
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`CURRENT_TIMESTAMP`),
 });
 

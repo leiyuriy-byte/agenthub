@@ -151,7 +151,7 @@ function LoginForm() {
                   type="email"
                   placeholder="your@email.com"
                   value={formData.email}
-                  onChange={(e) => handleChange('email', e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('email', e.target.value)}
                   disabled={isLoading}
                   className={validationErrors.email ? 'border-destructive' : ''}
                 />
@@ -177,7 +177,7 @@ function LoginForm() {
                   type="password"
                   placeholder="••••••••"
                   value={formData.password}
-                  onChange={(e) => handleChange('password', e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('password', e.target.value)}
                   disabled={isLoading}
                   className={validationErrors.password ? 'border-destructive' : ''}
                 />

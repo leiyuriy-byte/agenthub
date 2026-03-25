@@ -1,7 +1,7 @@
 import { eq, and, desc } from 'drizzle-orm';
 import { db, schema } from '@agenthub/db';
 import { nanoid } from 'nanoid';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { notificationService } from './notification.service.js';
 
 export interface CreateUserData {

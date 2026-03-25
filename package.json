@@ -17,10 +17,16 @@
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
+    "lighthouse": "^13.0.3",
     "typescript": "^5.3.3"
   },
   "engines": {
     "node": ">=20.0.0",
     "pnpm": ">=9.0.0"
+  },
+  "dependencies": {
+    "@emotion/is-prop-valid": "^1.4.0",
+    "@libsql/client": "^0.6.0",
+    "drizzle-orm": "^0.30.4"
   }
 }

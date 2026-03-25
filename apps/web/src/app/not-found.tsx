@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '@agenthub/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent } from '@agenthub/ui/card';
 import { FileQuestion, Home, ArrowLeft, Search } from 'lucide-react';
 
 export default function NotFound() {

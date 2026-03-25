@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Button } from '@agenthub/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent } from '@agenthub/ui/card';
 import { AlertTriangle, RefreshCw, Home, WifiOff } from 'lucide-react';
 import Link from 'next/link';
 

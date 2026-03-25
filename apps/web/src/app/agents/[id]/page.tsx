@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Avatar, AvatarFallback, AvatarImage } from '@agenthub/ui/avatar';
@@ -32,10 +33,10 @@ import {
   Bot,
   X,
   ChevronLeft,
-  ChevronRight,
   ChevronDown,
   ZoomIn,
   Flag,
+  GitCompare,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -52,6 +53,7 @@ interface AgentVersion {
   version: string;
   changelog?: string;
   downloadUrl?: string;
+  features?: string; // JSON array of features for version comparison
   createdAt: string;
 }
 
@@ -96,6 +98,9 @@ export default function AgentDetailPage() {
 
   // Version selector state
   const [selectedVersion, setSelectedVersion] = useState<string | null>(null);
+
+  // Version comparison modal state
+  const [showVersionCompare, setShowVersionCompare] = useState(false);
 
   // Report state
   const [showReportModal, setShowReportModal] = useState(false);
@@ -422,10 +427,13 @@ export default function AgentDetailPage() {
               <div className="flex-shrink-0">
                 <div className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-2xl overflow-hidden bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
                   {agent.logo ? (
-                    <img
+                    <Image
                       src={agent.logo}
                       alt={agent.name}
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 640px) 96px, 128px"
+                      priority
                     />
                   ) : (
                     <span className="text-4xl sm:text-5xl font-bold text-primary">
@@ -544,10 +552,13 @@ export default function AgentDetailPage() {
                   >
                     {selectedScreenshot && (
                       <>
-                        <img
+                        <Image
                           src={selectedScreenshot}
                           alt="Screenshot"
-                          className="w-full h-full object-contain"
+                          fill
+                          className="object-contain"
+                          sizes="(max-width: 768px) 100vw, 800px"
+                          priority
                         />
                         {/* Zoom overlay */}
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
@@ -572,10 +583,12 @@ export default function AgentDetailPage() {
                             : 'border-transparent hover:border-muted-foreground/30'
                         )}
                       >
-                        <img
+                        <Image
                           src={screenshot.url}
                           alt={screenshot.caption || 'Screenshot'}
-                          className="w-full h-full object-cover"
+                          fill
+                          className="object-cover"
+                          sizes="96px"
                         />
                       </button>
                     ))}
@@ -585,18 +598,32 @@ export default function AgentDetailPage() {
             )}
 
             {/* Version History */}
-            {agent.versions && agent.versions.length > 0 && (
+            {agent.versions && agent.versions.length > 1 && (
               <div className="mb-8">
-                <h2 className="text-lg font-semibold mb-3">版本历史</h2>
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="text-lg font-semibold">版本历史</h2>
+                  {agent.versions.length >= 2 && (
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setShowVersionCompare(true)}
+                    >
+                      <GitCompare className="h-4 w-4 mr-2" />
+                      版本对比
+                    </Button>
+                  )}
+                </div>
                 <div className="space-y-3">
-                  {agent.versions.map((version) => (
+                  {agent.versions.map((version, index) => (
                     <Card key={version.id}>
                       <CardContent className="p-4">
                         <div className="flex items-start justify-between gap-4">
                           <div>
                             <div className="flex items-center gap-2">
                               <span className="font-semibold">v{version.version}</span>
-                              <Badge variant="outline" className="text-xs">最新</Badge>
+                              {index === 0 && (
+                                <Badge variant="outline" className="text-xs">最新</Badge>
+                              )}
                             </div>
                             {version.changelog && (
                               <p className="text-sm text-muted-foreground mt-1">{version.changelog}</p>
@@ -929,12 +956,14 @@ export default function AgentDetailPage() {
                     <Link href={`/agents/${relatedAgent.id}`}>
                       <Card className="h-full transition-all duration-300 hover:shadow-xl hover:border-primary/50 group">
                         <CardHeader className="flex flex-row items-start gap-4 pb-2">
-                          <div className="h-14 w-14 rounded-xl overflow-hidden bg-muted flex-shrink-0">
+                          <div className="h-14 w-14 rounded-xl overflow-hidden bg-muted flex-shrink-0 relative">
                             {relatedAgent.logo ? (
-                              <img
+                              <Image
                                 src={relatedAgent.logo}
                                 alt={relatedAgent.name}
-                                className="h-full w-full object-cover"
+                                fill
+                                className="object-cover"
+                                sizes="56px"
                               />
                             ) : (
                               <div className="h-full w-full flex items-center justify-center bg-gradient-to-br from-indigo-500/20 to-purple-500/20">
@@ -1023,10 +1052,13 @@ export default function AgentDetailPage() {
             className="max-w-[90vw] max-h-[90vh]"
             onClick={(e) => e.stopPropagation()}
           >
-            <img
+            <Image
               src={agent.screenshots[lightboxIndex].url}
               alt={agent.screenshots[lightboxIndex].caption || `Screenshot ${lightboxIndex + 1}`}
+              width={1200}
+              height={800}
               className="max-w-full max-h-[90vh] object-contain rounded-lg"
+              priority
             />
             {/* Caption */}
             {agent.screenshots[lightboxIndex].caption && (
@@ -1038,6 +1070,200 @@ export default function AgentDetailPage() {
             <p className="text-center text-white/60 mt-2 text-sm">
               {lightboxIndex + 1} / {agent.screenshots.length}
             </p>
+          </motion.div>
+        </motion.div>
+      )}
+
+      {/* Version Comparison Modal */}
+      {showVersionCompare && agent?.versions && agent.versions.length >= 2 && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
+          onClick={() => setShowVersionCompare(false)}
+        >
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.95, opacity: 0 }}
+            className="bg-background rounded-xl shadow-2xl max-w-4xl w-full max-h-[85vh] overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b">
+              <div className="flex items-center gap-2">
+                <GitCompare className="h-5 w-5 text-primary" />
+                <h2 className="text-xl font-bold">版本对比</h2>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowVersionCompare(false)}
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+
+            {/* Content */}
+            <div className="p-4 overflow-auto max-h-[calc(85vh-80px)]">
+              {/* Feature Comparison Table */}
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse">
+                  <thead>
+                    <tr>
+                      <th className="text-left p-3 border-b font-semibold w-1/4">功能</th>
+                      {agent.versions.map((version) => (
+                        <th 
+                          key={version.id} 
+                          className="text-center p-3 border-b font-semibold bg-primary/5"
+                        >
+                          <div className="flex flex-col items-center gap-1">
+                            <span className="text-lg">v{version.version}</span>
+                            {agent.versions[0]?.id === version.id && (
+                              <Badge variant="outline" className="text-xs">最新</Badge>
+                            )}
+                          </div>
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {/* Collect all unique features */}
+                    {(() => {
+                      // Parse features from each version
+                      const allFeatures: Record<string, Record<string, boolean>> = {};
+                      
+                      agent.versions.forEach((version) => {
+                        allFeatures[version.id] = {};
+                        if (version.features) {
+                          try {
+                            const features = JSON.parse(version.features);
+                            features.forEach((feature: string) => {
+                              allFeatures[version.id][feature] = true;
+                            });
+                          } catch (e) {
+                            // If features is not valid JSON, treat it as a single feature
+                            allFeatures[version.id][version.features] = true;
+                          }
+                        }
+                      });
+
+                      // Get all unique features
+                      const featureSet = new Set<string>();
+                      agent.versions.forEach((version) => {
+                        if (version.features) {
+                          try {
+                            const features = JSON.parse(version.features);
+                            features.forEach((f: string) => featureSet.add(f));
+                          } catch (e) {
+                            featureSet.add(version.features);
+                          }
+                        }
+                      });
+
+                      const features = Array.from(featureSet);
+
+                      if (features.length === 0) {
+                        // No features data - show default comparison
+                        return (
+                          <>
+                            <tr>
+                              <td className="p-3 border-b font-medium">版本号</td>
+                              {agent.versions.map((version) => (
+                                <td key={version.id} className="text-center p-3 border-b">
+                                  v{version.version}
+                                </td>
+                              ))}
+                            </tr>
+                            <tr>
+                              <td className="p-3 border-b font-medium">发布日期</td>
+                              {agent.versions.map((version) => (
+                                <td key={version.id} className="text-center p-3 border-b text-muted-foreground">
+                                  {formatRelativeTime(version.createdAt)}
+                                </td>
+                              ))}
+                            </tr>
+                            <tr>
+                              <td className="p-3 border-b font-medium">更新日志</td>
+                              {agent.versions.map((version) => (
+                                <td key={version.id} className="text-center p-3 border-b">
+                                  <span className="text-sm text-muted-foreground">
+                                    {version.changelog || '暂无'}
+                                  </span>
+                                </td>
+                              ))}
+                            </tr>
+                            <tr>
+                              <td className="p-3 font-medium">下载</td>
+                              {agent.versions.map((version) => (
+                                <td key={version.id} className="text-center p-3">
+                                  {version.downloadUrl ? (
+                                    <a
+                                      href={version.downloadUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+                                    >
+                                      <ExternalLink className="h-3 w-3" />
+                                      下载
+                                    </a>
+                                  ) : (
+                                    <span className="text-muted-foreground">-</span>
+                                  )}
+                                </td>
+                              ))}
+                            </tr>
+                          </>
+                        );
+                      }
+
+                      // Render features
+                      return features.map((feature) => (
+                        <tr key={feature}>
+                          <td className="p-3 border-b font-medium">{feature}</td>
+                          {agent.versions.map((version) => {
+                            const hasFeature = allFeatures[version.id]?.[feature];
+                            return (
+                              <td key={version.id} className="text-center p-3 border-b">
+                                {hasFeature ? (
+                                  <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
+                                ) : (
+                                  <X className="h-5 w-5 text-muted-foreground/30 mx-auto" />
+                                )}
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      ));
+                    })()}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Version switch buttons */}
+              <div className="mt-6 pt-4 border-t">
+                <h3 className="text-sm font-medium text-muted-foreground mb-3">
+                  切换到指定版本
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {agent.versions.map((version) => (
+                    <Button
+                      key={version.id}
+                      variant={selectedVersion === version.version ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => {
+                        setSelectedVersion(version.version);
+                        setShowVersionCompare(false);
+                      }}
+                    >
+                      v{version.version}
+                      {agent.versions[0]?.id === version.id && ' (最新)'}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </div>
           </motion.div>
         </motion.div>
       )}

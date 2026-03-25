@@ -5,9 +5,9 @@ import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuthStore, User, notificationApi, messageApi, pointsApi } from '@/lib/api';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@agenthub/ui/button';
+import { Input } from '@agenthub/ui/input';
+import { Avatar, AvatarFallback, AvatarImage } from '@agenthub/ui/avatar';
 import { toast } from 'sonner';
 import {
   Search,
@@ -213,7 +213,7 @@ export function Navbar() {
               className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
                 pathname === link.href || pathname.startsWith(link.href + '/')
                   ? 'bg-primary/10 text-primary'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                  : 'text-foreground hover:text-foreground hover:bg-accent'
               }`}
             >
               {link.label}
@@ -243,7 +243,8 @@ export function Navbar() {
           {/* Search Button - Mobile */}
           <button
             onClick={() => router.push('/search')}
-            className="md:hidden p-2 text-muted-foreground hover:text-foreground"
+            className="md:hidden p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-muted-foreground hover:text-foreground"
+            aria-label="搜索"
           >
             <Search className="h-5 w-5" />
           </button>
@@ -379,7 +380,8 @@ export function Navbar() {
           {/* Mobile Menu Toggle */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 text-muted-foreground hover:text-foreground"
+            className="md:hidden p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-muted-foreground hover:text-foreground"
+            aria-label={isMobileMenuOpen ? '关闭菜单' : '打开菜单'}
           >
             {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>

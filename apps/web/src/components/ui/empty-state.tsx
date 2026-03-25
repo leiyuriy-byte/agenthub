@@ -139,7 +139,7 @@ export function CommentsEmptyState() {
   return (
     <EmptyState
       icon={MessageCircle}
-      title="暂无评论'
+      title="暂无评论"
       description="成为第一个评论的人吧"
     />
   );

@@ -3,7 +3,7 @@ import { drizzle, type DrizzleSQLiteConfig } from 'drizzle-orm/libsql';
 import * as schema from './schema';
 
 // Database file path
-const DB_PATH = process.env.DATABASE_URL || 'libsql:file:./data/agenthub.db';
+const DB_PATH = process.env.DATABASE_URL || 'file:./data/agenthub.db';
 
 // Create libsql client
 const client: Client = createClient({
@@ -218,6 +218,7 @@ export async function initializeDatabase() {
       version TEXT NOT NULL,
       changelog TEXT,
       download_url TEXT,
+      features TEXT,
       created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000)
     )
   `);
@@ -456,6 +457,31 @@ export async function initializeDatabase() {
   `);
 
   console.log('✅ Database initialized successfully');
+
+  // Run migrations for new columns
+  await runMigrations();
+}
+
+// Migration function to add new columns to existing tables
+async function runMigrations() {
+  try {
+    // Check if agent_versions.features column exists
+    const result = await client.execute(`
+      PRAGMA table_info(agent_versions)
+    `);
+    
+    const columns = result.rows || [];
+    const featuresExists = columns.some((col: Record<string, unknown>) => col.name === 'features');
+    
+    if (!featuresExists) {
+      await client.execute(`
+        ALTER TABLE agent_versions ADD COLUMN features TEXT
+      `);
+      console.log('✅ Migration: Added features column to agent_versions');
+    }
+  } catch (error) {
+    console.error('⚠️ Migration error:', error);
+  }
 }
 
 export default db;
