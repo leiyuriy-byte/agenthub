@@ -831,7 +831,7 @@ export async function adminRoutes(fastify: FastifyInstance) {
       const agentTagsWithAgents = await db
         .select({
           tagId: schema.agentTags.id,
-          tagName: schema.agentTags.name,
+          tagName: schema.agentTags.tag,
         })
         .from(schema.agentTags)
         .innerJoin(schema.agents, eq(schema.agentTags.agentId, schema.agents.id))
@@ -921,17 +921,17 @@ export async function adminRoutes(fastify: FastifyInstance) {
 
       // Fill in the data
       postsByHour.forEach((row) => {
-        if (hourCounts[row.hour]) {
+        if (row.hour !== null && hourCounts[row.hour]) {
           hourCounts[row.hour].posts = Number(row.count);
         }
       });
       commentsByHour.forEach((row) => {
-        if (hourCounts[row.hour]) {
+        if (row.hour !== null && hourCounts[row.hour]) {
           hourCounts[row.hour].comments = Number(row.count);
         }
       });
       agentsByHour.forEach((row) => {
-        if (hourCounts[row.hour]) {
+        if (row.hour !== null && hourCounts[row.hour]) {
           hourCounts[row.hour].agents = Number(row.count);
         }
       });

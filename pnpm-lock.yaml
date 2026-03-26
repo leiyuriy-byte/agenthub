@@ -286,7 +286,21 @@ importers:
         specifier: ^5.3.3
         version: 5.9.3
 
-  packages/db: {}
+  packages/db:
+    dependencies:
+      drizzle-orm:
+        specifier: ^0.30.4
+        version: 0.30.10(@libsql/client@0.6.2)(@opentelemetry/api@1.9.0)(@types/pg@8.6.1)(@types/react@18.3.28)(react@18.3.1)
+    devDependencies:
+      '@libsql/client':
+        specifier: ^0.6.0
+        version: 0.6.2
+      '@types/node':
+        specifier: ^20.11.0
+        version: 20.19.37
+      typescript:
+        specifier: ^5.3.3
+        version: 5.9.3
 
   packages/ui:
     dependencies:

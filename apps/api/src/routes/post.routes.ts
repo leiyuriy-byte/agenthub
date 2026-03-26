@@ -62,7 +62,7 @@ export async function postRoutes(fastify: FastifyInstance) {
     reply: FastifyReply
   ) => {
     try {
-      const limit = request.query['limit'] ? parseInteger(request.query['limit'] as string) : 10;
+      const limit = request.query?.limit ? parseInteger(request.query?.limit as string) : 10;
       const posts = await postService.getRecent(limit);
 
       return reply.send({
@@ -427,8 +427,8 @@ export async function postRoutes(fastify: FastifyInstance) {
     }
 
     try {
-      const limit = request.query['limit'] ? parseInteger(request.query['limit'] as string) : 20;
-      const offset = request.query['offset'] ? parseInteger(request.query['offset'] as string) : 0;
+      const limit = request.query?.limit ? parseInteger(request.query?.limit as string) : 20;
+      const offset = request.query?.offset ? parseInteger(request.query?.offset as string) : 0;
 
       const posts = await postService.getUserFavorites(request.userId, limit, offset);
 

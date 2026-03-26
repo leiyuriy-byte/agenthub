@@ -25,7 +25,6 @@ export interface CacheStats {
   misses: number;
   ksize: number;
   vsize: number;
-  expire: number;
 }
 
 declare module 'fastify' {
@@ -126,11 +125,10 @@ async function cachePlugin(fastify: FastifyInstance, opts: CachePluginOptions) {
           misses: stats.misses,
           ksize: stats.ksize,
           vsize: stats.vsize,
-          expire: stats.expire,
         };
       } catch (error) {
         fastify.log.error({ err: error }, 'Cache stats error');
-        return { keys: 0, hits: 0, misses: 0, ksize: 0, vsize: 0, expire: 0 };
+        return { keys: 0, hits: 0, misses: 0, ksize: 0, vsize: 0 };
       }
     },
 

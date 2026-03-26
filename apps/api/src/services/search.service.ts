@@ -296,7 +296,7 @@ export async function search(
           .from(schema.channels)
           .where(eq(schema.channels.id, post.channelId));
 
-        return { ...post, author, channel };
+        return { ...post, author: author ?? null, channel: channel ?? null };
       })
     );
 

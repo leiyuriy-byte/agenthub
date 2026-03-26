@@ -219,7 +219,7 @@ export const postService = {
 
     return {
       posts: postsWithDetails,
-      total: countResult.count,
+      total: countResult?.count ?? 0,
       limit,
       offset,
     };
@@ -251,7 +251,7 @@ export const postService = {
 
     // Find posts with similar tags or same channel
     // Priority: same tags > same channel > recent
-    let similarPosts: typeof postsWithDetails = [];
+    let similarPosts: any[] = [];
 
     if (tagList.length > 0) {
       // Get posts with matching tags

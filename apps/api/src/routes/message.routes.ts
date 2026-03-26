@@ -84,8 +84,6 @@ interface ConversationParams {
 }
 
 export async function messageRoutes(fastify: FastifyInstance) {
-  const { authenticate } = await import('../plugins/auth.js');
-
   // 错误处理包装器
   const handleError = (reply: FastifyReply, error: Error) => {
     fastify.log.error(error);

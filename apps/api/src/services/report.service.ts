@@ -94,6 +94,10 @@ class ReportService {
       })
       .returning();
 
+    if (!report || !report.id) {
+      throw new Error('Failed to create report');
+    }
+
     return this.getById(report.id) as Promise<ReportWithDetails>;
   }
 
@@ -134,6 +138,8 @@ class ReportService {
       .from(reports)
       .where(conditions.length > 0 ? and(...conditions) : undefined);
 
+    const totalCount = countResult?.count ?? 0;
+
     // Get paginated results
     const reportList = await db
       .select()
@@ -163,7 +169,7 @@ class ReportService {
       .from(reports)
       .where(eq(reports.status, 'pending'));
 
-    return result.count;
+    return result?.count ?? 0;
   }
 
   /**
@@ -200,6 +206,10 @@ class ReportService {
       })
       .where(eq(reports.id, reportId))
       .returning();
+
+    if (!updated) {
+      throw new Error('Failed to update report');
+    }
 
     // Take action based on resolution
     await this.takeAction(report.targetType, report.targetId, resolution);

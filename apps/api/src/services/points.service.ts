@@ -124,8 +124,12 @@ export async function addPoints(
     level: schema.users.level,
   }).from(schema.users).where(eq(schema.users.id, userId));
 
+  if (!currentUser) {
+    throw new Error('User not found');
+  }
+
   // Calculate new level
-  const newPoints = (currentUser?.points ?? 0) + points;
+  const newPoints = currentUser.points + points;
   const newLevel = calculateLevel(newPoints);
 
   // Update user points and level
@@ -136,6 +140,10 @@ export async function addPoints(
     })
     .where(eq(schema.users.id, userId))
     .returning({ points: schema.users.points, level: schema.users.level });
+
+  if (!updatedUser) {
+    throw new Error('Failed to update user points');
+  }
 
   // Send WebSocket notification about points update
   try {
@@ -180,9 +188,10 @@ export async function dailyCheckin(userId: string) {
   }
 
   // Create check-in record
+  const checkinId = nanoid();
   await db.insert(schema.userCheckins).values({
-    id: nanoid(),
-    userId,
+    id: checkinId,
+    userId: userId,
     date: today,
     points: POINTS.DAILY_CHECKIN,
   });
@@ -295,7 +304,10 @@ export async function getLeaderboard(type: 'total' | 'weekly' | 'monthly' = 'tot
     );
   }
 
-  return users.map((user, index) => ({
+  // Filter out undefined users first
+  const validUsers = users.filter((u): u is NonNullable<typeof u> => !!u);
+
+  return validUsers.map((user, index) => ({
     rank: index + 1,
     id: user.id,
     username: user.username,
@@ -304,7 +316,7 @@ export async function getLeaderboard(type: 'total' | 'weekly' | 'monthly' = 'tot
     points: type === 'total' ? user.points : (user as any).totalPoints || user.points,
     level: calculateLevel(user.points),
     levelName: LEVEL_NAMES[calculateLevel(user.points)],
-  })).filter(u => u.id); // Filter out nulls
+  }));
 }
 
 /**

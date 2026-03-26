@@ -1,3 +1,4 @@
-// Database package - schema, migrations, and utilities
-export * from './schema';
-export * from './client';
+import { client, schema } from './client.js';
+
+export { client, schema };
+export const db = client;

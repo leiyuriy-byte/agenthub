@@ -496,8 +496,8 @@ export async function agentRoutes(fastify: FastifyInstance) {
     }
 
     try {
-      const limit = request.query['limit'] ? parseInteger(request.query['limit'] as string) : 20;
-      const offset = request.query['offset'] ? parseInteger(request.query['offset'] as string) : 0;
+      const limit = request.query?.limit ? parseInteger(request.query.limit as string) : 20;
+      const offset = request.query?.offset ? parseInteger(request.query.offset as string) : 0;
 
       const agents = await agentService.getUserFavorites(request.userId, limit, offset);
 
@@ -523,8 +523,8 @@ export async function agentRoutes(fastify: FastifyInstance) {
   ) => {
     try {
       const { id } = request.params;
-      const limit = request.query['limit'] ? parseInteger(request.query['limit'] as string) : 10;
-      const offset = request.query['offset'] ? parseInteger(request.query['offset'] as string) : 0;
+      const limit = request.query?.limit ? parseInteger(request.query.limit as string) : 20;
+      const offset = request.query?.offset ? parseInteger(request.query.offset as string) : 0;
 
       // Check if agent exists
       const [agent] = await db.select()

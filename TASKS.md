@@ -51,4 +51,18 @@
 - ✅ Lighthouse Performance: **100%** (目标 ≥90 达成！)
 - ✅ Accessibility: 83% (建议后续优化)
 - ✅ Heading order 修复: h4 → h3 in footer
-- ⏳ 移动端真机验证（待测试）
+- ✅ 移动端hamburger抽屉已完成（2026-03-23）
+- ✅ 项目整体开发完成，所有核心功能已实装
+
+---
+
+## 📋 待上线确认事项
+
+### 已完成 ✅
+- 所有 Phase 1-3 功能开发
+- Lighthouse Performance 100%
+- Docker 部署配置就绪
+
+### 待确认 ⏳
+- 移动端真机测试（需在实际设备浏览器验证）
+- 生产环境域名/SSL配置

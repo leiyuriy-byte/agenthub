@@ -79,6 +79,7 @@ export const userService = {
    * Verify password
    */
   async verifyPassword(user: typeof schema.users.$inferSelect, password: string) {
+    if (!user.passwordHash) return false;
     return bcrypt.compare(password, user.passwordHash);
   },
 

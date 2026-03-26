@@ -48,8 +48,14 @@ async function authPlugin(fastify: FastifyInstance) {
     if (!authHeader || !authHeader.startsWith('Bearer ')) return;
 
     try {
-      const decoded = await request.jwtVerify<{ sub: string }>();
+      const decoded = await request.jwtVerify<{ sub: string; email: string; username: string; role: string }>();
       request.userId = decoded.sub;
+      request.user = {
+        id: decoded.sub,
+        email: decoded.email,
+        username: decoded.username,
+        role: decoded.role,
+      };
     } catch (err) {
       return;
     }

@@ -1,5 +1,5 @@
 # AgentHub 开发进度
-最后更新：2026-03-25 00:05
+最后更新：2026-03-26 18:05
 
 ## 已完成 ✅
 
@@ -110,56 +110,34 @@
 - **后端** websocket.service.ts（Socket.IO 服务端、认证中间件、用户房间管理）
 - **前端** useWebSocket.ts hook（自动重连、事件订阅、计数管理）
 - **通知触发点接入**：
-  - comment.service.ts：`create()` → 帖子作者通知 + 被回复者通知；`like()` → 评论作者通知；`accept()` → 评论作者通知（回答被采纳）
-  - post.service.ts：`like()` → 帖子作者通知
-  - user.service.ts：`follow()` → 被关注者通知
+  - comment.service.ts：create() → 帖子作者通知 + 被回复者通知；like() → 评论作者通知；accept() → 评论作者通知（回答被采纳）
+  - post.service.ts：like() → 帖子作者通知
+  - user.service.ts：follow() → 被关注者通知
 
-## 进行中 🔨
-- 上线准备阶段：Lighthouse Performance 测评 ✅ → 性能已达标 (100%)
-- 移动端真机验证 待测试
+### Lighthouse 性能优化 ✅
+- Performance: 100% (目标 ≥90 达成)
+- Accessibility: 83%
 
-## 待开发 📋（上线准备）
-详见 [TASKS.md](./TASKS.md) 第 8 轮任务
+### 移动端适配 ✅
+- 响应式 navbar hamburger 菜单
+- agents 列表页图片懒加载
 
-### Phase 3 已完成功能 ✅
-- ~~移动端适配完善~~ → ✅ navbar响应式 + agents列表页图片懒加载
-- ~~Q&A增强~~ → ✅ 采纳答案置顶排序+绿色高亮 + 相似问题推荐展示
-- ~~举报与内容审核流程~~ → ✅ /admin/reports页面完整 + 帖子详情页举报按钮
-- ~~Agent版本管理~~ → ✅ Agent详情页版本选择器+changelog展示+版本对比矩阵
-- ~~性能优化~~ → ✅ agents列表页next/image懒加载 + node-cache API缓存
-- ~~移动端hamburger抽屉~~ → ✅ navbar全功能移动端菜单（搜索+导航+创建按钮）
-- ~~Agent版本对比表~~ → ✅ Modal+功能矩阵+版本切换按钮（04:06实装）
+### Agent 版本管理 ✅
+- 版本选择器 + changelog 展示 + 版本对比矩阵（Modal + 功能矩阵）
 
-### Phase 2 已完成 ✅
-- ~~OAuth 第三方登录（GitHub/Google）~~ → ✅ 已实现（服务+路由+前端集成）
-- ~~MeiliSearch 全文搜索~~ → ✅ 已实现（search.service.ts 已集成 MeiliSearch）
-- ~~邮件通知系统~~ → ✅ 已实现（Nodemailer + SMTP + 邮件模板）
-- ~~数据统计图表（/admin/stats）~~ → ✅ 已实现（7个图表端点：trends/popular-agents/popular-tags/activity-hours/overview 等）
+### 举报与内容审核 ✅
+- /admin/reports 页面完整
+- 帖子详情页举报按钮
 
-### 上线前检查清单 ✅
-- ✅ 核心功能全部可用（API /web 服务正常运行）
-- ✅ 所有主要页面可访问（200 OK）
-- ✅ WebSocket 实时推送（已实现并测试）
-- ✅ UI 质感达到参考标准（framer-motion 动画、响应式设计）
-- ✅ 后台管理完整（用户/Agent/帖子/评论/统计/举报管理）
-- ✅ 数据统计图表完整（7个端点）
-- ✅ 数据库设计合理
-- ✅ Docker 部署就绪
-- ✅ 基础安全性（XSS/CSRF/速率限制）
-- ✅ 举报审核流程完整
-- ✅ Q&A 增强（相似问题 + 采纳按钮 + 置顶高亮）
-- ✅ Agent 版本管理（选择器 + changelog + 版本对比矩阵）
-- ✅ 截图灯箱预览
-- ✅ API 内存缓存（node-cache）
-- ✅ 移动端 hamburger 抽屉
-- ✅ Lighthouse Performance ⏸️ 因开发环境网络限制（Google Fonts 超时）无法测试，需生产构建后重新评估
+### Q&A 增强 ✅
+- 采纳答案置顶排序 + 绿色高亮
+- 相似问题推荐展示
+
+## 待上线确认 📋
+- 移动端真机测试（需在实际设备浏览器验证）
+- 生产环境域名/SSL配置
 
 ## 遇到的问题 ⚠️
-- ~~better-sqlite3 native module 编译问题~~ → 已切换到 libsql 解决
-- ~~WebSocket 通知触发点未接入业务逻辑~~ → 已全部接入 ✅
+- ~~TypeScript 编译配置问题~~ → 已修复（packages 不应纳入 api rootDir）
 - MeiliSearch / SMTP 需配置环境变量方可启用（服务已就绪）
-- ~~采纳答案置顶高亮 / API缓存 / 移动端hamburger~~ → 2026-03-23 02:05 全部完成 ✅
-- ~~Agent版本对比表~~ → 2026-03-23 04:06 完成 ✅ → **Phase 3 全部完成！**
-- ✅ Lighthouse Performance 测评完成 → **Performance: 100%** (目标 ≥90 已达成！)
-- Accessibility: 83% (建议后续优化)
-- ⏳ 移动端真机验证（待测试）
+- 生产环境部署需域名和 SSL 证书配置

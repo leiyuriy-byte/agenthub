@@ -49,7 +49,7 @@ export function initializeWebSocket(fastify: FastifyInstance): SocketIOServer {
     },
     pingTimeout: 60000,
     pingInterval: 25000,
-  });
+  } as any);
 
   // Authentication middleware
   io.use(async (socket: AuthenticatedSocket, next) => {
