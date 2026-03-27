@@ -212,7 +212,6 @@ export async function syncAgentsToMeiliSearch(): Promise<number> {
         tagline: schema.agents.tagline,
         description: schema.agents.description,
         logo: schema.agents.logo,
-        tags: schema.agents.tags,
         ownerId: schema.agents.ownerId,
         status: schema.agents.status,
         avgRating: schema.agents.avgRating,
@@ -223,7 +222,7 @@ export async function syncAgentsToMeiliSearch(): Promise<number> {
       .from(schema.agents)
       .where(eq(schema.agents.status, 'published'));
 
-    // Get owner info
+    // Get owner info and tags
     const agentsWithOwner = await Promise.all(
       agents.map(async (agent) => {
         const [owner] = await db
@@ -234,7 +233,12 @@ export async function syncAgentsToMeiliSearch(): Promise<number> {
           .from(schema.users)
           .where(eq(schema.users.id, agent.ownerId));
         
-        const tags = agent.tags ? JSON.parse(agent.tags) : [];
+        // Get tags from agentTags table
+        const agentTags = await db
+          .select({ tag: schema.agentTags.tag })
+          .from(schema.agentTags)
+          .where(eq(schema.agentTags.agentId, agent.id));
+        const tags = agentTags.map(t => t.tag);
         
         return {
           id: agent.id,
@@ -498,7 +502,6 @@ export async function indexAgentMeili(agentId: string): Promise<void> {
         tagline: schema.agents.tagline,
         description: schema.agents.description,
         logo: schema.agents.logo,
-        tags: schema.agents.tags,
         ownerId: schema.agents.ownerId,
         status: schema.agents.status,
         avgRating: schema.agents.avgRating,
@@ -519,7 +522,12 @@ export async function indexAgentMeili(agentId: string): Promise<void> {
       .from(schema.users)
       .where(eq(schema.users.id, agent.ownerId));
 
-    const tags = agent.tags ? JSON.parse(agent.tags) : [];
+    // Get tags from agentTags table
+    const agentTags = await db
+      .select({ tag: schema.agentTags.tag })
+      .from(schema.agentTags)
+      .where(eq(schema.agentTags.agentId, agent.id));
+    const tags = agentTags.map(t => t.tag);
 
     const document: MeiliAgent = {
       id: agent.id,

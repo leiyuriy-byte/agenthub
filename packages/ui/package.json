@@ -18,6 +18,8 @@
     "./tabs": "./src/tabs.tsx"
   },
   "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "clsx": "^2.1.0",
     "tailwind-merge": "^2.2.2",
     "class-variance-authority": "^0.7.0",
@@ -25,6 +27,8 @@
   },
   "devDependencies": {
     "typescript": "^5.3.3",
-    "@types/node": "^20.11.0"
+    "@types/node": "^20.11.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0"
   }
 }

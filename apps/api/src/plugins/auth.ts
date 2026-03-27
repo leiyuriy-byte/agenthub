@@ -9,6 +9,12 @@ declare module 'fastify' {
   }
   interface FastifyRequest {
     userId?: string;
+    userData?: {
+      id: string;
+      email: string;
+      username: string;
+      role: string;
+    };
   }
 }
 
@@ -50,7 +56,7 @@ async function authPlugin(fastify: FastifyInstance) {
     try {
       const decoded = await request.jwtVerify<{ sub: string; email: string; username: string; role: string }>();
       request.userId = decoded.sub;
-      request.user = {
+      request.userData = {
         id: decoded.sub,
         email: decoded.email,
         username: decoded.username,

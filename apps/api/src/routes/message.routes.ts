@@ -102,7 +102,7 @@ export async function messageRoutes(fastify: FastifyInstance) {
     { preHandler: [fastify.authenticate] },
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
-        const userId = request.user.id;
+        const userId = request.userData.id;
         const conversations = await getConversations(userId);
         return reply.send({ conversations });
       } catch (error) {
@@ -121,7 +121,7 @@ export async function messageRoutes(fastify: FastifyInstance) {
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
         const { id } = request.params;
-        const userId = request.user.id;
+        const userId = request.userData.id;
         const conversation = await getConversation(id, userId);
         
         if (!conversation) {
@@ -145,7 +145,7 @@ export async function messageRoutes(fastify: FastifyInstance) {
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
         const body = CreateConversationSchema.parse(request.body);
-        const userId = request.user.id;
+        const userId = request.userData.id;
         
         // 不能与自己对话
         if (body.participantIds.includes(userId) && body.participantIds.length === 1) {
@@ -173,7 +173,7 @@ export async function messageRoutes(fastify: FastifyInstance) {
     async (request: FastifyRequest<{ Params: { userId: string } }>, reply: FastifyReply) => {
       try {
         const { userId: targetUserId } = request.params;
-        const currentUserId = request.user.id;
+        const currentUserId = request.userData.id;
         
         // 不能与自己对话
         if (targetUserId === currentUserId) {
@@ -199,7 +199,7 @@ export async function messageRoutes(fastify: FastifyInstance) {
       try {
         const { conversationId } = request.params;
         const { limit, beforeId } = request.query as GetMessagesQuery;
-        const userId = request.user.id;
+        const userId = request.userData.id;
         
         const messages = await getMessages(conversationId, userId, { limit, beforeId });
         return reply.send({ messages });
@@ -219,7 +219,7 @@ export async function messageRoutes(fastify: FastifyInstance) {
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
         const body = SendMessageSchema.parse(request.body);
-        const senderId = request.user.id;
+        const senderId = request.userData.id;
         
         const result = await sendMessage(senderId, body);
         
@@ -246,7 +246,7 @@ export async function messageRoutes(fastify: FastifyInstance) {
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
         const { conversationId } = request.params;
-        const userId = request.user.id;
+        const userId = request.userData.id;
         
         await markAsRead(conversationId, userId);
         return reply.send({ success: true });
@@ -266,7 +266,7 @@ export async function messageRoutes(fastify: FastifyInstance) {
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
         const { q, limit } = request.query as SearchMessagesQuery;
-        const userId = request.user.id;
+        const userId = request.userData.id;
         
         const messages = await searchMessages(userId, q, { limit });
         return reply.send({ messages });
@@ -286,7 +286,7 @@ export async function messageRoutes(fastify: FastifyInstance) {
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
         const { id } = request.params;
-        const userId = request.user.id;
+        const userId = request.userData.id;
         
         await deleteConversation(id, userId);
         return reply.send({ success: true });
@@ -305,7 +305,7 @@ export async function messageRoutes(fastify: FastifyInstance) {
     { preHandler: [fastify.authenticate] },
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
-        const userId = request.user.id;
+        const userId = request.userData.id;
         const count = await getTotalUnreadCount(userId);
         return reply.send({ count });
       } catch (error) {

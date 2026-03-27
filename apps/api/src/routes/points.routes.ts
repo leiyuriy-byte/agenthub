@@ -38,7 +38,7 @@ export async function pointsRoutes(fastify: FastifyInstance) {
       preHandler: [fastify.authenticate],
     },
     async (request: FastifyRequest, reply: FastifyReply) => {
-      const userId = request.user!.id;
+      const userId = request.userId!;
       
       const pointsInfo = await getUserPoints(userId);
       if (!pointsInfo) {
@@ -71,7 +71,7 @@ export async function pointsRoutes(fastify: FastifyInstance) {
       preHandler: [fastify.authenticate],
     },
     async (request: FastifyRequest, reply: FastifyReply) => {
-      const userId = request.user!.id;
+      const userId = request.userId!;
       
       const result = await dailyCheckin(userId);
 
@@ -111,7 +111,7 @@ export async function pointsRoutes(fastify: FastifyInstance) {
       preHandler: [fastify.authenticate],
     },
     async (request: FastifyRequest<{ Querystring: z.infer<typeof historySchema> }>, reply: FastifyReply) => {
-      const userId = request.user!.id;
+      const userId = request.userId!;
       const { limit, offset } = historySchema.parse(request.query);
 
       const history = await getPointHistory(userId, limit, offset);

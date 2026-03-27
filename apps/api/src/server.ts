@@ -34,8 +34,6 @@ const fastify = Fastify({
       },
     },
   },
-  validatorCompiler: () => () => null,
-  schemaCompiler: () => null,
 });
 
 // Register plugins

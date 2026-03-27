@@ -16,8 +16,8 @@ export async function feedRoutes(fastify: FastifyInstance) {
     reply: FastifyReply
   ) => {
     const userId = request.userId;
-    const limit = Math.min(parseInt(request.query.limit as string) || 20, 50);
-    const offset = parseInt(request.query.offset as string) || 0;
+    const limit = Math.min(Number(request.query.limit) || 20, 50);
+    const offset = Number(request.query.offset) || 0;
     const feedType = request.query.type || 'global';
 
     try {

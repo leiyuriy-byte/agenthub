@@ -139,40 +139,26 @@ export const feedService = {
       });
     });
 
-    // 3. Get latest Comments from followed users
-    const latestComments = await db.select({
+    // 3. Get latest Comments from followed users (via posts)
+    const latestCommentsWithPosts = await db.select({
       id: schema.comments.id,
       content: schema.comments.content,
       createdAt: schema.comments.createdAt,
       authorId: schema.comments.authorId,
+      postId: schema.comments.postId,
       username: schema.users.username,
       displayName: schema.users.displayName,
       avatar: schema.users.avatar,
-      targetType: schema.comments.targetType,
-      targetId: schema.comments.targetId,
+      postTitle: schema.posts.title,
     })
       .from(schema.comments)
       .innerJoin(schema.users, eq(schema.comments.authorId, schema.users.id))
+      .innerJoin(schema.posts, eq(schema.comments.postId, schema.posts.id))
       .where(inArray(schema.comments.authorId, followedUserIds))
       .orderBy(desc(schema.comments.createdAt))
       .limit(Math.floor(limit / 3) + 1);
 
-    // Get target titles for comments
-    for (const comment of latestComments) {
-      let targetTitle = '';
-      
-      if (comment.targetType === 'agent' && comment.targetId) {
-        const [agent] = await db.select({ name: schema.agents.name })
-          .from(schema.agents)
-          .where(eq(schema.agents.id, comment.targetId));
-        targetTitle = agent?.name || '';
-      } else if (comment.targetType === 'post' && comment.targetId) {
-        const [post] = await db.select({ title: schema.posts.title })
-          .from(schema.posts)
-          .where(eq(schema.posts.id, comment.targetId));
-        targetTitle = post?.title || '';
-      }
-
+    for (const comment of latestCommentsWithPosts) {
       feedItems.push({
         id: `comment_${comment.id}`,
         type: 'comment',
@@ -186,9 +172,9 @@ export const feedService = {
         data: {
           commentId: comment.id,
           commentContent: comment.content?.slice(0, 200) + (comment.content && comment.content.length > 200 ? '...' : ''),
-          targetType: comment.targetType as 'agent' | 'post',
-          targetId: comment.targetId,
-          targetTitle,
+          targetType: 'post' as const,
+          targetId: comment.postId,
+          targetTitle: comment.postTitle || '',
         },
       });
     }
@@ -288,37 +274,24 @@ export const feedService = {
     });
 
     // Get latest Comments
-    const latestComments = await db.select({
+    const latestCommentsWithPosts = await db.select({
       id: schema.comments.id,
       content: schema.comments.content,
       createdAt: schema.comments.createdAt,
       authorId: schema.comments.authorId,
+      postId: schema.comments.postId,
       username: schema.users.username,
       displayName: schema.users.displayName,
       avatar: schema.users.avatar,
-      targetType: schema.comments.targetType,
-      targetId: schema.comments.targetId,
+      postTitle: schema.posts.title,
     })
       .from(schema.comments)
       .innerJoin(schema.users, eq(schema.comments.authorId, schema.users.id))
+      .innerJoin(schema.posts, eq(schema.comments.postId, schema.posts.id))
       .orderBy(desc(schema.comments.createdAt))
       .limit(Math.floor(limit / 3) + 1);
 
-    for (const comment of latestComments) {
-      let targetTitle = '';
-      
-      if (comment.targetType === 'agent' && comment.targetId) {
-        const [agent] = await db.select({ name: schema.agents.name })
-          .from(schema.agents)
-          .where(eq(schema.agents.id, comment.targetId));
-        targetTitle = agent?.name || '';
-      } else if (comment.targetType === 'post' && comment.targetId) {
-        const [post] = await db.select({ title: schema.posts.title })
-          .from(schema.posts)
-          .where(eq(schema.posts.id, comment.targetId));
-        targetTitle = post?.title || '';
-      }
-
+    for (const comment of latestCommentsWithPosts) {
       feedItems.push({
         id: `comment_${comment.id}`,
         type: 'comment',
@@ -332,9 +305,9 @@ export const feedService = {
         data: {
           commentId: comment.id,
           commentContent: comment.content?.slice(0, 200) + (comment.content && comment.content.length > 200 ? '...' : ''),
-          targetType: comment.targetType as 'agent' | 'post',
-          targetId: comment.targetId,
-          targetTitle,
+          targetType: 'post' as const,
+          targetId: comment.postId,
+          targetTitle: comment.postTitle || '',
         },
       });
     }

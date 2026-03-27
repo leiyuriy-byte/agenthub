@@ -87,13 +87,13 @@ export async function commentRoutes(fastify: FastifyInstance) {
         parentId?: string;
       };
     }>, reply: FastifyReply) => {
-      const user = request.user;
+      const userId = request.userId;
       const { postId, content, parentId } = request.body;
 
       try {
         const comment = await commentService.create({
           postId,
-          authorId: user!.id,
+          authorId: userId!,
           content,
           parentId,
         });
@@ -121,12 +121,12 @@ export async function commentRoutes(fastify: FastifyInstance) {
       Params: { id: string };
       Body: { content: string };
     }>, reply: FastifyReply) => {
-      const user = request.user;
+      const userId = request.userId;
       const { id } = request.params;
       const { content } = request.body;
 
       try {
-        const comment = await commentService.update(id, { content }, user!.id);
+        const comment = await commentService.update(id, { content }, userId!);
 
         return reply.send({
           success: true,
@@ -150,10 +150,11 @@ export async function commentRoutes(fastify: FastifyInstance) {
     async (request: FastifyRequest<{
       Params: { id: string };
     }>, reply: FastifyReply) => {
-      const user = request.user;
+      const userId = request.userId;
+      const userData = request.userData;
 
       try {
-        await commentService.delete(request.params.id, user!.id, user!.role);
+        await commentService.delete(request.params.id, userId!, userData?.role || 'user');
 
         return reply.send({
           success: true,
@@ -174,10 +175,10 @@ export async function commentRoutes(fastify: FastifyInstance) {
   fastify.post(
     '/:id/like',
     async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
-      const user = request.user;
+      const userId = request.userId;
 
       try {
-        const result = await commentService.like(request.params.id, user!.id);
+        const result = await commentService.like(request.params.id, userId!);
 
         return reply.send({
           success: true,
@@ -199,10 +200,10 @@ export async function commentRoutes(fastify: FastifyInstance) {
   fastify.post(
     '/:id/accept',
     async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
-      const user = request.user;
+      const userId = request.userId;
 
       try {
-        const comment = await commentService.accept(request.params.id, user!.id);
+        const comment = await commentService.accept(request.params.id, userId!);
 
         return reply.send({
           success: true,

@@ -27,11 +27,11 @@ export async function notificationRoutes(fastify: FastifyInstance) {
         unreadOnly?: boolean;
       };
     }>, reply: FastifyReply) => {
-      const user = request.user!;
+      const userId = request.userId!;
 
       try {
         const result = await notificationService.list({
-          userId: user.id,
+          userId: userId,
           limit: request.query.limit,
           offset: request.query.offset,
           unreadOnly: request.query.unreadOnly,
@@ -60,10 +60,10 @@ export async function notificationRoutes(fastify: FastifyInstance) {
       preHandler: [fastify.authenticate, fastify.requireUser],
     },
     async (request: FastifyRequest, reply: FastifyReply) => {
-      const user = request.user!;
+      const userId = request.userId!;
 
       try {
-        const count = await notificationService.getUnreadCount(user.id);
+        const count = await notificationService.getUnreadCount(userId);
 
         return reply.send({
           success: true,
@@ -85,7 +85,7 @@ export async function notificationRoutes(fastify: FastifyInstance) {
   fastify.get(
     '/:id',
     async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
-      const user = request.user!;
+      const userId = request.userId!;
       const { id } = request.params;
 
       try {
@@ -99,7 +99,7 @@ export async function notificationRoutes(fastify: FastifyInstance) {
         }
 
         // Check ownership
-        if (notification.userId !== user.id) {
+        if (notification.userId !== userId) {
           return reply.status(403).send({
             success: false,
             error: 'Not authorized',
@@ -126,11 +126,11 @@ export async function notificationRoutes(fastify: FastifyInstance) {
   fastify.put(
     '/:id/read',
     async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
-      const user = request.user!;
+      const userId = request.userId!;
       const { id } = request.params;
 
       try {
-        const notification = await notificationService.markAsRead(id, user.id);
+        const notification = await notificationService.markAsRead(id, userId);
 
         return reply.send({
           success: true,
@@ -155,10 +155,10 @@ export async function notificationRoutes(fastify: FastifyInstance) {
       preHandler: [fastify.authenticate, fastify.requireUser],
     },
     async (request: FastifyRequest, reply: FastifyReply) => {
-      const user = request.user!;
+      const userId = request.userId!;
 
       try {
-        await notificationService.markAllAsRead(user.id);
+        await notificationService.markAllAsRead(userId);
 
         return reply.send({
           success: true,
@@ -179,11 +179,11 @@ export async function notificationRoutes(fastify: FastifyInstance) {
   fastify.delete(
     '/:id',
     async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
-      const user = request.user!;
+      const userId = request.userId!;
       const { id } = request.params;
 
       try {
-        await notificationService.delete(id, user.id);
+        await notificationService.delete(id, userId);
 
         return reply.send({
           success: true,

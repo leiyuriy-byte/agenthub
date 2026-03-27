@@ -1061,6 +1061,8 @@ export interface UserPointsInfo {
   levelName: string;
   nextLevelPoints: number | null;
   progress: number;
+  checkedInToday?: boolean;
+  streak?: number;
 }
 
 export interface PointTransaction {

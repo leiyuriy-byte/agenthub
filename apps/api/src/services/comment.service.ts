@@ -16,7 +16,7 @@ export interface UpdateCommentData {
 }
 
 export interface CommentListParams {
-  postId: string;
+  postId?: string;
   limit?: number;
   offset?: number;
   sortBy?: 'createdAt' | 'likeCount';

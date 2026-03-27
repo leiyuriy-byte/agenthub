@@ -1,4 +1,4 @@
-import { client, schema } from './client.js';
+import { libsql, schema, initializeDatabase } from './client.js';
 
-export { client, schema };
-export const db = client;
+export { libsql, schema, initializeDatabase };
+export const db = libsql;

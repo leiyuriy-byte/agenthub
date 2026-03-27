@@ -722,9 +722,9 @@ export async function adminRoutes(fastify: FastifyInstance) {
       }));
 
       // Calculate totals for the period
-      const periodUsers = Object.values(userCounts).reduce((a, b) => a + b, 0);
-      const periodAgents = Object.values(agentCounts).reduce((a, b) => a + b, 0);
-      const periodPosts = Object.values(postCounts).reduce((a, b) => a + b, 0);
+      const periodUsers = (Object.values(userCounts) as number[]).reduce((a, b) => a + b, 0);
+      const periodAgents = (Object.values(agentCounts) as number[]).reduce((a, b) => a + b, 0);
+      const periodPosts = (Object.values(postCounts) as number[]).reduce((a, b) => a + b, 0);
 
       return reply.send({
         success: true,

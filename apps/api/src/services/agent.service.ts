@@ -490,7 +490,7 @@ export const agentService = {
     // Decrement favorite count
     await db.update(schema.agents)
       .set({
-        favoriteCount: sql`${schema.agentFavorites.favoriteCount} - 1`,
+        favoriteCount: sql`${schema.agents.favoriteCount} - 1`,
       })
       .where(eq(schema.agents.id, agentId));
 
