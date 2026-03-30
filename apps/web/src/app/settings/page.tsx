@@ -193,6 +193,7 @@ export default function SettingsPage() {
         setSocialLinks((prev) => {
           const newLinks = { ...prev };
           delete newLinks[platform];
+          return newLinks;
         });
         toast.success('社交链接已移除');
       } else {

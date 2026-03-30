@@ -274,6 +274,7 @@ export const agentApi = {
     search?: string;
     sortBy?: 'createdAt' | 'viewCount' | 'starCount' | 'avgRating';
     sortOrder?: 'asc' | 'desc';
+    ownerId?: string;
   }) => api.get<AgentListResponse>('/api/agents?' + new URLSearchParams(params as Record<string, string>)),
 
   get: (id: string) => api.get<Agent>(`/api/agents/${id}`),

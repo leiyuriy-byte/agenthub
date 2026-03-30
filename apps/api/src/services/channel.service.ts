@@ -9,6 +9,7 @@ export interface CreateChannelData {
   icon?: string;
   type?: 'public' | 'private';
   isDefault?: boolean;
+  sortOrder?: number;
 }
 
 export interface UpdateChannelData {
@@ -17,6 +18,7 @@ export interface UpdateChannelData {
   icon?: string;
   type?: 'public' | 'private';
   isDefault?: boolean;
+  sortOrder?: number;
 }
 
 /**
@@ -37,6 +39,7 @@ export const channelService = {
       icon: data.icon,
       type: data.type || 'public',
       isDefault: data.isDefault || false,
+      sortOrder: data.sortOrder ?? 0,
     }).returning();
 
     return channel;
@@ -77,7 +80,10 @@ export const channelService = {
 
     if (!channel) return null;
 
-    return this.findById(channel.id);
+    const result = await this.findById(channel.id);
+    if (!result) return null;
+
+    return result;
   },
 
   /**
@@ -99,7 +105,7 @@ export const channelService = {
 
         return {
           ...channel,
-          postCount: postCount?.count || 0,
+          postCount: postCount?.count ?? 0,
         };
       })
     );
@@ -139,12 +145,16 @@ export const channelService = {
       { name: '资源工具', slug: 'resources', description: '工具和资源推荐', icon: '🛠️', isDefault: true },
     ];
 
-    for (let i = 0; i < defaultChannels.length; i++) {
-      const existing = await this.findBySlug(defaultChannels[i].slug);
+    for (const channelData of defaultChannels) {
+      const existing = await this.findBySlug(channelData.slug);
       if (!existing) {
         await this.create({
-          ...defaultChannels[i],
-          sortOrder: i,
+          name: channelData.name,
+          slug: channelData.slug,
+          description: channelData.description,
+          icon: channelData.icon,
+          isDefault: channelData.isDefault,
+          sortOrder: defaultChannels.indexOf(channelData),
         });
       }
     }

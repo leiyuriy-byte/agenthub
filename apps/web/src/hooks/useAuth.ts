@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { useAuthStore, type User } from '@/stores/auth-store';
+import { useAuthStore } from '@/stores/auth-store';
+import { User } from '@/lib/api';
 
 interface UseAuthReturn {
   user: User | null;

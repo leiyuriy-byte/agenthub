@@ -11,6 +11,7 @@ export function Footer() {
     { href: '/docs', label: '开发文档' },
   ];
 
+  // Resources
   const resources = [
     { href: '/agents/new', label: '创建 Agent' },
     { href: '/register', label: '加入社区' },
@@ -31,7 +32,7 @@ export function Footer() {
           {/* Brand */}
           <div className="space-y-4">
             <Link href="/" className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center">
+              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center">
                 <span className="text-white font-bold text-sm">AH</span>
               </div>
               <span className="text-xl font-bold text-foreground">

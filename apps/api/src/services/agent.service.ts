@@ -1,4 +1,4 @@
-import { eq, and, desc, asc, like, sql, or } from 'drizzle-orm';
+import { eq, and, desc, asc, like, sql, or, type SQL } from 'drizzle-orm';
 import { db, schema } from '@agenthub/db';
 import { nanoid } from 'nanoid';
 import { awardPointsForAction } from './points.service.js';
@@ -165,7 +165,7 @@ export const agentService = {
     } = params;
 
     // Build conditions
-    const conditions = [];
+    const conditions: SQL[] = [];
 
     if (status) {
       conditions.push(eq(schema.agents.status, status));
@@ -176,13 +176,14 @@ export const agentService = {
     }
 
     if (search) {
-      conditions.push(
-        or(
-          like(schema.agents.name, `%${search}%`),
-          like(schema.agents.tagline, `%${search}%`),
-          like(schema.agents.description, `%${search}%`)
-        )
+      const searchCondition = or(
+        like(schema.agents.name, `%${search}%`),
+        like(schema.agents.tagline, `%${search}%`),
+        like(schema.agents.description, `%${search}%`)
       );
+      if (searchCondition) {
+        conditions.push(searchCondition);
+      }
     }
 
     // Build order by
@@ -202,17 +203,28 @@ export const agentService = {
         orderBy = orderFn(schema.agents.createdAt);
     }
 
+    // Build where condition - handle empty conditions case
+    const whereCondition = conditions.length > 0 ? and(...conditions) : undefined;
+
     // Get total count
-    const [countResult] = await db.select({
+    const countQuery = db.select({
       count: sql<number>`count(*)`,
     })
-      .from(schema.agents)
-      .where(conditions.length > 0 ? and(...conditions) : undefined);
+      .from(schema.agents);
+    
+    if (whereCondition) {
+      countQuery.where(whereCondition);
+    }
+    const [countResult] = await countQuery;
 
     // Get agents
-    const agents = await db.select()
-      .from(schema.agents)
-      .where(conditions.length > 0 ? and(...conditions) : undefined)
+    const agentsQuery = db.select()
+      .from(schema.agents);
+    
+    if (whereCondition) {
+      agentsQuery.where(whereCondition);
+    }
+    const agents = await agentsQuery
       .orderBy(orderBy)
       .limit(limit)
       .offset(offset);

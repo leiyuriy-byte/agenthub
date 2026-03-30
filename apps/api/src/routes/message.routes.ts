@@ -80,6 +80,7 @@ interface CreateDmQuery {
 }
 
 interface ConversationParams {
+  conversationId?: string;
   id: string;
 }
 
@@ -102,7 +103,7 @@ export async function messageRoutes(fastify: FastifyInstance) {
     { preHandler: [fastify.authenticate] },
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
-        const userId = request.userData.id;
+        const userId = request.userId as string || "";
         const conversations = await getConversations(userId);
         return reply.send({ conversations });
       } catch (error) {
@@ -118,10 +119,10 @@ export async function messageRoutes(fastify: FastifyInstance) {
   fastify.get<{ Params: ConversationParams }>(
     '/conversations/:id',
     { preHandler: [fastify.authenticate] },
-    async (request: FastifyRequest, reply: FastifyReply) => {
+    async (request: FastifyRequest<{ Params: ConversationParams }>, reply: FastifyReply) => {
       try {
-        const { id } = request.params;
-        const userId = request.userData.id;
+        const { id } = request.params as ConversationParams;
+        const userId = request.userId as string || "";
         const conversation = await getConversation(id, userId);
         
         if (!conversation) {
@@ -145,7 +146,7 @@ export async function messageRoutes(fastify: FastifyInstance) {
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
         const body = CreateConversationSchema.parse(request.body);
-        const userId = request.userData.id;
+        const userId = request.userId as string || "";
         
         // 不能与自己对话
         if (body.participantIds.includes(userId) && body.participantIds.length === 1) {
@@ -173,7 +174,7 @@ export async function messageRoutes(fastify: FastifyInstance) {
     async (request: FastifyRequest<{ Params: { userId: string } }>, reply: FastifyReply) => {
       try {
         const { userId: targetUserId } = request.params;
-        const currentUserId = request.userData.id;
+        const currentUserId = request.userId as string;
         
         // 不能与自己对话
         if (targetUserId === currentUserId) {
@@ -195,13 +196,14 @@ export async function messageRoutes(fastify: FastifyInstance) {
   fastify.get<{ Params: ConversationParams; Querystring: GetMessagesQuery }>(
     '/:conversationId',
     { preHandler: [fastify.authenticate] },
-    async (request: FastifyRequest, reply: FastifyReply) => {
+    async (request: FastifyRequest<{ Params: ConversationParams; Querystring: GetMessagesQuery }>, reply: FastifyReply) => {
       try {
-        const { conversationId } = request.params;
+        const { id, conversationId } = request.params as ConversationParams;
+        const convId = conversationId || id;
         const { limit, beforeId } = request.query as GetMessagesQuery;
-        const userId = request.userData.id;
+        const userId = request.userId as string || "";
         
-        const messages = await getMessages(conversationId, userId, { limit, beforeId });
+        const messages = await getMessages(convId, userId, { limit, beforeId });
         return reply.send({ messages });
       } catch (error) {
         return handleError(reply, error as Error);
@@ -219,9 +221,9 @@ export async function messageRoutes(fastify: FastifyInstance) {
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
         const body = SendMessageSchema.parse(request.body);
-        const senderId = request.userData.id;
+        const senderId = request.userId as string;
         
-        const result = await sendMessage(senderId, body);
+        const result = await sendMessage(senderId!, body);
         
         // TODO: 通过 WebSocket 推送消息给接收者
         // 这将在实时通讯功能中实现
@@ -243,12 +245,13 @@ export async function messageRoutes(fastify: FastifyInstance) {
   fastify.post<{ Params: ConversationParams }>(
     '/:conversationId/read',
     { preHandler: [fastify.authenticate] },
-    async (request: FastifyRequest, reply: FastifyReply) => {
+    async (request: FastifyRequest<{ Params: ConversationParams }>, reply: FastifyReply) => {
       try {
-        const { conversationId } = request.params;
-        const userId = request.userData.id;
+        const { id, conversationId } = request.params as ConversationParams;
+        const convId = conversationId || id;
+        const userId = request.userId as string;
         
-        await markAsRead(conversationId, userId);
+        await markAsRead(convId, userId);
         return reply.send({ success: true });
       } catch (error) {
         return handleError(reply, error as Error);
@@ -266,7 +269,7 @@ export async function messageRoutes(fastify: FastifyInstance) {
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
         const { q, limit } = request.query as SearchMessagesQuery;
-        const userId = request.userData.id;
+        const userId = request.userId as string || "";
         
         const messages = await searchMessages(userId, q, { limit });
         return reply.send({ messages });
@@ -285,8 +288,8 @@ export async function messageRoutes(fastify: FastifyInstance) {
     { preHandler: [fastify.authenticate] },
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
-        const { id } = request.params;
-        const userId = request.userData.id;
+        const { id } = request.params as any;
+        const userId = request.userId as string || "";
         
         await deleteConversation(id, userId);
         return reply.send({ success: true });
@@ -305,7 +308,7 @@ export async function messageRoutes(fastify: FastifyInstance) {
     { preHandler: [fastify.authenticate] },
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
-        const userId = request.userData.id;
+        const userId = request.userId as string || "";
         const count = await getTotalUnreadCount(userId);
         return reply.send({ count });
       } catch (error) {

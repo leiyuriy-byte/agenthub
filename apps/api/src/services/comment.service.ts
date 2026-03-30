@@ -190,6 +190,11 @@ export const commentService = {
       sortOrder = 'desc',
     } = params;
 
+    // Validate postId
+    if (!postId) {
+      return { comments: [], total: 0 };
+    }
+
     // Build order by
     const orderFn = sortOrder === 'desc' ? desc : asc;
     let orderBy;
@@ -242,14 +247,15 @@ export const commentService = {
 
     // First pass: create map with children arrays
     for (const comment of commentsWithAuthors) {
-      commentMap.set(comment.id, { ...comment, children: [] });
+      commentMap.set(comment.id, { ...comment, children: [] as typeof commentsWithAuthors });
     }
 
     // Second pass: build tree
     for (const comment of commentsWithAuthors) {
       const commentWithChildren = commentMap.get(comment.id)!;
-      if (comment.parentId) {
-        const parent = commentMap.get(comment.parentId);
+      const parentId = comment.parentId ?? null;
+      if (parentId) {
+        const parent = commentMap.get(parentId);
         if (parent) {
           parent.children.push(commentWithChildren);
         } else {

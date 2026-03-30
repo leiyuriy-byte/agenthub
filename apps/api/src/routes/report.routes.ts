@@ -71,9 +71,9 @@ export async function reportRoutes(fastify: FastifyInstance) {
     {
       preHandler: [fastify.authenticate, fastify.requireAdmin],
     },
-    async (request: FastifyRequest<{ Querystring: z.infer<typeof listQuerySchema> }>, reply: FastifyReply) => {
+    async (request: FastifyRequest, reply: FastifyReply) => {
       try {
-        const { limit, offset, status, targetType } = request.query;
+        const { limit, offset, status, targetType } = request.query as any;
 
         const result = await reportService.list({
           limit,
@@ -130,9 +130,9 @@ export async function reportRoutes(fastify: FastifyInstance) {
     {
       preHandler: [fastify.authenticate, fastify.requireAdmin],
     },
-    async (request: FastifyRequest<{ Params: ReportParams }>, reply: FastifyReply) => {
+    async (request: FastifyRequest, reply: FastifyReply) => {
       try {
-        const { id } = request.params;
+        const { id } = request.params as any;
 
         const report = await reportService.getById(id);
 
@@ -165,16 +165,11 @@ export async function reportRoutes(fastify: FastifyInstance) {
     {
       preHandler: [fastify.authenticate, fastify.requireAdmin],
     },
-    async (
-      request: FastifyRequest<{
-        Params: ReportParams;
-        Body: z.infer<typeof resolveReportSchema>;
-      }>,
-      reply: FastifyReply
-    ) => {
+    async (request: FastifyRequest, reply: FastifyReply) => {
       try {
-        const { id } = request.params;
-        const { resolution, targetAction } = request.body;
+        const { id } = request.params as ReportParams;
+        const body = request.body as { resolution: "warning" | "ignored" | "deleted" | "banned"; targetAction?: string };
+        const { resolution, targetAction } = body;
 
         const report = await reportService.resolve(
           id,
@@ -205,9 +200,9 @@ export async function reportRoutes(fastify: FastifyInstance) {
     {
       preHandler: [fastify.authenticate, fastify.requireAdmin],
     },
-    async (request: FastifyRequest<{ Params: ReportParams }>, reply: FastifyReply) => {
+    async (request: FastifyRequest, reply: FastifyReply) => {
       try {
-        const { id } = request.params;
+        const { id } = request.params as any;
 
         const report = await reportService.reject(id, request.userId!);
 

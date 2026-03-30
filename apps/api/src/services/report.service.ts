@@ -4,7 +4,7 @@
 
 import { db } from '@agenthub/db';
 import { reports, users, agents, posts, comments } from '@agenthub/db/schema';
-import { eq, and, desc, sql, like, or, inArray } from 'drizzle-orm';
+import { eq, and, desc, sql, like, or, inArray, SQL } from 'drizzle-orm';
 
 export interface CreateReportInput {
   reporterId: string;
@@ -122,7 +122,7 @@ class ReportService {
   async list(params: ReportListParams): Promise<{ reports: ReportWithDetails[]; total: number }> {
     const { limit = 20, offset = 0, status, targetType, search } = params;
 
-    const conditions = [];
+    const conditions: SQL[] = [];
 
     if (status) {
       conditions.push(eq(reports.status, status));

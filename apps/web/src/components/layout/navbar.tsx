@@ -199,18 +199,18 @@ export function Navbar() {
           <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center">
             <span className="text-white font-bold text-sm">AH</span>
           </div>
-          <span className="text-xl font-bold bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent hidden sm:block">
+          <span className="text-xl font-bold text-foreground hidden sm:block">
             AgentHub
           </span>
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-1">
+        <nav className="hidden md:flex items-center gap-1" role="navigation" aria-label="主要导航">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors min-h-[24px] ${
                 pathname === link.href || pathname.startsWith(link.href + '/')
                   ? 'bg-primary/10 text-primary'
                   : 'text-foreground hover:text-foreground hover:bg-accent'
@@ -382,6 +382,7 @@ export function Navbar() {
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className="md:hidden p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-muted-foreground hover:text-foreground"
             aria-label={isMobileMenuOpen ? '关闭菜单' : '打开菜单'}
+            aria-expanded={isMobileMenuOpen}
           >
             {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
@@ -396,6 +397,8 @@ export function Navbar() {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             className="md:hidden border-t bg-background"
+            role="navigation"
+            aria-label="移动端导航菜单"
           >
             <div className="container px-4 py-4 space-y-4">
               {/* Mobile Search */}
@@ -407,18 +410,19 @@ export function Navbar() {
                     placeholder="搜索 Agent..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
+                    aria-label="搜索"
                     className="w-full pl-10"
                   />
                 </div>
               </form>
 
               {/* Mobile Nav Links */}
-              <nav className="space-y-1">
+              <nav className="space-y-1" role="navigation" aria-label="主要导航">
                 {navLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
-                    className={`block px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                    className={`block px-4 py-3 text-sm font-medium rounded-lg transition-colors min-h-[44px] flex items-center ${
                       pathname === link.href || pathname.startsWith(link.href + '/')
                         ? 'bg-primary/10 text-primary'
                         : 'text-muted-foreground hover:text-foreground hover:bg-accent'

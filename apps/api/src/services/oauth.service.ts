@@ -158,7 +158,7 @@ export const oauthService = {
     }
 
     // Create new user
-    const username = await generateUniqueUsername(name || email.split('@')[0]);
+    const username = await generateUniqueUsername((name || email.split('@')[0]) as string);
     const passwordHash = await generateRandomPassword();
     const id = nanoid();
 

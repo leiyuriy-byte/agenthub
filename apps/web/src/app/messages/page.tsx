@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Avatar, AvatarFallback, AvatarImage } from '@agenthub/ui';
-import { messageApi, Conversation, User } from '@/lib/api';
+import { messageApi, Conversation, ConversationParticipant, User } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function MessagesPage() {

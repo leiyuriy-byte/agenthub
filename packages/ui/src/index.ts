@@ -5,7 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export { cva, type ClassVal } from 'class-variance-authority';
+export { cva } from 'class-variance-authority';
 
 export * from './button';
 export * from './badge';

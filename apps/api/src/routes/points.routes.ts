@@ -110,7 +110,7 @@ export async function pointsRoutes(fastify: FastifyInstance) {
     {
       preHandler: [fastify.authenticate],
     },
-    async (request: FastifyRequest<{ Querystring: z.infer<typeof historySchema> }>, reply: FastifyReply) => {
+    async (request: FastifyRequest, reply: FastifyReply) => {
       const userId = request.userId!;
       const { limit, offset } = historySchema.parse(request.query);
 
@@ -153,7 +153,7 @@ export async function pointsRoutes(fastify: FastifyInstance) {
     {
       preHandler: [fastify.authenticate],
     },
-    async (request: FastifyRequest<{ Querystring: z.infer<typeof leaderboardSchema> }>, reply: FastifyReply) => {
+    async (request: FastifyRequest, reply: FastifyReply) => {
       const { type, limit } = leaderboardSchema.parse(request.query);
 
       const leaderboard = await getLeaderboard(type, limit);

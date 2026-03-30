@@ -12,6 +12,9 @@ interface AuthState {
   isLoading: boolean;
   error: string | null;
 
+  // Computed
+  isAuthenticated: boolean;
+
   // Actions
   login: (email: string, password: string) => Promise<boolean>;
   register: (data: {
@@ -114,6 +117,12 @@ export const useAuthStore = create<AuthState>()(
       },
 
       clearError: () => set({ error: null }),
+    }),
+    (state) => ({
+      // Computed: isAuthenticated
+      get isAuthenticated() {
+        return !!state.user;
+      },
     }),
     {
       name: 'agenthub_auth',

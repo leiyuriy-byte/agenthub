@@ -3,6 +3,7 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { useAuth } from './useAuth';
+import { useAuthStore } from '@/stores/auth-store';
 
 const SOCKET_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
@@ -54,7 +55,8 @@ interface UseWebSocketReturn {
 type Callback<T> = (data: T) => void;
 
 export function useWebSocket(): UseWebSocketReturn {
-  const { user, isAuthenticated, token } = useAuth();
+  const { user, isAuthenticated } = useAuth();
+  const token = useAuthStore((state) => state.token);
   const socketRef = useRef<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0);

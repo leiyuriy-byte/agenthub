@@ -221,7 +221,7 @@ export default function LeaderboardPage() {
 
                               {/* Avatar */}
                               <Avatar className="h-12 w-12">
-                                <AvatarImage src={entry.avatar} />
+                                <AvatarImage src={entry.avatar ?? undefined} />
                                 <AvatarFallback>
                                   {entry.displayName?.charAt(0) || entry.username?.charAt(0)}
                                 </AvatarFallback>

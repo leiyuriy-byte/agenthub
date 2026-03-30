@@ -299,7 +299,8 @@ export function ScreenshotsUpload({
 
       for (let i = 0; i < files.length; i++) {
         setUploadingIndex(value.length + i);
-        const url = await uploadFile(files[i]);
+        const file = files[i] as File; // Safe: index bounds checked by for loop
+        const url = await uploadFile(file);
         newScreenshots.push({
           id: `temp_${Date.now()}_${i}`,
           url,

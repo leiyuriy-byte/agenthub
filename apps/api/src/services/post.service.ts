@@ -1,4 +1,4 @@
-import { eq, and, desc, asc, like, sql, or } from 'drizzle-orm';
+import { eq, and, desc, asc, like, sql, or, SQL } from 'drizzle-orm';
 import { db, schema } from '@agenthub/db';
 import { nanoid } from 'nanoid';
 import { awardPointsForAction } from './points.service.js';
@@ -131,7 +131,7 @@ export const postService = {
     } = params;
 
     // Build conditions
-    const conditions = [];
+    const conditions: SQL[] = [];
 
     if (channelId) {
       conditions.push(eq(schema.posts.channelId, channelId));
@@ -146,12 +146,13 @@ export const postService = {
     }
 
     if (search) {
-      conditions.push(
-        or(
-          like(schema.posts.title, `%${search}%`),
-          like(schema.posts.content, `%${search}%`)
-        )
+      const searchCondition = or(
+        like(schema.posts.title, `%${search}%`),
+        like(schema.posts.content, `%${search}%`)
       );
+      if (searchCondition) {
+        conditions.push(searchCondition);
+      }
     }
 
     // Build order by
@@ -171,17 +172,27 @@ export const postService = {
         orderBy = orderFn(schema.posts.createdAt);
     }
 
-    // Get total count
-    const [countResult] = await db.select({
+    // Build where condition - handle empty conditions case
+    const whereCondition = conditions.length > 0 ? and(...conditions) : undefined;
+    
+    const countQuery = db.select({
       count: sql<number>`count(*)`,
     })
-      .from(schema.posts)
-      .where(conditions.length > 0 ? and(...conditions) : undefined);
+      .from(schema.posts);
+    
+    if (whereCondition) {
+      countQuery.where(whereCondition);
+    }
+    const [countResult] = await countQuery;
 
     // Get posts
-    const posts = await db.select()
-      .from(schema.posts)
-      .where(conditions.length > 0 ? and(...conditions) : undefined)
+    const postsQuery = db.select()
+      .from(schema.posts);
+    
+    if (whereCondition) {
+      postsQuery.where(whereCondition);
+    }
+    const posts = await postsQuery
       .orderBy(orderBy)
       .limit(limit)
       .offset(offset);

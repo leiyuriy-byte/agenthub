@@ -78,7 +78,7 @@ export const notificationService = {
   /**
    * List notifications for a user
    */
-  async list(params: NotificationListParams = {}) {
+  async list(params: NotificationListParams) {
     const {
       userId,
       limit = 20,
@@ -258,7 +258,8 @@ export const notificationService = {
     // Send email notification if enabled
     try {
       const prefs = await this.getUserEmailPreferences(postAuthorId);
-      if (prefs?.emailNotifyOnComment) {
+      if (prefs?.emailNotifyOnComment && prefs.email) {
+        const userEmail = prefs.email;
         const [commenter] = await db.select({
           displayName: schema.users.displayName,
         })
@@ -267,9 +268,10 @@ export const notificationService = {
           .limit(1);
 
         const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+        const emailLocal = userEmail.split('@')[0];
         await sendCommentNotificationEmail(
-          prefs.email,
-          prefs.email.split('@')[0],
+          userEmail as string,
+          emailLocal as string,
           commenter?.displayName || '某用户',
           postTitle,
           commentContent,
@@ -303,7 +305,8 @@ export const notificationService = {
     // Send email notification if enabled (reuses comment notification setting)
     try {
       const prefs = await this.getUserEmailPreferences(parentCommentAuthorId);
-      if (prefs?.emailNotifyOnMention) {
+      if (prefs?.emailNotifyOnMention && prefs.email) {
+        const userEmail = prefs.email;
         const [replier] = await db.select({
           displayName: schema.users.displayName,
         })
@@ -312,9 +315,10 @@ export const notificationService = {
           .limit(1);
 
         const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+        const emailLocal = userEmail.split('@')[0];
         await sendCommentNotificationEmail(
-          prefs.email,
-          prefs.email.split('@')[0],
+          userEmail as string,
+          emailLocal as string,
           replier?.displayName || '某用户',
           postTitle,
           replyContent,
@@ -344,11 +348,13 @@ export const notificationService = {
     // Send email notification if enabled
     try {
       const prefs = await this.getUserEmailPreferences(followedUserId);
-      if (prefs?.emailNotifyOnFollow) {
+      if (prefs?.emailNotifyOnFollow && prefs.email) {
+        const userEmail = prefs.email;
         const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+        const emailLocal = userEmail.split('@')[0];
         await sendFollowNotificationEmail(
-          prefs.email,
-          prefs.email.split('@')[0],
+          userEmail as string,
+          emailLocal as string,
           followerName,
           `${frontendUrl}/users/${followerId}`
         );
@@ -379,11 +385,13 @@ export const notificationService = {
     // Send email notification if enabled
     try {
       const prefs = await this.getUserEmailPreferences(userId);
-      if (prefs?.emailNotifyOnLike) {
+      if (prefs?.emailNotifyOnLike && prefs.email) {
+        const userEmail = prefs.email;
         const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+        const emailLocal = userEmail.split('@')[0];
         await sendLikeNotificationEmail(
-          prefs.email,
-          prefs.email.split('@')[0],
+          userEmail as string,
+          emailLocal as string,
           likerName,
           targetTitle,
           `${frontendUrl}${link}`,

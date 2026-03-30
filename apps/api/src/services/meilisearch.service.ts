@@ -6,7 +6,7 @@
  */
 import { MeiliSearch, Index } from 'meilisearch';
 import { db, schema } from '@agenthub/db';
-import { eq, or, like, desc } from 'drizzle-orm';
+import { eq, or, like, desc, sql } from 'drizzle-orm';
 
 // MeiliSearch client singleton
 let meiliClient: MeiliSearch | null = null;
@@ -285,7 +285,7 @@ export async function syncPostsToMeiliSearch(): Promise<number> {
         title: schema.posts.title,
         content: schema.posts.content,
         type: schema.posts.type,
-        tags: schema.posts.tags,
+        
         authorId: schema.posts.authorId,
         channelId: schema.posts.channelId,
         viewCount: schema.posts.viewCount,
@@ -296,6 +296,22 @@ export async function syncPostsToMeiliSearch(): Promise<number> {
         updatedAt: schema.posts.updatedAt,
       })
       .from(schema.posts);
+
+    // Get post tags from postTags table
+    const postIds = posts.map(p => p.id);
+    const allPostTags = postIds.length > 0 
+      ? await db.select({ postId: schema.postTags.postId, tag: schema.postTags.tag })
+          .from(schema.postTags)
+          .where(sql`${schema.postTags.postId} IN (${sql.join(postIds, sql`, `)})`)
+      : [];
+    
+    const postTagsMap = new Map<string, string[]>();
+    allPostTags.forEach(pt => {
+      if (!postTagsMap.has(pt.postId)) {
+        postTagsMap.set(pt.postId, []);
+      }
+      postTagsMap.get(pt.postId)!.push(pt.tag);
+    });
 
     // Get author and channel info
     const postsWithDetails = await Promise.all(
@@ -317,7 +333,7 @@ export async function syncPostsToMeiliSearch(): Promise<number> {
           .from(schema.channels)
           .where(eq(schema.channels.id, post.channelId));
 
-        const tags = post.tags ? JSON.parse(post.tags) : [];
+        const tags = postTagsMap.get(post.id) || [];
 
         return {
           id: post.id,
@@ -371,10 +387,25 @@ export async function syncUsersToMeiliSearch(): Promise<number> {
         role: schema.users.role,
         level: schema.users.level,
         isVerified: schema.users.isVerified,
-        techStack: schema.users.techStack,
         createdAt: schema.users.createdAt,
       })
       .from(schema.users);
+
+    // Get user tags from userTags table
+    const userIds = users.map(u => u.id);
+    const allUserTags = userIds.length > 0
+      ? await db.select({ userId: schema.userTags.userId, tag: schema.userTags.tag })
+          .from(schema.userTags)
+          .where(sql`${schema.userTags.userId} IN (${sql.join(userIds, sql`, `)})`)
+      : [];
+    
+    const userTagsMap = new Map<string, string[]>();
+    allUserTags.forEach(ut => {
+      if (!userTagsMap.has(ut.userId)) {
+        userTagsMap.set(ut.userId, []);
+      }
+      userTagsMap.get(ut.userId)!.push(ut.tag);
+    });
 
     const usersData = users.map((user) => ({
       id: user.id,
@@ -385,7 +416,7 @@ export async function syncUsersToMeiliSearch(): Promise<number> {
       role: user.role,
       level: user.level,
       isVerified: user.isVerified,
-      techStack: user.techStack ? JSON.parse(user.techStack) : [],
+      techStack: userTagsMap.get(user.id) || [],
       createdAt: new Date(user.createdAt).getTime(),
     } as MeiliUser));
 
@@ -568,7 +599,7 @@ export async function indexPostMeili(postId: string): Promise<void> {
         title: schema.posts.title,
         content: schema.posts.content,
         type: schema.posts.type,
-        tags: schema.posts.tags,
+        
         authorId: schema.posts.authorId,
         channelId: schema.posts.channelId,
         viewCount: schema.posts.viewCount,
@@ -582,6 +613,13 @@ export async function indexPostMeili(postId: string): Promise<void> {
       .where(eq(schema.posts.id, postId));
 
     if (!post) return;
+
+    // Get post tags from postTags table
+    const postTagsList = await db
+      .select({ tag: schema.postTags.tag })
+      .from(schema.postTags)
+      .where(eq(schema.postTags.postId, postId));
+    const tagsFromPostTags = postTagsList.map(pt => pt.tag);
 
     const [author] = await db
       .select({
@@ -600,7 +638,9 @@ export async function indexPostMeili(postId: string): Promise<void> {
       .from(schema.channels)
       .where(eq(schema.channels.id, post.channelId));
 
-    const tags = post.tags ? JSON.parse(post.tags) : [];
+    // Merge tags from postTags table and post.tags field
+    const postTagsArray = post.tags ? JSON.parse(post.tags) : [];
+    const tags = [...new Set([...tagsFromPostTags, ...postTagsArray])];
 
     const document: MeiliPost = {
       id: post.id,
@@ -648,13 +688,19 @@ export async function indexUserMeili(userId: string): Promise<void> {
         role: schema.users.role,
         level: schema.users.level,
         isVerified: schema.users.isVerified,
-        techStack: schema.users.techStack,
         createdAt: schema.users.createdAt,
       })
       .from(schema.users)
       .where(eq(schema.users.id, userId));
 
     if (!user) return;
+
+    // Get user tags from userTags table
+    const userTagsList = await db
+      .select({ tag: schema.userTags.tag })
+      .from(schema.userTags)
+      .where(eq(schema.userTags.userId, userId));
+    const techStack = userTagsList.map(ut => ut.tag);
 
     const document: MeiliUser = {
       id: user.id,
@@ -665,7 +711,7 @@ export async function indexUserMeili(userId: string): Promise<void> {
       role: user.role,
       level: user.level,
       isVerified: user.isVerified,
-      techStack: user.techStack ? JSON.parse(user.techStack) : [],
+      techStack,
       createdAt: new Date(user.createdAt).getTime(),
     };
 

@@ -45,8 +45,9 @@ export const LEVEL_NAMES: Record<number, string> = {
  */
 export function calculateLevel(points: number): number {
   for (let i = LEVEL_THRESHOLDS.length - 1; i >= 0; i--) {
-    if (points >= LEVEL_THRESHOLDS[i].minPoints) {
-      return LEVEL_THRESHOLDS[i].level;
+    const threshold = LEVEL_THRESHOLDS[i];
+    if (threshold && points >= threshold.minPoints) {
+      return threshold.level;
     }
   }
   return 1;
@@ -147,10 +148,11 @@ export async function addPoints(
 
   // Send WebSocket notification about points update
   try {
+    const level = updatedUser.level ?? 1;
     sendPointsUpdateToUser(userId, {
       points: updatedUser.points,
-      level: updatedUser.level,
-      levelName: LEVEL_NAMES[updatedUser.level],
+      level: level,
+      levelName: LEVEL_NAMES[level] || '新手',
       change: points,
       reason,
     });
@@ -167,7 +169,7 @@ export async function addPoints(
  * Returns { success: false, message: "..." } if already checked in today
  */
 export async function dailyCheckin(userId: string) {
-  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+  const today: string = new Date().toISOString().split('T')[0] as string; // YYYY-MM-DD
 
   // Check if already checked in today
   const [existing] = await db.select()
@@ -210,7 +212,7 @@ export async function dailyCheckin(userId: string) {
  * Check if user has checked in today
  */
 export async function hasCheckedInToday(userId: string): Promise<boolean> {
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toISOString().split('T')[0] as string;
   const [existing] = await db.select()
     .from(schema.userCheckins)
     .where(

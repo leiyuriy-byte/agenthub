@@ -252,39 +252,65 @@ export async function adminRoutes(fastify: FastifyInstance) {
     try {
       const { limit = 20, offset = 0, search, status } = request.query;
 
-      let query = db.select({
-        id: schema.agents.id,
-        name: schema.agents.name,
-        slug: schema.agents.slug,
-        logo: schema.agents.logo,
-        tagline: schema.agents.tagline,
-        status: schema.agents.status,
-        isFeatured: schema.agents.isFeatured,
-        viewCount: schema.agents.viewCount,
-        starCount: schema.agents.starCount,
-        avgRating: schema.agents.avgRating,
-        createdAt: schema.agents.createdAt,
-        ownerId: schema.agents.ownerId,
-      }).from(schema.agents);
-
-      const conditions = [];
-      if (search) {
-        conditions.push(
-          sql`${schema.agents.name} LIKE ${`%${search}%`} OR ${schema.agents.tagline} LIKE ${`%${search}%`}`
-        );
-      }
-      if (status) {
-        conditions.push(eq(schema.agents.status, status));
+      // Build where clause based on filters
+      let whereClause;
+      const whereParams: any[] = [];
+      
+      if (search && status) {
+        whereClause = sql`(name LIKE ? OR tagline LIKE ?) AND status = ?`;
+        whereParams.push(`%${search}%`, `%${search}%`, status);
+      } else if (search) {
+        whereClause = sql`name LIKE ? OR tagline LIKE ?`;
+        whereParams.push(`%${search}%`, `%${search}%`);
+      } else if (status) {
+        whereClause = sql`status = ?`;
+        whereParams.push(status);
       }
 
-      if (conditions.length > 0) {
-        query = query.where(and(...conditions)) as typeof query;
+      // Execute query with conditional where
+      let agents;
+      if (whereClause) {
+        agents = await db
+          .select({
+            id: schema.agents.id,
+            name: schema.agents.name,
+            slug: schema.agents.slug,
+            logo: schema.agents.logo,
+            tagline: schema.agents.tagline,
+            status: schema.agents.status,
+            isFeatured: schema.agents.isFeatured,
+            viewCount: schema.agents.viewCount,
+            starCount: schema.agents.starCount,
+            avgRating: schema.agents.avgRating,
+            createdAt: schema.agents.createdAt,
+            ownerId: schema.agents.ownerId,
+          })
+          .from(schema.agents)
+          .where(whereClause)
+          .orderBy(desc(schema.agents.createdAt))
+          .limit(limit)
+          .offset(offset);
+      } else {
+        agents = await db
+          .select({
+            id: schema.agents.id,
+            name: schema.agents.name,
+            slug: schema.agents.slug,
+            logo: schema.agents.logo,
+            tagline: schema.agents.tagline,
+            status: schema.agents.status,
+            isFeatured: schema.agents.isFeatured,
+            viewCount: schema.agents.viewCount,
+            starCount: schema.agents.starCount,
+            avgRating: schema.agents.avgRating,
+            createdAt: schema.agents.createdAt,
+            ownerId: schema.agents.ownerId,
+          })
+          .from(schema.agents)
+          .orderBy(desc(schema.agents.createdAt))
+          .limit(limit)
+          .offset(offset);
       }
-
-      const agents = await query
-        .orderBy(desc(schema.agents.createdAt))
-        .limit(limit)
-        .offset(offset);
 
       // Get owner info for each agent
       const agentsWithOwner = await Promise.all(
@@ -297,13 +323,28 @@ export async function adminRoutes(fastify: FastifyInstance) {
         })
       );
 
-      const [total] = await db.select({ count: count() }).from(schema.agents);
+      // Get total count (with filter awareness)
+      let totalCount = 0;
+      if (whereClause) {
+        // For filtered count, we need to rebuild the query
+        // Simpler: just do a separate count query
+        const [totalResult] = await db
+          .select({ count: count() })
+          .from(schema.agents)
+          .where(whereClause);
+        totalCount = totalResult?.count || 0;
+      } else {
+        const [totalResult] = await db
+          .select({ count: count() })
+          .from(schema.agents);
+        totalCount = totalResult?.count || 0;
+      }
 
       return reply.send({
         success: true,
         data: {
           agents: agentsWithOwner,
-          total: total?.count || 0,
+          total: totalCount,
         },
       });
     } catch (error) {
@@ -683,7 +724,8 @@ export async function adminRoutes(fastify: FastifyInstance) {
       for (let i = days - 1; i >= 0; i--) {
         const date = new Date(now);
         date.setDate(date.getDate() - i);
-        dateRange.push(date.toISOString().split('T')[0]);
+        const dateStr = date.toISOString().split('T')[0] as string;
+        dateRange.push(dateStr);
       }
 
       // Helper to get counts by date
@@ -921,18 +963,21 @@ export async function adminRoutes(fastify: FastifyInstance) {
 
       // Fill in the data
       postsByHour.forEach((row) => {
-        if (row.hour !== null && hourCounts[row.hour]) {
-          hourCounts[row.hour].posts = Number(row.count);
+        const hour = row.hour;
+        if (hour !== null && hour !== undefined && hourCounts[hour]) {
+          hourCounts[hour].posts = Number(row.count);
         }
       });
       commentsByHour.forEach((row) => {
-        if (row.hour !== null && hourCounts[row.hour]) {
-          hourCounts[row.hour].comments = Number(row.count);
+        const hour = row.hour;
+        if (hour !== null && hour !== undefined && hourCounts[hour]) {
+          hourCounts[hour].comments = Number(row.count);
         }
       });
       agentsByHour.forEach((row) => {
-        if (row.hour !== null && hourCounts[row.hour]) {
-          hourCounts[row.hour].agents = Number(row.count);
+        const hour = row.hour;
+        if (hour !== null && hour !== undefined && hourCounts[hour]) {
+          hourCounts[hour].agents = Number(row.count);
         }
       });
 

@@ -44,6 +44,12 @@ export interface ConversationWithParticipant {
     type: string;
     senderId: string;
     createdAt: Date;
+    sender?: {
+      id: string;
+      username: string;
+      displayName: string | null;
+      avatar: string | null;
+    } | null;
   };
   unreadCount?: number;
 }
@@ -81,10 +87,13 @@ export async function createConversation(
   
   // 两人对话：检查是否已存在
   if (participantIds.length === 2) {
+    const firstUserId = participantIds[0] as string;
+    const secondUserId = participantIds[1] as string;
+    
     const existing = await db
       .select()
       .from(conversationParticipants)
-      .where(eq(conversationParticipants.userId, participantIds[0]));
+      .where(eq(conversationParticipants.userId, firstUserId));
     
     for (const p of existing) {
       // 找到与第二个用户的共同对话
@@ -94,7 +103,7 @@ export async function createConversation(
         .where(
           and(
             eq(conversationParticipants.conversationId, p.conversationId),
-            eq(conversationParticipants.userId, participantIds[1])
+            eq(conversationParticipants.userId, secondUserId)
           )
         );
       
@@ -167,7 +176,17 @@ export async function getConversations(
           id: p.id,
           userId: p.userId,
           lastReadAt: p.lastReadAt,
-          user: user || null,
+          user: user ? {
+            id: user.id,
+            username: user.username,
+            displayName: user.displayName,
+            avatar: user.avatar,
+          } : {
+            id: p.userId,
+            username: 'unknown',
+            displayName: null,
+            avatar: null,
+          },
         };
       })
     );
@@ -210,7 +229,7 @@ export async function getConversations(
     }
     
     // 获取最后一条消息的发送者信息
-    let lastMessageWithSender = undefined;
+    let lastMessageWithSender: ConversationWithParticipant['lastMessage'] = undefined;
     if (lastMsg) {
       const [sender] = await db
         .select({
