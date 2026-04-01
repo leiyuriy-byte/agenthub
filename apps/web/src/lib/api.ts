@@ -1208,4 +1208,444 @@ export const reportApi = {
   },
 };
 
+// Poll API
+export interface PollOption {
+  id: string;
+  text: string;
+  voteCount: number;
+  percentage: number;
+}
+
+export interface Poll {
+  id: string;
+  postId: string;
+  question: string;
+  isAnonymous: boolean;
+  isMultiSelect: boolean;
+  endsAt: string | null;
+  totalVotes: number;
+  userVotedOptionIds: string[];
+  options: PollOption[];
+  hasEnded: boolean;
+}
+
+export interface PollResults {
+  poll: Poll;
+  totalVotes: number;
+  options: PollOption[];
+}
+
+export const pollApi = {
+  // Get poll for a post
+  getByPostId: (postId: string) => {
+    return api.get<Poll>(`/api/polls/${postId}`);
+  },
+
+  // Create a poll (authenticated)
+  create: (data: {
+    postId: string;
+    question: string;
+    options: string[];
+    isAnonymous?: boolean;
+    isMultiSelect?: boolean;
+    endsAt?: string;
+  }) => {
+    return api.post<Poll>('/api/polls', data);
+  },
+
+  // Vote on a poll
+  vote: (pollId: string, optionIds: string[]) => {
+    return api.post<PollResults>('/api/polls/vote', { pollId, optionIds });
+  },
+
+  // Get poll results
+  getResults: (pollId: string) => {
+    return api.get<PollResults>(`/api/polls/${pollId}/results`);
+  },
+
+  // Delete a poll (author only)
+  delete: (pollId: string) => {
+    return api.delete(`/api/polls/${pollId}`);
+  },
+};
+
 export default api;
+
+// ============== Article API ==============
+export interface ArticleCategory {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  icon?: string;
+  sortOrder: number;
+}
+
+export interface Article {
+  id: string;
+  authorId: string;
+  title: string;
+  slug: string;
+  excerpt?: string;
+  content: string;
+  coverImage?: string;
+  categoryId?: string;
+  status: 'draft' | 'published' | 'archived';
+  isFeatured: boolean;
+  viewCount: number;
+  likeCount: number;
+  commentCount: number;
+  readTimeMinutes?: number;
+  publishedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+  author?: User;
+  category?: ArticleCategory;
+  tags?: string[];
+  isLiked?: boolean;
+}
+
+export interface ArticleSeries {
+  id: string;
+  title: string;
+  slug: string;
+  description?: string;
+  coverImage?: string;
+  authorId: string;
+  createdAt: string;
+  articles?: Article[];
+}
+
+export interface ArticleListResponse {
+  articles: Article[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export const articleApi = {
+  list: (params?: {
+    categoryId?: string;
+    status?: string;
+    authorId?: string;
+    featured?: boolean;
+    limit?: number;
+    offset?: number;
+    orderBy?: 'createdAt' | 'publishedAt' | 'viewCount' | 'likeCount';
+  }) => {
+    const query = new URLSearchParams(params as Record<string, string>);
+    return api.get<ArticleListResponse>(`/api/articles?${query}`);
+  },
+
+  get: (idOrSlug: string) => api.get<Article>(`/api/articles/${idOrSlug}`),
+
+  create: (data: {
+    title: string;
+    content: string;
+    excerpt?: string;
+    coverImage?: string;
+    categoryId?: string;
+    tags?: string[];
+    status?: 'draft' | 'published';
+  }) => api.post<Article>('/api/articles', data),
+
+  update: (id: string, data: {
+    title?: string;
+    content?: string;
+    excerpt?: string;
+    coverImage?: string;
+    categoryId?: string;
+    tags?: string[];
+    status?: 'draft' | 'published' | 'archived';
+  }) => api.put<Article>(`/api/articles/${id}`, data),
+
+  delete: (id: string) => api.delete(`/api/articles/${id}`),
+
+  like: (id: string) => api.post(`/api/articles/${id}/like`),
+
+  getCategories: () => api.get<ArticleCategory[]>('/api/articles/categories'),
+
+  getStats: () => api.get<{ total: number; published: number; drafts: number }>('/api/articles/stats'),
+
+  getSeries: (authorId?: string) => api.get<ArticleSeries[]>('/api/articles/series'),
+
+  getSeriesById: (id: string) => api.get<ArticleSeries>('/api/articles/series/' + id),
+};
+
+// ============== Resource API ==============
+export interface ResourceCategory {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  icon?: string;
+  sortOrder: number;
+}
+
+export interface Resource {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  type: 'tool' | 'dataset' | 'api' | 'learning';
+  url?: string;
+  coverImage?: string;
+  categoryId?: string;
+  tags?: string[];
+  isFree: boolean;
+  isFeatured: boolean;
+  viewCount: number;
+  likeCount: number;
+  submitterId?: string;
+  status: 'pending' | 'approved' | 'rejected';
+  createdAt: string;
+  updatedAt: string;
+  category?: ResourceCategory;
+  submitter?: User;
+  isLiked?: boolean;
+}
+
+export interface ResourceListResponse {
+  resources: Resource[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export const resourceApi = {
+  list: (params?: {
+    categoryId?: string;
+    type?: 'tool' | 'dataset' | 'api' | 'learning';
+    status?: string;
+    featured?: boolean;
+    limit?: number;
+    offset?: number;
+    orderBy?: 'createdAt' | 'viewCount' | 'likeCount';
+  }) => {
+    const query = new URLSearchParams(params as Record<string, string>);
+    return api.get<ResourceListResponse>(`/api/resources?${query}`);
+  },
+
+  get: (idOrSlug: string) => api.get<Resource>(`/api/resources/${idOrSlug}`),
+
+  create: (data: {
+    name: string;
+    description: string;
+    type: 'tool' | 'dataset' | 'api' | 'learning';
+    url?: string;
+    coverImage?: string;
+    categoryId?: string;
+    tags?: string[];
+    isFree?: boolean;
+  }) => api.post<Resource>('/api/resources', data),
+
+  update: (id: string, data: {
+    name?: string;
+    description?: string;
+    type?: 'tool' | 'dataset' | 'api' | 'learning';
+    url?: string;
+    coverImage?: string;
+    categoryId?: string;
+    tags?: string[];
+    isFree?: boolean;
+    status?: 'pending' | 'approved' | 'rejected';
+    isFeatured?: boolean;
+  }) => api.put<Resource>(`/api/resources/${id}`, data),
+
+  delete: (id: string) => api.delete(`/api/resources/${id}`),
+
+  like: (id: string) => api.post(`/api/resources/${id}/like`),
+
+  getCategories: () => api.get<ResourceCategory[]>('/api/resources/categories'),
+
+  getStats: () => api.get<{ total: number; approved: number; pending: number }>('/api/resources/stats'),
+};
+
+// ============== Activity API ==============
+export interface Activity {
+  id: string;
+  organizerId: string;
+  title: string;
+  slug: string;
+  description: string;
+  coverImage?: string;
+  type: 'online' | 'offline';
+  location?: string;
+  startTime: string;
+  endTime: string;
+  maxAttendees?: number;
+  isFeatured: boolean;
+  viewCount: number;
+  status: 'upcoming' | 'ongoing' | 'ended' | 'cancelled';
+  createdAt: string;
+  updatedAt: string;
+  organizer?: User;
+  registrationCount?: number;
+  isRegistered?: boolean;
+}
+
+export interface ActivityRegistration {
+  id: string;
+  activityId: string;
+  userId: string;
+  status: 'registered' | 'confirmed' | 'cancelled';
+  createdAt: string;
+  user?: User;
+}
+
+export interface ActivityListResponse {
+  activities: Activity[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export const activityApi = {
+  list: (params?: {
+    type?: 'online' | 'offline';
+    status?: string;
+    featured?: boolean;
+    upcoming?: boolean;
+    limit?: number;
+    offset?: number;
+    orderBy?: 'startTime' | 'createdAt' | 'viewCount';
+  }) => {
+    const query = new URLSearchParams(params as Record<string, string>);
+    return api.get<ActivityListResponse>(`/api/activities?${query}`);
+  },
+
+  get: (idOrSlug: string) => api.get<Activity>(`/api/activities/${idOrSlug}`),
+
+  create: (data: {
+    title: string;
+    description: string;
+    coverImage?: string;
+    type: 'online' | 'offline';
+    location?: string;
+    startTime: number;
+    endTime: number;
+    maxAttendees?: number;
+  }) => api.post<Activity>('/api/activities', data),
+
+  update: (id: string, data: {
+    title?: string;
+    description?: string;
+    coverImage?: string;
+    type?: 'online' | 'offline';
+    location?: string;
+    startTime?: number;
+    endTime?: number;
+    maxAttendees?: number;
+    status?: 'upcoming' | 'ongoing' | 'ended' | 'cancelled';
+    isFeatured?: boolean;
+  }) => api.put<Activity>(`/api/activities/${id}`, data),
+
+  delete: (id: string) => api.delete(`/api/activities/${id}`),
+
+  register: (id: string) => api.post(`/api/activities/${id}/register`),
+
+  cancelRegistration: (id: string) => api.delete(`/api/activities/${id}/register`),
+
+  getMyRegistrations: () => api.get<ActivityRegistration[]>('/api/activities/my-registrations'),
+
+  getStats: () => api.get<{ total: number; upcoming: number; ongoing: number }>('/api/activities/stats'),
+};
+
+// Agent Comments API
+export interface AgentComment {
+  id: string;
+  agentId: string;
+  authorId: string;
+  parentId?: string;
+  content: string;
+  screenshotUrl?: string;
+  likeCount: number;
+  isHidden: boolean;
+  createdAt: string;
+  updatedAt: string;
+  author?: {
+    id: string;
+    username: string;
+    displayName?: string;
+    avatar?: string;
+    level: number;
+  };
+  isLiked?: boolean;
+}
+
+export const agentCommentApi = {
+  getByAgent: (agentId: string, options?: { limit?: number; offset?: number; sortBy?: 'newest' | 'popular' }) =>
+    api.get<{ comments: AgentComment[]; total: number }>(`/api/agents/${agentId}/comments`, options),
+
+  create: (agentId: string, data: { parentId?: string; content: string; screenshotUrl?: string }) =>
+    api.post<AgentComment>(`/api/agents/${agentId}/comments`, data),
+
+  update: (id: string, content: string) =>
+    api.put<AgentComment>(`/api/comments/${id}`, { content }),
+
+  delete: (id: string) =>
+    api.delete(`/api/comments/${id}`),
+
+  like: (id: string) =>
+    api.post(`/api/comments/${id}/like`),
+
+  unlike: (id: string) =>
+    api.delete(`/api/comments/${id}/like`),
+};
+
+// User Feedback API
+export interface UserFeedback {
+  id: string;
+  userId: string;
+  type: 'bug_report' | 'feature_suggestion';
+  title: string;
+  description: string;
+  screenshots?: string[];
+  status: 'pending' | 'in_progress' | 'resolved' | 'rejected';
+  priority?: string;
+  resolution?: string;
+  adminResponse?: string;
+  createdAt: string;
+  updatedAt: string;
+  resolvedAt?: string;
+  user?: {
+    id: string;
+    username: string;
+    displayName?: string;
+    avatar?: string;
+  };
+}
+
+export const feedbackApi = {
+  create: (data: {
+    type: 'bug_report' | 'feature_suggestion';
+    title: string;
+    description: string;
+    screenshots?: string[];
+  }) => api.post<UserFeedback>('/api/feedback', data),
+
+  getMy: (options?: { limit?: number; offset?: number }) =>
+    api.get<{ feedbacks: UserFeedback[]; total: number }>('/api/feedback/my', options),
+
+  getById: (id: string) =>
+    api.get<UserFeedback>(`/api/feedback/${id}`),
+
+  delete: (id: string) =>
+    api.delete(`/api/feedback/${id}`),
+
+  // Admin endpoints
+  getAll: (options?: { limit?: number; offset?: number; status?: string; type?: string }) =>
+    api.get<{ feedbacks: UserFeedback[]; total: number }>('/api/admin/feedback', options),
+
+  updateStatus: (id: string, data: { status: string; adminResponse?: string; resolution?: string }) =>
+    api.put<UserFeedback>(`/api/admin/feedback/${id}`, data),
+
+  getStats: () => api.get<{
+    total: number;
+    pending: number;
+    inProgress: number;
+    resolved: number;
+    bugReports: number;
+    featureSuggestions: number;
+  }>('/api/admin/feedback/stats'),
+};

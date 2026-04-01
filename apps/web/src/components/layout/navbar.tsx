@@ -189,6 +189,10 @@ export function Navbar() {
   const navLinks = [
     { href: '/agents', label: '发现 Agent' },
     { href: '/discussions', label: '讨论区' },
+    { href: '/articles', label: '博客' },
+    { href: '/resources', label: '资源' },
+    { href: '/activities', label: '活动' },
+    { href: '/feedback', label: '反馈' },
   ];
 
   return (

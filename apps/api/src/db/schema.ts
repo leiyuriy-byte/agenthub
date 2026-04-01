@@ -178,6 +178,46 @@ export const agentRatings = sqliteTable('agent_ratings', {
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().default(sql`CURRENT_TIMESTAMP`),
 });
 
+/** Agent comments - discussion/comments on agent detail pages */
+export const agentComments = sqliteTable('agent_comments', {
+  id: text('id').primaryKey(),
+  agentId: text('agent_id').notNull().references(() => agents.id, { onDelete: 'cascade' }),
+  authorId: text('author_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  parentId: text('parent_id'), // for nested replies
+  content: text('content').notNull(), // Markdown supported
+  screenshotUrl: text('screenshot_url'), // optional screenshot attachment
+  likeCount: integer('like_count').notNull().default(0),
+  isHidden: integer('is_hidden', { mode: 'boolean' }).notNull().default(false), // hidden by moderator
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
+/** Agent comment likes */
+export const agentCommentLikes = sqliteTable('agent_comment_likes', {
+  id: text('id').primaryKey(),
+  commentId: text('comment_id').notNull().references(() => agentComments.id, { onDelete: 'cascade' }),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
+/** User feedback - bug reports and feature suggestions */
+export const userFeedback = sqliteTable('user_feedback', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  type: text('type').notNull(), // bug_report, feature_suggestion
+  title: text('title').notNull(),
+  description: text('description').notNull(),
+  screenshots: text('screenshots'), // JSON array of screenshot URLs
+  status: text('status').notNull().default('pending'), // pending, in_progress, resolved, rejected
+  priority: text('priority'), // low, medium, high
+  resolution: text('resolution'), // resolution notes from admin
+  adminResponse: text('admin_response'), // response to the user
+  reviewedBy: text('reviewed_by').references(() => users.id, { onDelete: 'set null' }),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().default(sql`CURRENT_TIMESTAMP`),
+  resolvedAt: integer('resolved_at', { mode: 'timestamp' }),
+});
+
 /** Agent favorites */
 export const agentFavorites = sqliteTable('agent_favorites', {
   id: text('id').primaryKey(),
@@ -386,3 +426,9 @@ export type Comment = typeof comments.$inferSelect;
 export type NewComment = typeof comments.$inferInsert;
 export type Channel = typeof channels.$inferSelect;
 export type Notification = typeof notifications.$inferSelect;
+
+// Feedback types
+export type AgentComment = typeof agentComments.$inferSelect;
+export type NewAgentComment = typeof agentComments.$inferInsert;
+export type UserFeedback = typeof userFeedback.$inferSelect;
+export type NewUserFeedback = typeof userFeedback.$inferInsert;

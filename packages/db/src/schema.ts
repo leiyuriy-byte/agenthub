@@ -178,6 +178,46 @@ export const agentRatings = sqliteTable('agent_ratings', {
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().default(sql`CURRENT_TIMESTAMP`),
 });
 
+/** Agent comments - discussion/comments on agent detail pages */
+export const agentComments = sqliteTable('agent_comments', {
+  id: text('id').primaryKey(),
+  agentId: text('agent_id').notNull().references(() => agents.id, { onDelete: 'cascade' }),
+  authorId: text('author_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  parentId: text('parent_id'), // for nested replies
+  content: text('content').notNull(), // Markdown supported
+  screenshotUrl: text('screenshot_url'), // optional screenshot attachment
+  likeCount: integer('like_count').notNull().default(0),
+  isHidden: integer('is_hidden', { mode: 'boolean' }).notNull().default(false), // hidden by moderator
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
+/** Agent comment likes */
+export const agentCommentLikes = sqliteTable('agent_comment_likes', {
+  id: text('id').primaryKey(),
+  commentId: text('comment_id').notNull().references(() => agentComments.id, { onDelete: 'cascade' }),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
+/** User feedback - bug reports and feature suggestions */
+export const userFeedback = sqliteTable('user_feedback', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  type: text('type').notNull(), // bug_report, feature_suggestion
+  title: text('title').notNull(),
+  description: text('description').notNull(),
+  screenshots: text('screenshots'), // JSON array of screenshot URLs
+  status: text('status').notNull().default('pending'), // pending, in_progress, resolved, rejected
+  priority: text('priority'), // low, medium, high
+  resolution: text('resolution'), // resolution notes from admin
+  adminResponse: text('admin_response'), // response to the user
+  reviewedBy: text('reviewed_by').references(() => users.id, { onDelete: 'set null' }),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().default(sql`CURRENT_TIMESTAMP`),
+  resolvedAt: integer('resolved_at', { mode: 'timestamp' }),
+});
+
 /** Agent favorites */
 export const agentFavorites = sqliteTable('agent_favorites', {
   id: text('id').primaryKey(),
@@ -353,6 +393,133 @@ export const reports = sqliteTable('reports', {
   resolvedAt: integer('resolved_at', { mode: 'timestamp' }),
 });
 
+// ============== Content Management - Articles ==============
+
+/** Articles/Blog posts */
+export const articles = sqliteTable('articles', {
+  id: text('id').primaryKey(),
+  authorId: text('author_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  title: text('title').notNull(),
+  slug: text('slug').notNull(),
+  excerpt: text('excerpt'), // 摘要
+  content: text('content').notNull(), // Markdown content
+  coverImage: text('cover_image'),
+  categoryId: text('category_id'),
+  status: text('status').notNull().default('draft'), // draft, published, archived
+  isFeatured: integer('is_featured', { mode: 'boolean' }).notNull().default(false),
+  viewCount: integer('view_count').notNull().default(0),
+  likeCount: integer('like_count').notNull().default(0),
+  commentCount: integer('comment_count').notNull().default(0),
+  readTimeMinutes: integer('read_time_minutes'), // 阅读时间估算
+  publishedAt: integer('published_at', { mode: 'timestamp' }),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
+/** Article categories */
+export const articleCategories = sqliteTable('article_categories', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  slug: text('slug').notNull().unique(),
+  description: text('description'),
+  icon: text('icon'),
+  sortOrder: integer('sort_order').notNull().default(0),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
+/** Article tags */
+export const articleTags = sqliteTable('article_tags', {
+  id: text('id').primaryKey(),
+  articleId: text('article_id').notNull().references(() => articles.id, { onDelete: 'cascade' }),
+  tag: text('tag').notNull(),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
+/** Article series (grouping multiple articles) */
+export const articleSeries = sqliteTable('article_series', {
+  id: text('id').primaryKey(),
+  title: text('title').notNull(),
+  slug: text('slug').notNull().unique(),
+  description: text('description'),
+  coverImage: text('cover_image'),
+  authorId: text('author_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
+/** Article to series relationship */
+export const articleSeriesItems = sqliteTable('article_series_items', {
+  id: text('id').primaryKey(),
+  seriesId: text('series_id').notNull().references(() => articleSeries.id, { onDelete: 'cascade' }),
+  articleId: text('article_id').notNull().references(() => articles.id, { onDelete: 'cascade' }),
+  order: integer('order').notNull().default(0),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
+// ============== Content Management - Resources ==============
+
+/** Resources (tools, datasets, APIs) */
+export const resources = sqliteTable('resources', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  slug: text('slug').notNull(),
+  description: text('description').notNull(),
+  type: text('type').notNull(), // tool, dataset, api, learning
+  url: text('url'), // 链接
+  coverImage: text('cover_image'),
+  categoryId: text('category_id'),
+  tags: text('tags'), // JSON array
+  isFree: integer('is_free', { mode: 'boolean' }).notNull().default(true),
+  isFeatured: integer('is_featured', { mode: 'boolean' }).notNull().default(false),
+  viewCount: integer('view_count').notNull().default(0),
+  likeCount: integer('like_count').notNull().default(0),
+  submitterId: text('submitter_id').references(() => users.id, { onDelete: 'set null' }),
+  status: text('status').notNull().default('pending'), // pending, approved, rejected
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
+/** Resource categories */
+export const resourceCategories = sqliteTable('resource_categories', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  slug: text('slug').notNull().unique(),
+  description: text('description'),
+  icon: text('icon'),
+  sortOrder: integer('sort_order').notNull().default(0),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
+// ============== Content Management - Activities ==============
+
+/** Activities (online/offline events) */
+export const activities = sqliteTable('activities', {
+  id: text('id').primaryKey(),
+  organizerId: text('organizer_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  title: text('title').notNull(),
+  slug: text('slug').notNull(),
+  description: text('description').notNull(),
+  coverImage: text('cover_image'),
+  type: text('type').notNull(), // online, offline
+  location: text('location'), // 地址或在线链接
+  startTime: integer('start_time', { mode: 'timestamp' }).notNull(),
+  endTime: integer('end_time', { mode: 'timestamp' }).notNull(),
+  maxAttendees: integer('max_attendees'), // 最大参与人数，null 表示无限
+  isFeatured: integer('is_featured', { mode: 'boolean' }).notNull().default(false),
+  viewCount: integer('view_count').notNull().default(0),
+  status: text('status').notNull().default('upcoming'), // upcoming, ongoing, ended, cancelled
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
+/** Activity registrations */
+export const activityRegistrations = sqliteTable('activity_registrations', {
+  id: text('id').primaryKey(),
+  activityId: text('activity_id').notNull().references(() => activities.id, { onDelete: 'cascade' }),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  status: text('status').notNull().default('registered'), // registered, confirmed, cancelled
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
 // ============== Points & Level System ==============
 
 /** Point transactions - history of point changes */
@@ -386,3 +553,25 @@ export type Comment = typeof comments.$inferSelect;
 export type NewComment = typeof comments.$inferInsert;
 export type Channel = typeof channels.$inferSelect;
 export type Notification = typeof notifications.$inferSelect;
+
+// Article types
+export type Article = typeof articles.$inferSelect;
+export type NewArticle = typeof articles.$inferInsert;
+export type ArticleCategory = typeof articleCategories.$inferSelect;
+export type ArticleSeries = typeof articleSeries.$inferSelect;
+
+// Resource types
+export type Resource = typeof resources.$inferSelect;
+export type NewResource = typeof resources.$inferInsert;
+export type ResourceCategory = typeof resourceCategories.$inferSelect;
+
+// Activity types
+export type Activity = typeof activities.$inferSelect;
+export type NewActivity = typeof activities.$inferInsert;
+export type ActivityRegistration = typeof activityRegistrations.$inferSelect;
+
+// Feedback types
+export type AgentComment = typeof agentComments.$inferSelect;
+export type NewAgentComment = typeof agentComments.$inferInsert;
+export type UserFeedback = typeof userFeedback.$inferSelect;
+export type NewUserFeedback = typeof userFeedback.$inferInsert;

@@ -10,7 +10,7 @@ import { Badge } from '@agenthub/ui/badge';
 import { Button } from '@agenthub/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@agenthub/ui/card';
 import { Input } from '@agenthub/ui/input';
-import { agentApi, Agent, AgentCategory, User, reportApi } from '@/lib/api';
+import { agentApi, Agent, AgentCategory, User, reportApi, agentCommentApi } from '@/lib/api';
 import { formatRelativeTime, formatNumber, cn } from '@/lib/utils';
 import {
   ArrowLeft,
@@ -37,7 +37,9 @@ import {
   ZoomIn,
   Flag,
   GitCompare,
+  ThumbsUp,
 } from 'lucide-react';
+import { Textarea } from '@agenthub/ui/textarea';
 import { toast } from 'sonner';
 
 // Extended types for agent detail
@@ -108,6 +110,20 @@ export default function AgentDetailPage() {
   const [isReporting, setIsReporting] = useState(false);
   const [reportSuccess, setReportSuccess] = useState(false);
 
+  // Comments state
+  const [comments, setComments] = useState<any[]>([]);
+  const [commentsTotal, setCommentsTotal] = useState(0);
+  const [isLoadingComments, setIsLoadingComments] = useState(false);
+  const [commentSortBy, setCommentSortBy] = useState<'newest' | 'popular'>('newest');
+  const [commentPage, setCommentPage] = useState(1);
+  const [isLoadingMoreComments, setIsLoadingMoreComments] = useState(false);
+  const [newComment, setNewComment] = useState('');
+  const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+  const [replyToComment, setReplyToComment] = useState<string | null>(null);
+  const [replyContent, setReplyContent] = useState('');
+  const [isSubmittingReply, setIsSubmittingReply] = useState(false);
+  const userId = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('agenthub_user') || '{}')?.id : null;
+
   // Check auth status
   useEffect(() => {
     const token = localStorage.getItem('agenthub_token');
@@ -162,6 +178,152 @@ export default function AgentDetailPage() {
       fetchRelated();
     }
   }, [agent?.id]);
+
+  // Fetch comments
+  const fetchComments = useCallback(async (page = 1, append = false) => {
+    if (!id) return;
+
+    if (append) {
+      setIsLoadingMoreComments(true);
+    } else {
+      setIsLoadingComments(true);
+    }
+
+    try {
+      const response = await agentCommentApi.getByAgent(id, {
+        limit: 10,
+        offset: (page - 1) * 10,
+        sortBy: commentSortBy,
+      });
+
+      if (response.success && response.data) {
+        if (append) {
+          setComments((prev) => [...prev, ...response.data.comments]);
+        } else {
+          setComments(response.data.comments);
+        }
+        setCommentsTotal(response.data.total);
+      }
+    } catch (err) {
+      console.error('Failed to fetch comments:', err);
+    } finally {
+      setIsLoadingComments(false);
+      setIsLoadingMoreComments(false);
+    }
+  }, [id, commentSortBy]);
+
+  useEffect(() => {
+    if (id) {
+      fetchComments(1, false);
+    }
+  }, [id, commentSortBy]);
+
+  // Load more comments
+  const loadMoreComments = () => {
+    const nextPage = commentPage + 1;
+    setCommentPage(nextPage);
+    fetchComments(nextPage, true);
+  };
+
+  // Submit new comment
+  const handleSubmitComment = async () => {
+    if (!newComment.trim() || !id) return;
+
+    setIsSubmittingComment(true);
+    try {
+      const response = await agentCommentApi.create(id, {
+        content: newComment,
+      });
+
+      if (response.success) {
+        setNewComment('');
+        toast.success('评论已发表');
+        fetchComments(1, false); // Refresh comments
+      } else {
+        toast.error(response.error || 'Failed to post comment');
+      }
+    } catch (err) {
+      console.error('Failed to post comment:', err);
+      toast.error('Failed to post comment');
+    } finally {
+      setIsSubmittingComment(false);
+    }
+  };
+
+  // Like a comment
+  const handleLikeComment = async (commentId: string) => {
+    if (!isLoggedIn) {
+      window.location.href = '/login';
+      return;
+    }
+
+    const comment = comments.find(c => c.id === commentId);
+    if (!comment) return;
+
+    try {
+      if (comment.isLiked) {
+        await agentCommentApi.unlike(commentId);
+        setComments(prev => prev.map(c => 
+          c.id === commentId 
+            ? { ...c, isLiked: false, likeCount: (c.likeCount || 0) - 1 }
+            : c
+        ));
+      } else {
+        await agentCommentApi.like(commentId);
+        setComments(prev => prev.map(c => 
+          c.id === commentId 
+            ? { ...c, isLiked: true, likeCount: (c.likeCount || 0) + 1 }
+            : c
+        ));
+      }
+    } catch (err) {
+      console.error('Failed to like comment:', err);
+    }
+  };
+
+  // Submit reply
+  const handleSubmitReply = async (parentId: string) => {
+    if (!replyContent.trim() || !id) return;
+
+    setIsSubmittingReply(true);
+    try {
+      const response = await agentCommentApi.create(id, {
+        parentId,
+        content: replyContent,
+      });
+
+      if (response.success) {
+        setReplyContent('');
+        setReplyToComment(null);
+        toast.success('回复已发表');
+        fetchComments(1, false);
+      } else {
+        toast.error(response.error || 'Failed to post reply');
+      }
+    } catch (err) {
+      console.error('Failed to post reply:', err);
+      toast.error('Failed to post reply');
+    } finally {
+      setIsSubmittingReply(false);
+    }
+  };
+
+  // Delete comment
+  const handleDeleteComment = async (commentId: string) => {
+    if (!confirm('确定删除这条评论吗？')) return;
+
+    try {
+      const response = await agentCommentApi.delete(commentId);
+      if (response.success) {
+        toast.success('评论已删除');
+        fetchComments(1, false);
+      } else {
+        toast.error(response.error || 'Failed to delete comment');
+      }
+    } catch (err) {
+      console.error('Failed to delete comment:', err);
+    }
+  };
 
   // Handle favorite toggle
   const handleFavorite = async () => {
@@ -915,6 +1077,262 @@ export default function AgentDetailPage() {
               </Card>
             )}
           </div>
+        </div>
+
+        {/* Agent Comments Section */}
+        <div className="mt-8 pt-8 border-t">
+          <h2 className="text-xl font-bold flex items-center gap-2 mb-6">
+            <MessageCircle className="h-5 w-5" />
+            用户讨论 ({comments.length > 0 ? commentsTotal : 0})
+          </h2>
+          
+          {/* Comment Form */}
+          {isLoggedIn ? (
+            <Card className="mb-6">
+              <CardContent className="pt-4">
+                <div className="space-y-4">
+                  <Textarea
+                    placeholder="分享您的使用体验、问题或建议..."
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    className="min-h-[100px]"
+                  />
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs text-muted-foreground">
+                      支持 Markdown 格式
+                    </span>
+                    <Button 
+                      onClick={handleSubmitComment} 
+                      disabled={!newComment.trim() || isSubmittingComment}
+                    >
+                      {isSubmittingComment ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : null}
+                      发表
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card className="mb-6">
+              <CardContent className="py-6 text-center">
+                <p className="text-muted-foreground mb-3">
+                  登录后可参与讨论
+                </p>
+                <Button variant="outline" onClick={() => window.location.href = '/login'}>
+                  登录
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Sort Options */}
+          <div className="flex gap-2 mb-4">
+            <Button
+              variant={commentSortBy === 'newest' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setCommentSortBy('newest')}
+            >
+              最新
+            </Button>
+            <Button
+              variant={commentSortBy === 'popular' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setCommentSortBy('popular')}
+            >
+              最热
+            </Button>
+          </div>
+
+          {/* Comments List */}
+          {isLoadingComments ? (
+            <div className="space-y-4">
+              {[...Array(3)].map((_, i) => (
+                <Card key={i} className="animate-pulse">
+                  <CardContent className="pt-4">
+                    <div className="flex gap-3">
+                      <div className="h-10 w-10 rounded-full bg-muted" />
+                      <div className="space-y-2 flex-1">
+                        <div className="h-4 bg-muted rounded w-1/4" />
+                        <div className="h-16 bg-muted rounded" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : comments.length === 0 ? (
+            <Card>
+              <CardContent className="py-12 text-center">
+                <MessageCircle className="h-12 w-12 text-muted mx-auto mb-4" />
+                <p className="text-muted-foreground">暂无讨论，快来发表第一条评论吧！</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-4">
+              {comments.map((comment: any) => (
+                <Card key={comment.id}>
+                  <CardContent className="pt-4">
+                    <div className="flex gap-3">
+                      <Link href={`/users/${comment.author?.username}`}>
+                        <Avatar className="h-10 w-10">
+                          <AvatarImage src={comment.author?.avatar} />
+                          <AvatarFallback>
+                            {comment.author?.username?.charAt(0).toUpperCase() || '?'}
+                          </AvatarFallback>
+                        </Avatar>
+                      </Link>
+                      <div className="flex-1 space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Link 
+                            href={`/users/${comment.author?.username}`}
+                            className="font-medium hover:underline"
+                          >
+                            {comment.author?.displayName || comment.author?.username}
+                          </Link>
+                          {comment.author?.level && (
+                            <Badge variant="outline" className="text-xs">
+                              L{comment.author.level}
+                            </Badge>
+                          )}
+                          <span className="text-xs text-muted-foreground">
+                            {formatRelativeTime(comment.createdAt)}
+                          </span>
+                        </div>
+                        <div className="prose prose-sm dark:prose-invert max-w-none">
+                          {comment.content}
+                        </div>
+                        {comment.screenshotUrl && (
+                          <div className="mt-2">
+                            <Image
+                              src={comment.screenshotUrl}
+                              alt="Comment screenshot"
+                              width={300}
+                              height={200}
+                              className="rounded-md object-cover max-h-40"
+                            />
+                          </div>
+                        )}
+                        <div className="flex items-center gap-4 pt-2">
+                          <button
+                            onClick={() => handleLikeComment(comment.id)}
+                            disabled={!isLoggedIn}
+                            className={cn(
+                              "flex items-center gap-1 text-sm transition-colors",
+                              comment.isLiked ? "text-primary" : "text-muted-foreground hover:text-primary",
+                              !isLoggedIn && "cursor-not-allowed opacity-50"
+                            )}
+                          >
+                            <ThumbsUp className="h-4 w-4" />
+                            {comment.likeCount || 0}
+                          </button>
+                          {isLoggedIn && (
+                            <button
+                              onClick={() => setReplyToComment(comment.id)}
+                              className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                            >
+                              回复
+                            </button>
+                          )}
+                          {comment.authorId === userId && (
+                            <button
+                              onClick={() => handleDeleteComment(comment.id)}
+                              className="text-sm text-muted-foreground hover:text-destructive transition-colors"
+                            >
+                              删除
+                            </button>
+                          )}
+                        </div>
+
+                        {/* Reply Form */}
+                        {replyToComment === comment.id && (
+                          <div className="mt-3 pl-4 border-l-2">
+                            <Textarea
+                              placeholder="写下你的回复..."
+                              value={replyContent}
+                              onChange={(e) => setReplyContent(e.target.value)}
+                              className="min-h-[80px] mb-2"
+                            />
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                onClick={() => handleSubmitReply(comment.id)}
+                                disabled={!replyContent.trim() || isSubmittingReply}
+                              >
+                                {isSubmittingReply ? (
+                                  <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                                ) : null}
+                                发送
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => {
+                                  setReplyToComment(null);
+                                  setReplyContent('');
+                                }}
+                              >
+                                取消
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Nested Replies */}
+                        {comment.replies && comment.replies.length > 0 && (
+                          <div className="mt-4 space-y-3 pl-4 border-l-2">
+                            {comment.replies.map((reply: any) => (
+                              <div key={reply.id} className="flex gap-2">
+                                <Link href={`/users/${reply.author?.username}`}>
+                                  <Avatar className="h-8 w-8">
+                                    <AvatarImage src={reply.author?.avatar} />
+                                    <AvatarFallback className="text-xs">
+                                      {reply.author?.username?.charAt(0).toUpperCase() || '?'}
+                                    </AvatarFallback>
+                                  </Avatar>
+                                </Link>
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-2">
+                                    <Link 
+                                      href={`/users/${reply.author?.username}`}
+                                      className="font-medium text-sm hover:underline"
+                                    >
+                                      {reply.author?.displayName || reply.author?.username}
+                                    </Link>
+                                    <span className="text-xs text-muted-foreground">
+                                      {formatRelativeTime(reply.createdAt)}
+                                    </span>
+                                  </div>
+                                  <p className="text-sm mt-1">{reply.content}</p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+
+              {/* Load More */}
+              {commentsTotal > comments.length && (
+                <div className="text-center mt-4">
+                  <Button
+                    variant="outline"
+                    onClick={loadMoreComments}
+                    disabled={isLoadingMoreComments}
+                  >
+                    {isLoadingMoreComments ? (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    ) : null}
+                    加载更多
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Related Agents Section */}

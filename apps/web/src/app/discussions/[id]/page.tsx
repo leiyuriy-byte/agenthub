@@ -41,6 +41,7 @@ import rehypeHighlight from 'rehype-highlight';
 import rehypeSanitize from 'rehype-sanitize';
 import 'highlight.js/styles/github-dark.css';
 import { CommentList, CommentForm } from '@/components/comment/comment-list';
+import { PollComponent } from '@/components/poll/poll-component';
 
 export default function PostDetailPage() {
   const params = useParams();
@@ -537,6 +538,13 @@ export default function PostDetailPage() {
                   {post.content}
                 </ReactMarkdown>
               </div>
+
+              {/* Poll Section */}
+              {post.type === 'poll' && (
+                <div className="mt-8 p-6 bg-muted/30 rounded-lg border">
+                  <PollComponent postId={id} />
+                </div>
+              )}
 
               {/* Action Bar */}
               <div className="flex flex-wrap items-center justify-between gap-4 mt-8 pt-6 border-t">

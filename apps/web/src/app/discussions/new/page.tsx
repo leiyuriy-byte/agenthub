@@ -39,6 +39,12 @@ const postFormSchema = z.object({
   content: z.string().min(1, '内容不能为空'),
   type: z.enum(['normal', 'question', 'poll', 'share']).default('normal'),
   tags: z.array(z.string()).max(5).optional(),
+  // Poll fields
+  pollQuestion: z.string().optional(),
+  pollOptions: z.array(z.string()).optional(),
+  pollMultiSelect: z.boolean().optional(),
+  pollAnonymous: z.boolean().optional(),
+  pollEndsAt: z.string().optional(),
 });
 
 type PostFormData = z.infer<typeof postFormSchema>;
@@ -56,6 +62,11 @@ export default function NewPostPage() {
     content: '',
     type: 'normal',
     tags: [],
+    pollQuestion: '',
+    pollOptions: ['', ''],
+    pollMultiSelect: false,
+    pollAnonymous: false,
+    pollEndsAt: '',
   });
 
   // Check auth
@@ -124,15 +135,61 @@ export default function NewPostPage() {
       return;
     }
 
+    // Additional validation for poll type
+    if (formData.type === 'poll') {
+      const options = formData.pollOptions?.filter(o => o.trim()) || [];
+      if (!formData.pollQuestion?.trim()) {
+        toast.error('请填写投票问题');
+        return;
+      }
+      if (options.length < 2) {
+        toast.error('请至少提供 2 个投票选项');
+        return;
+      }
+    }
+
     setIsLoading(true);
     try {
-      const response = await postApi.create(formData);
+      // Create the post first
+      const postResponse = await postApi.create({
+        channelId: formData.channelId,
+        title: formData.title,
+        content: formData.content,
+        type: formData.type,
+        tags: formData.tags,
+      });
 
-      if (response.success && response.data) {
+      if (postResponse.success && postResponse.data) {
+        const postId = postResponse.data.id;
+
+        // If it's a poll, create the poll
+        if (formData.type === 'poll' && formData.pollQuestion) {
+          const pollOptions = (formData.pollOptions || []).filter(o => o.trim());
+          if (pollOptions.length >= 2) {
+            try {
+              await fetch('/api/polls', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  postId,
+                  question: formData.pollQuestion,
+                  options: pollOptions,
+                  isAnonymous: formData.pollAnonymous,
+                  isMultiSelect: formData.pollMultiSelect,
+                  endsAt: formData.pollEndsAt || undefined,
+                }),
+              });
+            } catch (pollError) {
+              console.error('Failed to create poll:', pollError);
+              // Don't fail the whole submission if poll creation fails
+            }
+          }
+        }
+
         toast.success('帖子已发布！');
-        router.push(`/discussions/${response.data.id}`);
+        router.push(`/discussions/${postId}`);
       } else {
-        toast.error(response.error || '发布失败');
+        toast.error(postResponse.error || '发布失败');
       }
     } catch {
       toast.error('发布失败');
@@ -290,6 +347,107 @@ export default function NewPostPage() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Poll Configuration (only when poll type selected) */}
+          {formData.type === 'poll' && (
+            <Card>
+              <CardHeader>
+                <CardTitle>投票配置</CardTitle>
+                <CardDescription>设置投票选项和规则</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Poll Question */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">投票问题</label>
+                  <Input
+                    placeholder="例如：你喜欢哪种开发语言？"
+                    value={formData.pollQuestion || ''}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, pollQuestion: e.target.value }))}
+                    className={errors.pollQuestion ? 'border-destructive' : ''}
+                  />
+                  {errors.pollQuestion && <p className="text-xs text-destructive">{errors.pollQuestion}</p>}
+                </div>
+
+                {/* Poll Options */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">投票选项（2-10个）</label>
+                  <div className="space-y-2">
+                    {(formData.pollOptions || ['', '']).map((option, index) => (
+                      <div key={index} className="flex gap-2">
+                        <Input
+                          placeholder={`选项 ${index + 1}`}
+                          value={option}
+                          onChange={(e) => {
+                            const newOptions = [...(formData.pollOptions || ['', ''])];
+                            newOptions[index] = e.target.value;
+                            setFormData((prev) => ({ ...prev, pollOptions: newOptions }));
+                          }}
+                          className="flex-1"
+                        />
+                        {(formData.pollOptions?.length || 2) > 2 && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => {
+                              const newOptions = (formData.pollOptions || ['', '']).filter((_, i) => i !== index);
+                              setFormData((prev) => ({ ...prev, pollOptions: newOptions }));
+                            }}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  {(formData.pollOptions?.length || 2) < 10 && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const newOptions = [...(formData.pollOptions || ['', '']), ''];
+                        setFormData((prev) => ({ ...prev, pollOptions: newOptions }));
+                      }}
+                      className="mt-2"
+                    >
+                      + 添加选项
+                    </Button>
+                  )}
+                </div>
+
+                {/* Poll Settings */}
+                <div className="flex flex-wrap gap-6">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.pollMultiSelect || false}
+                      onChange={(e) => setFormData((prev) => ({ ...prev, pollMultiSelect: e.target.checked }))}
+                      className="rounded border-input"
+                    />
+                    <span className="text-sm">允许多选</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.pollAnonymous || false}
+                      onChange={(e) => setFormData((prev) => ({ ...prev, pollAnonymous: e.target.checked }))}
+                      className="rounded border-input"
+                    />
+                    <span className="text-sm">匿名投票</span>
+                  </label>
+                </div>
+
+                {/* End Date */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">截止日期（可选）</label>
+                  <Input
+                    type="datetime-local"
+                    value={formData.pollEndsAt || ''}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, pollEndsAt: e.target.value }))}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Actions */}
           <div className="flex items-center justify-end gap-4 pb-8">

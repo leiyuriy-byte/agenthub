@@ -16,3 +16,4 @@ export * from './textarea';
 export * from './dropdown-menu';
 export * from './image-upload';
 export * from './tabs';
+export * from './skeleton';

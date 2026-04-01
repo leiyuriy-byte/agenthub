@@ -21,6 +21,11 @@ import { uploadRoutes } from './routes/upload.routes.js';
 import { feedRoutes } from './routes/feed.routes.js';
 import { oauthRoutes } from './routes/oauth.routes.js';
 import { reportRoutes } from './routes/report.routes.js';
+import { pollRoutes } from './routes/poll.routes.js';
+import { articleRoutes } from './routes/article.routes.js';
+import { resourceRoutes } from './routes/resource.routes.js';
+import { activityRoutes } from './routes/activity.routes.js';
+import { feedbackRoutes } from './routes/feedback.routes.js';
 import { initializeWebSocket } from './services/websocket.service.js';
 import { initializeEmailTransporter } from './services/email.service.js';
 
@@ -113,6 +118,11 @@ await fastify.register(uploadRoutes, { prefix: '/api/upload' });
 await fastify.register(feedRoutes, { prefix: '/api/feed' });
 await fastify.register(oauthRoutes, { prefix: '/api/auth' });
 await fastify.register(reportRoutes, { prefix: '/api/reports' });
+await fastify.register(pollRoutes, { prefix: '/api/polls' });
+await fastify.register(articleRoutes, { prefix: '/api/articles' });
+await fastify.register(resourceRoutes, { prefix: '/api/resources' });
+await fastify.register(activityRoutes, { prefix: '/api/activities' });
+await fastify.register(feedbackRoutes, { prefix: '/api' });
 
 // Health check endpoint
 fastify.get('/health', async () => {
