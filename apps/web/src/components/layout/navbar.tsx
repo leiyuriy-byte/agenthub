@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAuthStore, User, notificationApi, messageApi, pointsApi } from '@/lib/api';
+import { useAuthStore, User, notificationApi, messageApi, pointsApi, searchApi } from '@/lib/api';
 import { Button } from '@agenthub/ui/button';
 import { Input } from '@agenthub/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@agenthub/ui/avatar';
@@ -25,7 +25,15 @@ import {
   Calendar,
   Flame,
   Trophy,
+  Bot,
+  FileText,
 } from 'lucide-react';
+
+interface QuickSearchResult {
+  agents: { id: string; name: string; slug: string; logo: string | null }[];
+  posts: { id: string; title: string }[];
+  users: { id: string; username: string; displayName: string | null; avatar: string | null }[];
+}
 
 export function Navbar() {
   const router = useRouter();
@@ -40,6 +48,9 @@ export function Navbar() {
   const [checkedIn, setCheckedIn] = useState(false);
   const [isCheckingIn, setIsCheckingIn] = useState(false);
   const [userPoints, setUserPoints] = useState<{ points: number; level: number; levelName: string } | null>(null);
+  const [showSearchDropdown, setShowSearchDropdown] = useState(false);
+  const [searchResults, setSearchResults] = useState<QuickSearchResult | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const notificationRef = useRef<HTMLDivElement>(null);
 
@@ -136,9 +147,49 @@ export function Navbar() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
+      setShowSearchDropdown(false);
       router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
     }
   };
+
+  // Handle quick search for autocomplete
+  const handleSearchChange = async (value: string) => {
+    setSearchQuery(value);
+    if (value.trim().length < 1) {
+      setSearchResults(null);
+      setShowSearchDropdown(false);
+      return;
+    }
+
+    setIsSearching(true);
+    try {
+      const response = await searchApi.quickSearch(value.trim(), 5);
+      if (response.success && response.data) {
+        const hasResults = 
+          response.data.agents.length > 0 || 
+          response.data.posts.length > 0 || 
+          response.data.users.length > 0;
+        setSearchResults(response.data);
+        setShowSearchDropdown(hasResults);
+      }
+    } catch (error) {
+      // Silently fail
+    }
+    setIsSearching(false);
+  };
+
+  // Clear search dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const searchContainer = document.getElementById('search-container');
+      if (searchContainer && !searchContainer.contains(event.target as Node)) {
+        setShowSearchDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Handle logout
   const handleLogout = useCallback(() => {
@@ -230,15 +281,111 @@ export function Navbar() {
           onSubmit={handleSearch}
           className="hidden md:flex flex-1 max-w-md mx-8"
         >
-          <div className="relative w-full">
+          <div className="relative w-full" id="search-container">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
-              placeholder="搜索..."
+              placeholder="搜索 Agent/帖子/用户..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              onFocus={() => searchResults && setShowSearchDropdown(true)}
               className="w-full pl-10 pr-4 bg-muted/50 border-transparent focus:border-primary focus:bg-background transition-all"
             />
+            {/* Search Autocomplete Dropdown */}
+            <AnimatePresence>
+              {showSearchDropdown && searchResults && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  className="absolute top-full mt-2 w-full rounded-xl border bg-background shadow-lg overflow-hidden z-50"
+                >
+                  {isSearching ? (
+                    <div className="p-4 text-center text-muted-foreground">
+                      <Loader2 className="h-4 w-4 animate-spin mx-auto" />
+                    </div>
+                  ) : (
+                    <>
+                      {/* Agents */}
+                      {searchResults.agents.length > 0 && (
+                        <div className="p-2">
+                          <p className="px-2 py-1 text-xs font-medium text-muted-foreground flex items-center gap-1">
+                            <Bot className="h-3 w-3" /> Agent
+                          </p>
+                          {searchResults.agents.map((agent) => (
+                            <Link
+                              key={agent.id}
+                              href={`/agents/${agent.slug}`}
+                              onClick={() => setShowSearchDropdown(false)}
+                              className="flex items-center gap-2 px-2 py-2 rounded-lg hover:bg-accent transition-colors"
+                            >
+                              {agent.logo ? (
+                                <img src={agent.logo} alt={agent.name} className="h-6 w-6 rounded-md object-cover" />
+                              ) : (
+                                <div className="h-6 w-6 rounded-md bg-primary/10 flex items-center justify-center">
+                                  <Bot className="h-3 w-3 text-primary" />
+                                </div>
+                              )}
+                              <span className="text-sm truncate">{agent.name}</span>
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                      {/* Posts */}
+                      {searchResults.posts.length > 0 && (
+                        <div className="p-2 border-t">
+                          <p className="px-2 py-1 text-xs font-medium text-muted-foreground flex items-center gap-1">
+                            <FileText className="h-3 w-3" /> 帖子
+                          </p>
+                          {searchResults.posts.map((post) => (
+                            <Link
+                              key={post.id}
+                              href={`/discussions/${post.id}`}
+                              onClick={() => setShowSearchDropdown(false)}
+                              className="flex items-center gap-2 px-2 py-2 rounded-lg hover:bg-accent transition-colors"
+                            >
+                              <FileText className="h-4 w-4 text-muted-foreground" />
+                              <span className="text-sm truncate">{post.title}</span>
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                      {/* Users */}
+                      {searchResults.users.length > 0 && (
+                        <div className="p-2 border-t">
+                          <p className="px-2 py-1 text-xs font-medium text-muted-foreground flex items-center gap-1">
+                            <UserIcon className="h-3 w-3" /> 用户
+                          </p>
+                          {searchResults.users.map((userItem) => (
+                            <Link
+                              key={userItem.id}
+                              href={`/users/${userItem.id}`}
+                              onClick={() => setShowSearchDropdown(false)}
+                              className="flex items-center gap-2 px-2 py-2 rounded-lg hover:bg-accent transition-colors"
+                            >
+                              {userItem.avatar ? (
+                                <img src={userItem.avatar} alt={userItem.displayName || userItem.username} className="h-6 w-6 rounded-full object-cover" />
+                              ) : (
+                                <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center">
+                                  <UserIcon className="h-3 w-3 text-primary" />
+                                </div>
+                              )}
+                              <span className="text-sm truncate">{userItem.displayName || userItem.username}</span>
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                      {/* No results */}
+                      {searchResults.agents.length === 0 && searchResults.posts.length === 0 && searchResults.users.length === 0 && (
+                        <div className="p-4 text-center text-muted-foreground text-sm">
+                          未找到相关结果
+                        </div>
+                      )}
+                    </>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </form>
 
@@ -411,9 +558,9 @@ export function Navbar() {
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     type="search"
-                    placeholder="搜索 Agent..."
+                    placeholder="搜索 Agent/帖子/用户..."
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={(e) => handleSearchChange(e.target.value)}
                     aria-label="搜索"
                     className="w-full pl-10"
                   />

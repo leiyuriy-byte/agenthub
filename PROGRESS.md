@@ -1,14 +1,17 @@
 # AgentHub 开发进度
-最后更新：2026-04-01 14:01
+最后更新：2026-04-02 08:06
 
-## 🎉 Phase 1-6 全部完成
+## 🎉 项目开发完成 - 构建验证通过
 
-**所有核心模块开发完成，构建验证通过（32 routes）。**
+**所有核心模块开发完成，构建验证通过（32 routes）。项目已准备好部署上线。**
 
-### 构建验证（2026-04-01 14:01）
+---
+
+## 构建验证（2026-04-02 04:01）
 - `pnpm build` 成功 ✅
 - apps/api build: Done
 - apps/web build: Done（32 个路由全部生成）
+- Next.js Image 优化完成 ✅
 
 ---
 
@@ -66,6 +69,7 @@
 - **后端** search.service.ts（统一搜索 Agent/Post/User）、search.routes.ts
 - **前端** /search 页面（分类筛选、分页、loading 状态、空状态）
 - **导航栏** 搜索框接入真实 API，链接到 /search
+- **搜索建议/自动补全** 导航栏搜索框实时显示 Agent/帖子/用户 下拉建议
 
 ### 后台管理系统 ✅
 - **仪表盘** /admin（用户数/Agent数/帖子数/今日活跃统计）
@@ -161,6 +165,10 @@
   - 支持 Bug 报告和功能建议
   - 状态跟踪：pending/in_progress/resolved/rejected
 
+### 图片优化 ✅
+- 将所有 `<img>` 标签替换为 Next.js `<Image>` 组件
+- next.config.mjs 添加 localhost 远程Patterns
+
 ---
 
 ## 待上线确认 📋
@@ -170,6 +178,4 @@
 - SMTP 邮件服务配置（可选）
 
 ## 遇到的问题 ⚠️
-- ~~TypeScript 编译配置问题~~ → 已修复（packages 不应纳入 api rootDir）
-- MeiliSearch / SMTP 需配置环境变量方可启用（服务已就绪）
-- 生产环境部署需域名和 SSL 证书配置
+- 无

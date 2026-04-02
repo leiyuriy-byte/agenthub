@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter, useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { z } from 'zod';
@@ -326,7 +327,7 @@ export default function EditAgentPage() {
                 <div className="relative">
                   <div className="h-20 w-20 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center overflow-hidden border-2 border-dashed border-muted-foreground/20">
                     {formData.logo ? (
-                      <img src={formData.logo} alt="Logo" className="h-full w-full object-cover" />
+                      <Image src={formData.logo} alt="Logo" fill className="object-cover" />
                     ) : (
                       <ImageIcon className="h-8 w-8 text-muted-foreground" />
                     )}
@@ -511,9 +512,9 @@ export default function EditAgentPage() {
             </CardHeader>
             <CardContent>
               <div className="flex items-start gap-4 p-4 rounded-lg border bg-muted/30">
-                <div className="h-16 w-16 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center overflow-hidden flex-shrink-0">
+                <div className="relative h-16 w-16 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center overflow-hidden flex-shrink-0">
                   {formData.logo ? (
-                    <img src={formData.logo} alt="Logo" className="h-full w-full object-cover" />
+                    <Image src={formData.logo} alt="Logo" fill className="object-cover" />
                   ) : (
                     <span className="text-2xl font-bold text-primary">
                       {formData.name.charAt(0).toUpperCase() || '?'}

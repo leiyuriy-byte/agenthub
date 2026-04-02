@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { adminApi, AdminUser } from '@/lib/api';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@agenthub/ui/button';
@@ -202,7 +203,7 @@ export default function AdminUsersPage() {
                         <div className="flex items-center gap-3">
                           <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                             {u.avatar ? (
-                              <img src={u.avatar} alt="" className="h-10 w-10 rounded-full object-cover" />
+                              <Image src={u.avatar} alt="" width={40} height={40} className="rounded-full object-cover" />
                             ) : (
                               <span className="text-sm font-medium">
                                 {u.displayName?.charAt(0) || u.username.charAt(0).toUpperCase()}

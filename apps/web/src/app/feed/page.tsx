@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { feedApi, FeedItem } from '@/lib/api';
 import { useAuthStore } from '@/stores/auth-store';
@@ -285,10 +286,12 @@ export default function FeedPage() {
                                 <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
                                   <div className="h-12 w-12 rounded-lg overflow-hidden bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center flex-shrink-0">
                                     {item.data.agentLogo ? (
-                                      <img 
+                                      <Image 
                                         src={item.data.agentLogo} 
                                         alt={item.data.agentName}
-                                        className="h-full w-full object-cover"
+                                        width={48}
+                                        height={48}
+                                        className="object-cover"
                                       />
                                     ) : (
                                       <Bot className="h-6 w-6 text-muted-foreground" />

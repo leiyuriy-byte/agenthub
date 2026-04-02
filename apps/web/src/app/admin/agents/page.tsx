@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { adminApi, AdminAgent } from '@/lib/api';
@@ -247,7 +248,7 @@ export default function AdminAgentsPage() {
                         <div className="flex items-center gap-3">
                           <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center overflow-hidden shrink-0">
                             {agent.logo ? (
-                              <img src={agent.logo} alt="" className="h-10 w-10 object-cover" />
+                              <Image src={agent.logo} alt="" width={40} height={40} className="object-cover" />
                             ) : (
                               <Bot className="h-5 w-5 text-muted-foreground" />
                             )}
