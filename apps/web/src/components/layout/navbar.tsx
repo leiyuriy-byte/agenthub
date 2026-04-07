@@ -408,7 +408,7 @@ export function Navbar() {
                   <Plus className="h-4 w-4" />
                   <span>创建</span>
                 </Button>
-                <Button variant="default" size="sm" className="sm:hidden p-2">
+                <Button variant="default" size="sm" className="sm:hidden p-2" aria-label="创建 Agent">
                   <Plus className="h-4 w-4" />
                 </Button>
               </Link>

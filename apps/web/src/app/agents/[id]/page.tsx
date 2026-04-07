@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 import { Avatar, AvatarFallback, AvatarImage } from '@agenthub/ui/avatar';
 import { Badge } from '@agenthub/ui/badge';
 import { Button } from '@agenthub/ui/button';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@agenthub/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@agenthub/ui/card';
 import { Input } from '@agenthub/ui/input';
 import { agentApi, Agent, AgentCategory, User, reportApi, agentCommentApi } from '@/lib/api';
@@ -101,8 +102,8 @@ export default function AgentDetailPage() {
   // Version selector state
   const [selectedVersion, setSelectedVersion] = useState<string | null>(null);
 
-  // Version comparison modal state
-  const [showVersionCompare, setShowVersionCompare] = useState(false);
+  // Version tab state ('detail' | 'compare')
+  const [versionTab, setVersionTab] = useState<'detail' | 'compare'>('detail');
 
   // Report state
   const [showReportModal, setShowReportModal] = useState(false);
@@ -759,52 +760,212 @@ export default function AgentDetailPage() {
               </div>
             )}
 
-            {/* Version History */}
+            {/* Version History with Tab Switching */}
             {agent.versions && agent.versions.length > 1 && (
               <div className="mb-8">
-                <div className="flex items-center justify-between mb-3">
-                  <h2 className="text-lg font-semibold">版本历史</h2>
-                  {agent.versions.length >= 2 && (
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => setShowVersionCompare(true)}
-                    >
-                      <GitCompare className="h-4 w-4 mr-2" />
-                      版本对比
-                    </Button>
-                  )}
-                </div>
-                <div className="space-y-3">
-                  {agent.versions.map((version, index) => (
-                    <Card key={version.id}>
-                      <CardContent className="p-4">
-                        <div className="flex items-start justify-between gap-4">
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <span className="font-semibold">v{version.version}</span>
-                              {index === 0 && (
-                                <Badge variant="outline" className="text-xs">最新</Badge>
-                              )}
+                <Tabs value={versionTab} onValueChange={(v) => setVersionTab(v as 'detail' | 'compare')}>
+                  <div className="flex items-center justify-between mb-3">
+                    <h2 className="text-lg font-semibold">版本历史</h2>
+                    <TabsList>
+                      <TabsTrigger value="detail">版本详情</TabsTrigger>
+                      <TabsTrigger value="compare">
+                        <GitCompare className="h-3.5 w-3.5 mr-1" />
+                        版本对比
+                      </TabsTrigger>
+                    </TabsList>
+                  </div>
+
+                  {/* Version Detail Tab */}
+                  <TabsContent value="detail" className="mt-4">
+                    <div className="space-y-3">
+                      {agent.versions.map((version, index) => (
+                        <Card key={version.id}>
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between gap-4">
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  <span className="font-semibold">v{version.version}</span>
+                                  {index === 0 && (
+                                    <Badge variant="outline" className="text-xs">最新</Badge>
+                                  )}
+                                </div>
+                                {version.changelog && (
+                                  <p className="text-sm text-muted-foreground mt-1">{version.changelog}</p>
+                                )}
+                              </div>
+                              <div className="text-xs text-muted-foreground">
+                                {formatRelativeTime(version.createdAt)}
+                              </div>
                             </div>
-                            {version.changelog && (
-                              <p className="text-sm text-muted-foreground mt-1">{version.changelog}</p>
+                            {version.downloadUrl && (
+                              <Button variant="outline" size="sm" className="mt-3">
+                                <ExternalLink className="h-4 w-4 mr-2" />
+                                下载
+                              </Button>
                             )}
-                          </div>
-                          <div className="text-xs text-muted-foreground">
-                            {formatRelativeTime(version.createdAt)}
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </TabsContent>
+
+                  {/* Version Compare Tab */}
+                  <TabsContent value="compare" className="mt-4">
+                    <Card>
+                      <CardContent className="p-4">
+                        <div className="overflow-x-auto">
+                          <table className="w-full border-collapse">
+                            <thead>
+                              <tr>
+                                <th className="text-left p-3 border-b font-semibold w-1/4">功能</th>
+                                {agent.versions.map((version) => (
+                                  <th
+                                    key={version.id}
+                                    className="text-center p-3 border-b font-semibold bg-primary/5"
+                                  >
+                                    <div className="flex flex-col items-center gap-1">
+                                      <span className="text-lg">v{version.version}</span>
+                                      {agent.versions[0]?.id === version.id && (
+                                        <Badge variant="outline" className="text-xs">最新</Badge>
+                                      )}
+                                    </div>
+                                  </th>
+                                ))}
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {/* Collect all unique features */}
+                              {(() => {
+                                const allFeatures: Record<string, Record<string, boolean>> = {};
+
+                                agent.versions.forEach((version) => {
+                                  allFeatures[version.id] = {};
+                                  if (version.features) {
+                                    try {
+                                      const features = JSON.parse(version.features);
+                                      features.forEach((feature: string) => {
+                                        allFeatures[version.id][feature] = true;
+                                      });
+                                    } catch (e) {
+                                      allFeatures[version.id][version.features] = true;
+                                    }
+                                  }
+                                });
+
+                                const featureSet = new Set<string>();
+                                agent.versions.forEach((version) => {
+                                  if (version.features) {
+                                    try {
+                                      const features = JSON.parse(version.features);
+                                      features.forEach((f: string) => featureSet.add(f));
+                                    } catch (e) {
+                                      featureSet.add(version.features);
+                                    }
+                                  }
+                                });
+
+                                const features = Array.from(featureSet);
+
+                                if (features.length === 0) {
+                                  return (
+                                    <>
+                                      <tr>
+                                        <td className="p-3 border-b font-medium">版本号</td>
+                                        {agent.versions.map((version) => (
+                                          <td key={version.id} className="text-center p-3 border-b">
+                                            v{version.version}
+                                          </td>
+                                        ))}
+                                      </tr>
+                                      <tr>
+                                        <td className="p-3 border-b font-medium">发布日期</td>
+                                        {agent.versions.map((version) => (
+                                          <td key={version.id} className="text-center p-3 border-b text-muted-foreground">
+                                            {formatRelativeTime(version.createdAt)}
+                                          </td>
+                                        ))}
+                                      </tr>
+                                      <tr>
+                                        <td className="p-3 border-b font-medium">更新日志</td>
+                                        {agent.versions.map((version) => (
+                                          <td key={version.id} className="text-center p-3 border-b">
+                                            <span className="text-sm text-muted-foreground">
+                                              {version.changelog || '暂无'}
+                                            </span>
+                                          </td>
+                                        ))}
+                                      </tr>
+                                      <tr>
+                                        <td className="p-3 font-medium">下载</td>
+                                        {agent.versions.map((version) => (
+                                          <td key={version.id} className="text-center p-3">
+                                            {version.downloadUrl ? (
+                                              <a
+                                                href={version.downloadUrl}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+                                              >
+                                                <ExternalLink className="h-3 w-3" />
+                                                下载
+                                              </a>
+                                            ) : (
+                                              <span className="text-muted-foreground">-</span>
+                                            )}
+                                          </td>
+                                        ))}
+                                      </tr>
+                                    </>
+                                  );
+                                }
+
+                                return features.map((feature) => (
+                                  <tr key={feature}>
+                                    <td className="p-3 border-b font-medium">{feature}</td>
+                                    {agent.versions.map((version) => {
+                                      const hasFeature = allFeatures[version.id]?.[feature];
+                                      return (
+                                        <td key={version.id} className="text-center p-3 border-b">
+                                          {hasFeature ? (
+                                            <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
+                                          ) : (
+                                            <X className="h-5 w-5 text-muted-foreground/30 mx-auto" />
+                                          )}
+                                        </td>
+                                      );
+                                    })}
+                                  </tr>
+                                ));
+                              })()}
+                            </tbody>
+                          </table>
+                        </div>
+
+                        {/* Version switch buttons */}
+                        <div className="mt-6 pt-4 border-t">
+                          <h3 className="text-sm font-medium text-muted-foreground mb-3">
+                            切换到指定版本
+                          </h3>
+                          <div className="flex flex-wrap gap-2">
+                            {agent.versions.map((version) => (
+                              <Button
+                                key={version.id}
+                                variant={selectedVersion === version.version ? 'default' : 'outline'}
+                                size="sm"
+                                onClick={() => {
+                                  setSelectedVersion(version.version);
+                                }}
+                              >
+                                v{version.version}
+                                {agent.versions[0]?.id === version.id && ' (最新)'}
+                              </Button>
+                            ))}
                           </div>
                         </div>
-                        {version.downloadUrl && (
-                          <Button variant="outline" size="sm" className="mt-3">
-                            <ExternalLink className="h-4 w-4 mr-2" />
-                            下载
-                          </Button>
-                        )}
                       </CardContent>
                     </Card>
-                  ))}
-                </div>
+                  </TabsContent>
+                </Tabs>
               </div>
             )}
           </div>
@@ -833,7 +994,7 @@ export default function AgentDetailPage() {
                     )}
                     {agent.isFavorited ? '已收藏' : '收藏'}
                   </Button>
-                  <Button variant="outline" onClick={handleShare}>
+                  <Button variant="outline" onClick={handleShare} aria-label="分享">
                     <Share2 className="h-4 w-4" />
                   </Button>
                 </div>
@@ -1488,200 +1649,6 @@ export default function AgentDetailPage() {
             <p className="text-center text-white/60 mt-2 text-sm">
               {lightboxIndex + 1} / {agent.screenshots.length}
             </p>
-          </motion.div>
-        </motion.div>
-      )}
-
-      {/* Version Comparison Modal */}
-      {showVersionCompare && agent?.versions && agent.versions.length >= 2 && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
-          onClick={() => setShowVersionCompare(false)}
-        >
-          <motion.div
-            initial={{ scale: 0.95, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.95, opacity: 0 }}
-            className="bg-background rounded-xl shadow-2xl max-w-4xl w-full max-h-[85vh] overflow-hidden"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b">
-              <div className="flex items-center gap-2">
-                <GitCompare className="h-5 w-5 text-primary" />
-                <h2 className="text-xl font-bold">版本对比</h2>
-              </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setShowVersionCompare(false)}
-              >
-                <X className="h-5 w-5" />
-              </Button>
-            </div>
-
-            {/* Content */}
-            <div className="p-4 overflow-auto max-h-[calc(85vh-80px)]">
-              {/* Feature Comparison Table */}
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse">
-                  <thead>
-                    <tr>
-                      <th className="text-left p-3 border-b font-semibold w-1/4">功能</th>
-                      {agent.versions.map((version) => (
-                        <th 
-                          key={version.id} 
-                          className="text-center p-3 border-b font-semibold bg-primary/5"
-                        >
-                          <div className="flex flex-col items-center gap-1">
-                            <span className="text-lg">v{version.version}</span>
-                            {agent.versions[0]?.id === version.id && (
-                              <Badge variant="outline" className="text-xs">最新</Badge>
-                            )}
-                          </div>
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {/* Collect all unique features */}
-                    {(() => {
-                      // Parse features from each version
-                      const allFeatures: Record<string, Record<string, boolean>> = {};
-                      
-                      agent.versions.forEach((version) => {
-                        allFeatures[version.id] = {};
-                        if (version.features) {
-                          try {
-                            const features = JSON.parse(version.features);
-                            features.forEach((feature: string) => {
-                              allFeatures[version.id][feature] = true;
-                            });
-                          } catch (e) {
-                            // If features is not valid JSON, treat it as a single feature
-                            allFeatures[version.id][version.features] = true;
-                          }
-                        }
-                      });
-
-                      // Get all unique features
-                      const featureSet = new Set<string>();
-                      agent.versions.forEach((version) => {
-                        if (version.features) {
-                          try {
-                            const features = JSON.parse(version.features);
-                            features.forEach((f: string) => featureSet.add(f));
-                          } catch (e) {
-                            featureSet.add(version.features);
-                          }
-                        }
-                      });
-
-                      const features = Array.from(featureSet);
-
-                      if (features.length === 0) {
-                        // No features data - show default comparison
-                        return (
-                          <>
-                            <tr>
-                              <td className="p-3 border-b font-medium">版本号</td>
-                              {agent.versions.map((version) => (
-                                <td key={version.id} className="text-center p-3 border-b">
-                                  v{version.version}
-                                </td>
-                              ))}
-                            </tr>
-                            <tr>
-                              <td className="p-3 border-b font-medium">发布日期</td>
-                              {agent.versions.map((version) => (
-                                <td key={version.id} className="text-center p-3 border-b text-muted-foreground">
-                                  {formatRelativeTime(version.createdAt)}
-                                </td>
-                              ))}
-                            </tr>
-                            <tr>
-                              <td className="p-3 border-b font-medium">更新日志</td>
-                              {agent.versions.map((version) => (
-                                <td key={version.id} className="text-center p-3 border-b">
-                                  <span className="text-sm text-muted-foreground">
-                                    {version.changelog || '暂无'}
-                                  </span>
-                                </td>
-                              ))}
-                            </tr>
-                            <tr>
-                              <td className="p-3 font-medium">下载</td>
-                              {agent.versions.map((version) => (
-                                <td key={version.id} className="text-center p-3">
-                                  {version.downloadUrl ? (
-                                    <a
-                                      href={version.downloadUrl}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
-                                    >
-                                      <ExternalLink className="h-3 w-3" />
-                                      下载
-                                    </a>
-                                  ) : (
-                                    <span className="text-muted-foreground">-</span>
-                                  )}
-                                </td>
-                              ))}
-                            </tr>
-                          </>
-                        );
-                      }
-
-                      // Render features
-                      return features.map((feature) => (
-                        <tr key={feature}>
-                          <td className="p-3 border-b font-medium">{feature}</td>
-                          {agent.versions.map((version) => {
-                            const hasFeature = allFeatures[version.id]?.[feature];
-                            return (
-                              <td key={version.id} className="text-center p-3 border-b">
-                                {hasFeature ? (
-                                  <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
-                                ) : (
-                                  <X className="h-5 w-5 text-muted-foreground/30 mx-auto" />
-                                )}
-                              </td>
-                            );
-                          })}
-                        </tr>
-                      ));
-                    })()}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Version switch buttons */}
-              <div className="mt-6 pt-4 border-t">
-                <h3 className="text-sm font-medium text-muted-foreground mb-3">
-                  切换到指定版本
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {agent.versions.map((version) => (
-                    <Button
-                      key={version.id}
-                      variant={selectedVersion === version.version ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => {
-                        setSelectedVersion(version.version);
-                        setShowVersionCompare(false);
-                      }}
-                    >
-                      v{version.version}
-                      {agent.versions[0]?.id === version.id && ' (最新)'}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </div>
           </motion.div>
         </motion.div>
       )}
