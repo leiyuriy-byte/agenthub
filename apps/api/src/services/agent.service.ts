@@ -1,5 +1,5 @@
 import { eq, and, desc, asc, like, sql, or, type SQL } from 'drizzle-orm';
-import { db, schema } from '@agenthub/db';
+import { db, schema, type AgentCategory } from '@agenthub/db';
 import { nanoid } from 'nanoid';
 import { awardPointsForAction } from './points.service.js';
 
@@ -98,13 +98,13 @@ export const agentService = {
       .limit(1);
 
     // Get category
-    let category = null;
+    let category: AgentCategory | null = null;
     if (agent.categoryId) {
       const [cat] = await db.select()
         .from(schema.agentCategories)
         .where(eq(schema.agentCategories.id, agent.categoryId))
         .limit(1);
-      category = cat;
+      category = cat || null;
     }
 
     // Get tags
@@ -242,13 +242,13 @@ export const agentService = {
           .where(eq(schema.users.id, agent.ownerId))
           .limit(1);
 
-        let category = null;
+        let category: AgentCategory | null = null;
         if (agent.categoryId) {
           const [cat] = await db.select()
             .from(schema.agentCategories)
             .where(eq(schema.agentCategories.id, agent.categoryId))
             .limit(1);
-          category = cat;
+          category = cat || null;
         }
 
         const tags = await db.select()
@@ -266,7 +266,7 @@ export const agentService = {
 
     return {
       agents: agentsWithDetails,
-      total: countResult.count,
+      total: countResult!.count,
       limit,
       offset,
     };
@@ -423,6 +423,8 @@ export const agentService = {
     })
       .from(schema.agentRatings)
       .where(eq(schema.agentRatings.agentId, id));
+
+    if (!stats) return rating;
 
     await db.update(schema.agents)
       .set({
@@ -811,7 +813,7 @@ export const agentService = {
           avatar: schema.users.avatar,
         })
           .from(schema.users)
-          .where(eq(schema.users.id, rating.userId))
+          .where(eq(schema.users.id, (rating as any).userId))
           .limit(1);
 
         return { ...rating, user };

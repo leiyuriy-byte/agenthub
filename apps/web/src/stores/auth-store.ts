@@ -12,9 +12,6 @@ interface AuthState {
   isLoading: boolean;
   error: string | null;
 
-  // Computed
-  isAuthenticated: boolean;
-
   // Actions
   login: (email: string, password: string) => Promise<boolean>;
   register: (data: {
@@ -28,6 +25,9 @@ interface AuthState {
   checkAuth: () => Promise<void>;
   clearError: () => void;
 }
+
+// Selector for computed isAuthenticated - use in components via useAuthStore((state) => !!state.user)
+export const selectIsAuthenticated = (state: AuthState) => !!state.user;
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -118,17 +118,14 @@ export const useAuthStore = create<AuthState>()(
 
       clearError: () => set({ error: null }),
     }),
-    (state) => ({
-      // Computed: isAuthenticated
-      get isAuthenticated() {
-        return !!state.user;
-      },
-    }),
     {
       name: 'agenthub_auth',
-      partialize: (state) => ({ token: state.token }),
+      partialize: (state: AuthState) => ({ token: state.token }),
     }
   )
 );
+
+// Computed property as a hook selector
+export const useIsAuthenticated = () => useAuthStore((state) => !!state.user);
 
 export default useAuthStore;

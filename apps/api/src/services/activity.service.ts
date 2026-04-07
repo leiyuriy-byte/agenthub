@@ -28,8 +28,8 @@ export interface ActivityListItem {
   coverImage: string | null;
   type: string;
   location: string | null;
-  startTime: number;
-  endTime: number;
+  startTime: Date;
+  endTime: Date;
   maxAttendees: number | null;
   isFeatured: boolean;
   viewCount: number;
@@ -38,7 +38,8 @@ export interface ActivityListItem {
   organizerName?: string;
   attendeeCount?: number;
   isRegistered?: boolean;
-  createdAt: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export async function getActivities(options: {
@@ -126,7 +127,7 @@ export async function getActivities(options: {
   
   return result.map(activity => ({
     ...activity,
-    organizerName: organizerMap[activity.organizerId] || null,
+    organizerName: organizerMap[activity.organizerId] || undefined,
     attendeeCount: attendeeCounts[activity.id] || 0,
   }));
 }
@@ -232,8 +233,8 @@ export async function createActivity(data: {
     coverImage: data.coverImage || null,
     type: data.type,
     location: data.location || null,
-    startTime: data.startTime,
-    endTime: data.endTime,
+    startTime: new Date(data.startTime),
+    endTime: new Date(data.endTime),
     maxAttendees: data.maxAttendees || null,
     organizerId: data.organizerId,
     status,

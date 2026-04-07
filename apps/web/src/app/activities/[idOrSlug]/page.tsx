@@ -8,6 +8,7 @@ import { Badge } from '@agenthub/ui/badge';
 import { Button } from '@agenthub/ui/button';
 import { Skeleton } from '@agenthub/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@agenthub/ui/avatar';
+import { useAuth } from '@/hooks/useAuth';
 import { useAuthStore } from '@/lib/api';
 import { activityApi, Activity } from '@/lib/api';
 import { formatRelativeTime, formatNumber } from '@/lib/utils';
@@ -31,7 +32,7 @@ const statusColors: Record<string, string> = {
 export default function ActivityDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const { isAuthenticated, user } = useAuthStore();
+  const { isAuthenticated, user } = useAuth();
   const [activity, setActivity] = useState<Activity | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRegistering, setIsRegistering] = useState(false);

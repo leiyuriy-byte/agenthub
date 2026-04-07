@@ -8,7 +8,7 @@ import { motion } from 'framer-motion';
 import { Avatar, AvatarFallback, AvatarImage } from '@agenthub/ui/avatar';
 import { Badge } from '@agenthub/ui/badge';
 import { Button } from '@agenthub/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@agenthub/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@agenthub/ui/card';
 import { Input } from '@agenthub/ui/input';
 import { agentApi, Agent, AgentCategory, User, reportApi, agentCommentApi } from '@/lib/api';
 import { formatRelativeTime, formatNumber, cn } from '@/lib/utils';

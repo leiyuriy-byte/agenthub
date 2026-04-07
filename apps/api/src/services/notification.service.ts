@@ -48,19 +48,19 @@ export const notificationService = {
     // Send real-time notification via WebSocket
     try {
       sendNotificationToUser(data.userId, {
-        id: notification.id,
-        type: notification.type,
-        title: notification.title,
-        content: notification.content || undefined,
-        link: notification.link || undefined,
-        createdAt: notification.createdAt,
+        id: notification!.id,
+        type: notification!.type,
+        title: notification!.title,
+        content: notification!.content || undefined,
+        link: notification!.link || undefined,
+        createdAt: notification!.createdAt.toISOString(),
       });
     } catch (error) {
       // Don't fail the notification creation if WebSocket fails
       console.error('Failed to send WebSocket notification:', error);
     }
 
-    return notification;
+    return notification!;
   },
 
   /**
@@ -122,8 +122,8 @@ export const notificationService = {
 
     return {
       notifications,
-      total: countResult.count,
-      unreadCount: unreadResult.count,
+      total: countResult!.count,
+      unreadCount: unreadResult!.count,
       limit,
       offset,
     };
@@ -212,7 +212,7 @@ export const notificationService = {
         )
       );
 
-    return result.count;
+    return result!.count;
   },
 
   /**

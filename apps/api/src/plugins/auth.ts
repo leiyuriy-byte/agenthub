@@ -6,6 +6,7 @@ declare module 'fastify' {
     authenticate: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
     requireUser: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
     requireAdmin: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
+    authOptional: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
   }
   interface FastifyRequest {
     userId?: string;
@@ -38,6 +39,9 @@ async function authPlugin(fastify: FastifyInstance) {
     if (user?.role !== 'admin' && user?.role !== 'moderator') {
       reply.code(403).send({ success: false, error: 'Admin access required' });
     }
+  });
+  fastify.decorate('authOptional', async (request: FastifyRequest, reply: FastifyReply) => {
+    // No-op - just allows optional auth, always continues
   });
 
   fastify.addHook('onRequest', async (request: FastifyRequest, reply: FastifyReply) => {

@@ -107,6 +107,8 @@ export const agentCategories = sqliteTable('agent_categories', {
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`CURRENT_TIMESTAMP`),
 });
 
+export type AgentCategory = typeof agentCategories.$inferSelect;
+
 /** Agents */
 export const agents = sqliteTable('agents', {
   id: text('id').primaryKey(),
@@ -575,3 +577,23 @@ export type AgentComment = typeof agentComments.$inferSelect;
 export type NewAgentComment = typeof agentComments.$inferInsert;
 export type UserFeedback = typeof userFeedback.$inferSelect;
 export type NewUserFeedback = typeof userFeedback.$inferInsert;
+
+// Additional type exports needed by other packages
+export type Message = typeof messages.$inferSelect;
+export type NewMessage = typeof messages.$inferInsert;
+export type Conversation = typeof conversations.$inferSelect;
+export type NewConversation = typeof conversations.$inferInsert;
+export type AgentTag = typeof agentTags.$inferSelect;
+export type NewAgentTag = typeof agentTags.$inferInsert;
+export type AgentScreenshot = typeof agentScreenshots.$inferSelect;
+export type NewAgentScreenshot = typeof agentScreenshots.$inferInsert;
+export type AgentVersion = typeof agentVersions.$inferSelect;
+export type NewAgentVersion = typeof agentVersions.$inferInsert;
+export type AgentRating = typeof agentRatings.$inferSelect;
+export type NewAgentRating = typeof agentRatings.$inferInsert;
+export type UserSocialLink = typeof userSocialLinks.$inferSelect;
+export type NewUserSocialLink = typeof userSocialLinks.$inferInsert;
+export type UserTag = typeof userTags.$inferSelect;
+export type NewUserTag = typeof userTags.$inferInsert;
+export type PostTag = typeof postTags.$inferSelect;
+export type NewPostTag = typeof postTags.$inferInsert;

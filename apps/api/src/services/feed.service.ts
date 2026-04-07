@@ -7,9 +7,9 @@ export interface FeedItem {
   createdAt: Date;
   user: {
     id: string;
-    username: string;
-    displayName: string;
-    avatar: string | null;
+    username: string | undefined;
+    displayName: string | undefined;
+    avatar: string | null | undefined;
   };
   data: {
     // Agent data
@@ -80,15 +80,15 @@ export const feedService = {
         createdAt: agent.createdAt,
         user: {
           id: agent.ownerId,
-          username: agent.username,
-          displayName: agent.displayName,
-          avatar: agent.avatar,
+          username: agent.username || undefined,
+          displayName: agent.displayName || undefined,
+          avatar: agent.avatar || undefined,
         },
         data: {
           agentId: agent.id,
-          agentName: agent.name,
-          agentTagline: agent.tagline,
-          agentLogo: agent.logo,
+          agentName: agent.name || undefined,
+          agentTagline: agent.tagline || undefined,
+          agentLogo: agent.logo || undefined,
         },
       });
     });
@@ -125,16 +125,16 @@ export const feedService = {
         createdAt: post.createdAt,
         user: {
           id: post.authorId,
-          username: post.username,
-          displayName: post.displayName,
-          avatar: post.avatar,
+          username: post.username || undefined,
+          displayName: post.displayName || undefined,
+          avatar: post.avatar || undefined,
         },
         data: {
           postId: post.id,
-          postTitle: post.title,
+          postTitle: post.title || undefined,
           postExcerpt: excerpt,
-          channelName: post.channelName,
-          channelIcon: post.channelIcon,
+          channelName: post.channelName || undefined,
+          channelIcon: post.channelIcon || undefined,
         },
       });
     });
@@ -165,9 +165,9 @@ export const feedService = {
         createdAt: comment.createdAt,
         user: {
           id: comment.authorId,
-          username: comment.username,
-          displayName: comment.displayName,
-          avatar: comment.avatar,
+          username: comment.username || undefined,
+          displayName: comment.displayName || undefined,
+          avatar: comment.avatar || undefined,
         },
         data: {
           commentId: comment.id,
@@ -216,15 +216,15 @@ export const feedService = {
         createdAt: agent.createdAt,
         user: {
           id: agent.ownerId,
-          username: agent.username,
-          displayName: agent.displayName,
-          avatar: agent.avatar,
+          username: agent.username || undefined,
+          displayName: agent.displayName || undefined,
+          avatar: agent.avatar || undefined,
         },
         data: {
           agentId: agent.id,
-          agentName: agent.name,
-          agentTagline: agent.tagline,
-          agentLogo: agent.logo,
+          agentName: agent.name || undefined,
+          agentTagline: agent.tagline || undefined,
+          agentLogo: agent.logo || undefined,
         },
       });
     });
@@ -259,16 +259,16 @@ export const feedService = {
         createdAt: post.createdAt,
         user: {
           id: post.authorId,
-          username: post.username,
-          displayName: post.displayName,
-          avatar: post.avatar,
+          username: post.username || undefined,
+          displayName: post.displayName || undefined,
+          avatar: post.avatar || undefined,
         },
         data: {
           postId: post.id,
-          postTitle: post.title,
+          postTitle: post.title || undefined,
           postExcerpt: excerpt,
-          channelName: post.channelName,
-          channelIcon: post.channelIcon,
+          channelName: post.channelName || undefined,
+          channelIcon: post.channelIcon || undefined,
         },
       });
     });
@@ -298,9 +298,9 @@ export const feedService = {
         createdAt: comment.createdAt,
         user: {
           id: comment.authorId,
-          username: comment.username,
-          displayName: comment.displayName,
-          avatar: comment.avatar,
+          username: comment.username || undefined,
+          displayName: comment.displayName || undefined,
+          avatar: comment.avatar || undefined,
         },
         data: {
           commentId: comment.id,

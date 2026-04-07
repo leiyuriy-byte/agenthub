@@ -471,6 +471,19 @@ export async function getMessages(
         .from(users)
         .where(eq(users.id, msg.senderId));
       
+      // If sender not found, use a fallback
+      const senderInfo = sender ? {
+        id: sender.id,
+        username: sender.username,
+        displayName: sender.displayName,
+        avatar: sender.avatar,
+      } : {
+        id: msg.senderId,
+        username: 'Unknown',
+        displayName: null,
+        avatar: null,
+      };
+      
       return {
         id: msg.id,
         conversationId: msg.conversationId,
@@ -479,7 +492,7 @@ export async function getMessages(
         type: msg.type,
         metadata: msg.metadata,
         createdAt: msg.createdAt,
-        sender: sender || null,
+        sender: senderInfo,
       };
     })
   );
@@ -565,6 +578,19 @@ export async function searchMessages(
         .from(users)
         .where(eq(users.id, msg.senderId));
       
+      // If sender not found, use a fallback
+      const senderInfo = sender ? {
+        id: sender.id,
+        username: sender.username,
+        displayName: sender.displayName,
+        avatar: sender.avatar,
+      } : {
+        id: msg.senderId,
+        username: 'Unknown',
+        displayName: null,
+        avatar: null,
+      };
+      
       return {
         id: msg.id,
         conversationId: msg.conversationId,
@@ -573,7 +599,7 @@ export async function searchMessages(
         type: msg.type,
         metadata: msg.metadata,
         createdAt: msg.createdAt,
-        sender: sender || null,
+        sender: senderInfo,
       };
     })
   );

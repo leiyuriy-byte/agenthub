@@ -80,7 +80,7 @@ export async function getUserPoints(userId: string) {
   const calculatedLevel = calculateLevel(user.points);
   
   // Update level if needed
-  if (calculatedLevel !== user.level) {
+  if (calculatedLevel !== user!.level) {
     await db.update(schema.users)
       .set({ level: calculatedLevel })
       .where(eq(schema.users.id, userId));
@@ -311,10 +311,10 @@ export async function getLeaderboard(type: 'total' | 'weekly' | 'monthly' = 'tot
 
   return validUsers.map((user, index) => ({
     rank: index + 1,
-    id: user.id,
-    username: user.username,
-    displayName: user.displayName,
-    avatar: user.avatar,
+    id: user!.id,
+    username: user!.username,
+    displayName: user!.displayName,
+    avatar: user!.avatar,
     points: type === 'total' ? user.points : (user as any).totalPoints || user.points,
     level: calculateLevel(user.points),
     levelName: LEVEL_NAMES[calculateLevel(user.points)],
@@ -356,7 +356,7 @@ export async function getCheckinStreak(userId: string): Promise<number> {
   today.setHours(0, 0, 0, 0);
 
   for (let i = 0; i < checkins.length; i++) {
-    const checkinDate = new Date(checkins[i].date);
+    const checkinDate = new Date(checkins[i]!.date);
     checkinDate.setHours(0, 0, 0, 0);
 
     const expectedDate = new Date(today);

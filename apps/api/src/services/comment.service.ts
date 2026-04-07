@@ -165,7 +165,7 @@ export const commentService = {
         .from(schema.comments)
         .where(eq(schema.comments.id, comment.parentId))
         .limit(1);
-      parent = parentComment;
+      parent = parentComment || null;
     }
 
     // Get user's vote
@@ -290,7 +290,7 @@ export const commentService = {
 
     return {
       comments: topLevelComments,
-      total: countResult.count,
+      total: countResult!.count,
       limit,
       offset,
     };

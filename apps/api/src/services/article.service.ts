@@ -82,7 +82,7 @@ export interface ArticleListItem {
   excerpt: string | null;
   coverImage: string | null;
   categoryId: string | null;
-  categoryName?: string;
+  categoryName?: string | undefined;
   authorId: string;
   authorName: string;
   authorAvatar: string | null;
@@ -92,9 +92,9 @@ export interface ArticleListItem {
   likeCount: number;
   commentCount: number;
   readTimeMinutes: number | null;
-  publishedAt: number | null;
-  createdAt: number;
-  updatedAt: number;
+  publishedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
   tags?: string[];
 }
 
@@ -178,7 +178,7 @@ export async function getArticles(options: {
         ...article,
         authorName: result.find(r => r.authorId === article.authorId)?.id ? 'User' : 'Unknown',
         authorAvatar: null,
-        categoryName: categoryResult[0]?.name || null,
+        categoryName: categoryResult[0]?.name || undefined,
         tags: tagsResult.map(t => t.tag),
       };
     })
@@ -301,7 +301,7 @@ export async function createArticle(data: {
     categoryId: data.categoryId || null,
     status: data.status || 'draft',
     readTimeMinutes: readTime,
-    publishedAt: data.status === 'published' ? now : null,
+    publishedAt: data.status === 'published' ? new Date(now) : null,
   });
   
   // Add tags

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { pollApi, Poll } from '@/lib/api';
+import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@agenthub/ui/button';
 import { Loader2 } from 'lucide-react';
 
@@ -25,10 +26,12 @@ export function PollComponent({ postId }: PollComponentProps) {
   const fetchPoll = async () => {
     try {
       setIsLoading(true);
-      const data = await pollApi.getByPostId(postId);
-      setPoll(data);
-      setHasVoted(data.userVotedOptionIds.length > 0);
-      setSelectedOptions(data.userVotedOptionIds);
+      const response = await pollApi.getByPostId(postId);
+      if (response.success && response.data) {
+        setPoll(response.data);
+        setHasVoted((response.data.userVotedOptionIds?.length ?? 0) > 0);
+        setSelectedOptions(response.data.userVotedOptionIds ?? []);
+      }
     } catch (err) {
       // Poll might not exist for non-poll posts or error fetching
       setError('Failed to load poll');
@@ -56,9 +59,11 @@ export function PollComponent({ postId }: PollComponentProps) {
 
     try {
       setIsVoting(true);
-      const results = await pollApi.vote(poll.id, selectedOptions);
-      setPoll(results.poll);
-      setHasVoted(true);
+      const response = await pollApi.vote(poll.id, selectedOptions);
+      if (response.success && response.data) {
+        setPoll(response.data.poll);
+        setHasVoted(true);
+      }
     } catch (err) {
       console.error('Failed to vote:', err);
     } finally {

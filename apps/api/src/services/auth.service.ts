@@ -60,24 +60,24 @@ export const authService = {
 
     // Generate JWT token
     const token = fastify.jwt.sign({
-      sub: user.id,
-      email: user.email,
-      username: user.username,
-      role: user.role,
+      sub: user!.id,
+      email: user!.email,
+      username: user!.username,
+      role: user!.role,
     });
 
     // Create session
-    await this.createSession(user.id, token);
+    await this.createSession(user!.id, token);
 
     return {
       user: {
-        id: user.id,
-        email: user.email,
-        username: user.username,
-        displayName: user.displayName,
-        avatar: user.avatar,
-        role: user.role,
-        level: user.level,
+        id: user!.id,
+        email: user!.email,
+        username: user!.username,
+        displayName: user!.displayName,
+        avatar: user!.avatar,
+        role: user!.role,
+        level: user!.level,
       },
       token,
     };
@@ -98,6 +98,9 @@ export const authService = {
     }
 
     // Verify password
+    if (!user.passwordHash) {
+      throw new Error('Invalid email or password');
+    }
     const validPassword = await bcrypt.compare(data.password, user.passwordHash);
     if (!validPassword) {
       throw new Error('Invalid email or password');
@@ -105,29 +108,29 @@ export const authService = {
 
     // Generate JWT token
     const token = fastify.jwt.sign({
-      sub: user.id,
-      email: user.email,
-      username: user.username,
-      role: user.role,
+      sub: user!.id,
+      email: user!.email,
+      username: user!.username,
+      role: user!.role,
     });
 
     // Create session
-    await this.createSession(user.id, token);
+    await this.createSession(user!.id, token);
 
     // Update last login
     await db.update(schema.users)
       .set({ lastLoginAt: new Date() })
-      .where(eq(schema.users.id, user.id));
+      .where(eq(schema.users.id, user!.id));
 
     return {
       user: {
-        id: user.id,
-        email: user.email,
-        username: user.username,
-        displayName: user.displayName,
-        avatar: user.avatar,
-        role: user.role,
-        level: user.level,
+        id: user!.id,
+        email: user!.email,
+        username: user!.username,
+        displayName: user!.displayName,
+        avatar: user!.avatar,
+        role: user!.role,
+        level: user!.level,
       },
       token,
     };
@@ -252,7 +255,7 @@ export const authService = {
 
     await db.insert(schema.passwordResets).values({
       id,
-      userId: user.id,
+      userId: user!.id,
       token,
       expiresAt,
     });

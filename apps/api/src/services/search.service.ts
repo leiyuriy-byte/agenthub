@@ -224,14 +224,17 @@ export async function search(
     // Get owner info
     const agentsWithOwner = await Promise.all(
       agentsResult.map(async (agent) => {
-        const [owner] = await db
+        const [ownerUser] = await db
           .select({
             username: schema.users.username,
             displayName: schema.users.displayName,
           })
           .from(schema.users)
           .where(eq(schema.users.id, agent.ownerId));
-        return { ...agent, owner };
+        return { ...agent, owner: ownerUser ? {
+          username: ownerUser.username,
+          displayName: ownerUser.displayName,
+        } : null };
       })
     );
 

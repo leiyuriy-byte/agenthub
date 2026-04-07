@@ -517,7 +517,12 @@ export const commentApi = {
     sortBy?: 'createdAt' | 'likeCount';
     sortOrder?: 'asc' | 'desc';
   }) => {
-    const query = new URLSearchParams({ postId, ...params } as Record<string, string>);
+    const query = new URLSearchParams();
+    query.set('postId', postId);
+    if (params?.limit) query.set('limit', String(params.limit));
+    if (params?.offset) query.set('offset', String(params.offset));
+    if (params?.sortBy) query.set('sortBy', params.sortBy);
+    if (params?.sortOrder) query.set('sortOrder', params.sortOrder);
     return api.get<CommentListResponse>(`/api/comments?${query}`);
   },
 
@@ -673,7 +678,10 @@ export const messageApi = {
 
   // Message endpoints
   getMessages: (conversationId: string, params?: { limit?: number; beforeId?: string }) => {
-    const query = new URLSearchParams({ conversationId, ...params } as Record<string, string>);
+    const query = new URLSearchParams();
+    query.set('conversationId', conversationId);
+    if (params?.limit) query.set('limit', String(params.limit));
+    if (params?.beforeId) query.set('beforeId', params.beforeId);
     return api.get<MessageListResponse>(`/api/messages?${query}`);
   },
 
@@ -1046,7 +1054,11 @@ export const searchApi = {
     limit?: number;
     offset?: number;
   }) => {
-    const query = new URLSearchParams(params as Record<string, string>);
+    const query = new URLSearchParams();
+    query.set('q', params.q);
+    if (params.type) query.set('type', params.type);
+    if (params.limit) query.set('limit', String(params.limit));
+    if (params.offset) query.set('offset', String(params.offset));
     return api.get<SearchResult>(`/api/search?${query}`);
   },
 
@@ -1574,8 +1586,13 @@ export interface AgentComment {
 }
 
 export const agentCommentApi = {
-  getByAgent: (agentId: string, options?: { limit?: number; offset?: number; sortBy?: 'newest' | 'popular' }) =>
-    api.get<{ comments: AgentComment[]; total: number }>(`/api/agents/${agentId}/comments`, options),
+  getByAgent: (agentId: string, options?: { limit?: number; offset?: number; sortBy?: 'newest' | 'popular' }) => {
+    const query = new URLSearchParams();
+    if (options?.limit) query.set('limit', String(options.limit));
+    if (options?.offset) query.set('offset', String(options.offset));
+    if (options?.sortBy) query.set('sortBy', options.sortBy);
+    return api.get<{ comments: AgentComment[]; total: number }>(`/api/agents/${agentId}/comments?${query}`);
+  },
 
   create: (agentId: string, data: { parentId?: string; content: string; screenshotUrl?: string }) =>
     api.post<AgentComment>(`/api/agents/${agentId}/comments`, data),
@@ -1625,7 +1642,7 @@ export const feedbackApi = {
   }) => api.post<UserFeedback>('/api/feedback', data),
 
   getMy: (options?: { limit?: number; offset?: number }) =>
-    api.get<{ feedbacks: UserFeedback[]; total: number }>('/api/feedback/my', options),
+    api.get<{ feedbacks: UserFeedback[]; total: number }>('/api/feedback/my' + (options?.limit ? '?limit=' + options.limit + (options.offset ? '&offset=' + options.offset : '') : '')),
 
   getById: (id: string) =>
     api.get<UserFeedback>(`/api/feedback/${id}`),
@@ -1635,7 +1652,7 @@ export const feedbackApi = {
 
   // Admin endpoints
   getAll: (options?: { limit?: number; offset?: number; status?: string; type?: string }) =>
-    api.get<{ feedbacks: UserFeedback[]; total: number }>('/api/admin/feedback', options),
+    api.get<{ feedbacks: UserFeedback[]; total: number }>('/api/admin/feedback' + (options?.limit ? '?limit=' + options.limit + (options.offset ? '&offset=' + options.offset : '') + (options.status ? '&status=' + options.status : '') + (options.type ? '&type=' + options.type : '') : '')),
 
   updateStatus: (id: string, data: { status: string; adminResponse?: string; resolution?: string }) =>
     api.put<UserFeedback>(`/api/admin/feedback/${id}`, data),

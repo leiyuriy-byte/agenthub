@@ -5,7 +5,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { feedApi, FeedItem } from '@/lib/api';
-import { useAuthStore } from '@/stores/auth-store';
+import { useAuth } from '@/hooks/useAuth';
+
 import { formatRelativeTime } from '@/lib/utils';
 import { Button } from '@agenthub/ui/button';
 import { Card, CardContent } from '@agenthub/ui/card';
@@ -66,7 +67,7 @@ const getFeedActionText = (type: FeedItem['type']) => {
 };
 
 export default function FeedPage() {
-  const { user, isAuthenticated } = useAuthStore();
+  const { user, isAuthenticated } = useAuth();
   const [feed, setFeed] = useState<FeedItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [feedType, setFeedType] = useState<'following' | 'global'>('global');

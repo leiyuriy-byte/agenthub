@@ -78,16 +78,17 @@ export interface ResourceListItem {
   url: string | null;
   coverImage: string | null;
   categoryId: string | null;
-  categoryName?: string;
+  categoryName?: string | null;
   tags: string[];
   isFree: boolean;
   isFeatured: boolean;
   viewCount: number;
   likeCount: number;
   submitterId: string | null;
-  submitterName?: string;
+  submitterName?: string | null;
   status: string;
-  createdAt: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export async function getResources(options: {

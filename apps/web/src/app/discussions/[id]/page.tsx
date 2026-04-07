@@ -29,6 +29,7 @@ import {
   Pin,
   Star,
   AlertCircle,
+  X as XIcon,
   Sparkles,
   ArrowRight,
   HelpCircle,
@@ -116,7 +117,7 @@ export default function PostDetailPage() {
       if (response.success && response.data) {
         // For questions, sort accepted answer to top
         if (post.type === 'question') {
-          const comments = response.data.comments;
+          const comments = response.data!.comments;
           const sorted = [...comments].sort((a, b) => {
             // Accepted answer always first
             if (a.isAccepted && !b.isAccepted) return -1;
@@ -126,7 +127,7 @@ export default function PostDetailPage() {
           });
           setComments(sorted);
         } else {
-          setComments(response.data.comments);
+          setComments(response.data!.comments);
         }
       }
     } catch {
@@ -173,11 +174,11 @@ export default function PostDetailPage() {
         if (response.success && response.data) {
           setPost((prev) => prev ? {
             ...prev,
-            likeCount: response.data.liked
+            likeCount: response.data!.liked
               ? prev.likeCount + 1
               : prev.likeCount - 1,
             dislikeCount: prev.userVote === -1 ? prev.dislikeCount - 1 : prev.dislikeCount,
-            userVote: response.data.liked ? 1 : 0,
+            userVote: response.data!.liked ? 1 : 0,
           } : null);
         }
       } else {
@@ -185,11 +186,11 @@ export default function PostDetailPage() {
         if (response.success && response.data) {
           setPost((prev) => prev ? {
             ...prev,
-            dislikeCount: response.data.disliked
+            dislikeCount: response.data!.disliked
               ? prev.dislikeCount + 1
               : prev.dislikeCount - 1,
             likeCount: prev.userVote === 1 ? prev.likeCount - 1 : prev.likeCount,
-            userVote: response.data.disliked ? -1 : 0,
+            userVote: response.data!.disliked ? -1 : 0,
           } : null);
         }
       }
@@ -840,7 +841,7 @@ export default function PostDetailPage() {
                   className="p-1 hover:bg-muted rounded"
                   aria-label="关闭举报弹窗"
                 >
-                  <X className="h-5 w-5" />
+                  <XIcon className="h-5 w-5" />
                 </button>
               </div>
 

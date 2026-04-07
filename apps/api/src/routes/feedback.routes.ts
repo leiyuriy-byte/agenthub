@@ -3,27 +3,43 @@ import { agentCommentService, feedbackService } from '../services/feedback.servi
 
 // Validation schemas
 const createCommentSchema = {
-  agentId: { type: 'string' },
-  parentId: { type: 'string', optional: true },
-  content: { type: 'string', minLength: 1, maxLength: 5000 },
-  screenshotUrl: { type: 'string', optional: true },
+  type: 'object',
+  required: ['agentId', 'content'],
+  properties: {
+    agentId: { type: 'string' },
+    parentId: { type: 'string' },
+    content: { type: 'string', minLength: 1, maxLength: 5000 },
+    screenshotUrl: { type: 'string' },
+  },
 };
 
 const updateCommentSchema = {
-  content: { type: 'string', minLength: 1, maxLength: 5000 },
+  type: 'object',
+  required: ['content'],
+  properties: {
+    content: { type: 'string', minLength: 1, maxLength: 5000 },
+  },
 };
 
 const createFeedbackSchema = {
-  type: { type: 'string', enum: ['bug_report', 'feature_suggestion'] },
-  title: { type: 'string', minLength: 1, maxLength: 200 },
-  description: { type: 'string', minLength: 1, maxLength: 5000 },
-  screenshots: { type: 'array', items: { type: 'string' }, optional: true },
+  type: 'object',
+  required: ['type', 'title', 'description'],
+  properties: {
+    type: { type: 'string', enum: ['bug_report', 'feature_suggestion'] },
+    title: { type: 'string', minLength: 1, maxLength: 200 },
+    description: { type: 'string', minLength: 1, maxLength: 5000 },
+    screenshots: { type: 'array', items: { type: 'string' } },
+  },
 };
 
 const updateFeedbackStatusSchema = {
-  status: { type: 'string', enum: ['pending', 'in_progress', 'resolved', 'rejected'] },
-  adminResponse: { type: 'string', optional: true },
-  resolution: { type: 'string', optional: true },
+  type: 'object',
+  required: ['status'],
+  properties: {
+    status: { type: 'string', enum: ['pending', 'in_progress', 'resolved', 'rejected'] },
+    adminResponse: { type: 'string' },
+    resolution: { type: 'string' },
+  },
 };
 
 // Body types

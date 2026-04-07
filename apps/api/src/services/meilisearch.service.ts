@@ -599,7 +599,6 @@ export async function indexPostMeili(postId: string): Promise<void> {
         title: schema.posts.title,
         content: schema.posts.content,
         type: schema.posts.type,
-        
         authorId: schema.posts.authorId,
         channelId: schema.posts.channelId,
         viewCount: schema.posts.viewCount,
@@ -638,9 +637,8 @@ export async function indexPostMeili(postId: string): Promise<void> {
       .from(schema.channels)
       .where(eq(schema.channels.id, post.channelId));
 
-    // Merge tags from postTags table and post.tags field
-    const postTagsArray = post.tags ? JSON.parse(post.tags) : [];
-    const tags = [...new Set([...tagsFromPostTags, ...postTagsArray])];
+    // Use tags from postTags table only
+    const tags = tagsFromPostTags;
 
     const document: MeiliPost = {
       id: post.id,

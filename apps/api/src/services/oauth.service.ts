@@ -71,29 +71,29 @@ export const oauthService = {
       
       // Generate JWT token
       const token = fastify.jwt.sign({
-        sub: user.id,
-        email: user.email,
-        username: user.username,
-        role: user.role,
+        sub: user!.id,
+        email: user!.email,
+        username: user!.username,
+        role: user!.role,
       });
 
       // Update last login
       await db.update(schema.users)
         .set({ lastLoginAt: new Date() })
-        .where(eq(schema.users.id, user.id));
+        .where(eq(schema.users.id, user!.id));
 
       // Create session
-      await authService.createSession(user.id, token);
+      await authService.createSession(user!.id, token);
 
       return {
         user: {
-          id: user.id,
-          email: user.email,
-          username: user.username,
-          displayName: user.displayName,
-          avatar: user.avatar,
-          role: user.role,
-          level: user.level,
+          id: user!.id,
+          email: user!.email,
+          username: user!.username,
+          displayName: user!.displayName,
+          avatar: user!.avatar,
+          role: user!.role,
+          level: user!.level,
         },
         token,
         isNewUser: false,
@@ -129,28 +129,28 @@ export const oauthService = {
           oauthProvider: provider,
           lastLoginAt: new Date(),
         })
-        .where(eq(schema.users.id, user.id));
+        .where(eq(schema.users.id, user!.id));
 
       // Generate JWT token
       const token = fastify.jwt.sign({
-        sub: user.id,
-        email: user.email,
-        username: user.username,
-        role: user.role,
+        sub: user!.id,
+        email: user!.email,
+        username: user!.username,
+        role: user!.role,
       });
 
       // Create session
-      await authService.createSession(user.id, token);
+      await authService.createSession(user!.id, token);
 
       return {
         user: {
-          id: user.id,
-          email: user.email,
-          username: user.username,
-          displayName: user.displayName,
-          avatar: user.avatar,
-          role: user.role,
-          level: user.level,
+          id: user!.id,
+          email: user!.email,
+          username: user!.username,
+          displayName: user!.displayName,
+          avatar: user!.avatar,
+          role: user!.role,
+          level: user!.level,
         },
         token,
         isNewUser: false,
@@ -176,24 +176,24 @@ export const oauthService = {
 
     // Generate JWT token
     const token = fastify.jwt.sign({
-      sub: user.id,
-      email: user.email,
-      username: user.username,
-      role: user.role,
+      sub: user!.id,
+      email: user!.email,
+      username: user!.username,
+      role: user!.role,
     });
 
     // Create session
-    await authService.createSession(user.id, token);
+    await authService.createSession(user!.id, token);
 
     return {
       user: {
-        id: user.id,
-        email: user.email,
-        username: user.username,
-        displayName: user.displayName,
-        avatar: user.avatar,
-        role: user.role,
-        level: user.level,
+        id: user!.id,
+        email: user!.email,
+        username: user!.username,
+        displayName: user!.displayName,
+        avatar: user!.avatar,
+        role: user!.role,
+        level: user!.level,
       },
       token,
       isNewUser: true,

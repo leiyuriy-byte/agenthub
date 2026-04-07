@@ -9,14 +9,14 @@ import { Input } from '@agenthub/ui/input';
 import { Textarea } from '@agenthub/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@agenthub/ui/card';
 import { MarkdownEditor } from '@/components/markdown/markdown-editor';
-import { useAuthStore } from '@/lib/api';
+import { useAuth } from '@/hooks/useAuth';
 import { articleApi, ArticleCategory } from '@/lib/api';
 import { Loader2, X, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function NewArticlePage() {
   const router = useRouter();
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated } = useAuth();
   const [categories, setCategories] = useState<ArticleCategory[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);

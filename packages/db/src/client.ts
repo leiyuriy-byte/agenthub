@@ -1,19 +1,20 @@
 import { createClient } from '@libsql/client';
+import { drizzle } from 'drizzle-orm/libsql';
 import * as schema from './schema.js';
 
-const dbPath = process.env.DATABASE_URL || './data/agenthub.db';
+const dbPath = process.env.DATABASE_URL || 'file:./data/agenthub.db';
 
-// Create the database client
+// Create the database client - libsql:// prefix for local file
 const client = createClient({
-  url: dbPath,
+  url: dbPath.startsWith('file:') ? dbPath : `file:${dbPath}`,
 });
+
+// Create drizzle ORM instance
+export const db = drizzle(client, { schema });
 
 // Re-export schema and client
 export { client as libsql };
 export { schema };
-
-// For backward compatibility with old code
-export const db = client;
 
 /**
  * Initialize database - creates tables if they don't exist

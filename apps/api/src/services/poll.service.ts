@@ -63,13 +63,15 @@ export const pollService = {
     // Create poll options
     const options: Array<{ id: string; pollId: string; text: string; sortOrder: number }> = [];
     for (let i = 0; i < data.options.length; i++) {
+      const optionText = data.options[i];
+      if (!optionText) continue;
       const [option] = await db.insert(schema.pollOptions).values({
         id: nanoid(),
         pollId,
-        text: data.options[i],
+        text: optionText,
         sortOrder: i,
       }).returning();
-      options.push(option);
+      if (option) options.push(option);
     }
 
     return poll;
@@ -198,12 +200,20 @@ export const pollService = {
       const [vote] = await db.insert(schema.pollVotes).values({
         id: nanoid(),
         pollId,
-        optionId,
+        optionId: option.id,
         userId: userId || null,
         ipAddress: ipAddress || null,
       }).returning();
 
-      votes.push(vote);
+      if (vote) {
+        votes.push({
+          id: vote.id,
+          pollId: vote.pollId,
+          optionId: vote.optionId,
+          userId: vote.userId,
+          ipAddress: vote.ipAddress,
+        });
+      }
     }
 
     return votes;

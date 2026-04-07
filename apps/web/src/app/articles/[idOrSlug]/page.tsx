@@ -10,7 +10,7 @@ import { Badge } from '@agenthub/ui/badge';
 import { Button } from '@agenthub/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@agenthub/ui/avatar';
 import { Skeleton } from '@agenthub/ui/skeleton';
-import { useAuthStore } from '@/lib/api';
+import { useAuth } from '@/hooks/useAuth';
 import { articleApi, Article, ArticleCategory, User } from '@/lib/api';
 import { formatRelativeTime, formatNumber } from '@/lib/utils';
 import { Eye, Heart, MessageCircle, Share2, ChevronLeft, Calendar, Clock, Edit, Trash2, Loader2 } from 'lucide-react';
@@ -19,7 +19,7 @@ import { toast } from 'sonner';
 export default function ArticleDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const { isAuthenticated, user } = useAuthStore();
+  const { isAuthenticated, user } = useAuth();
   const [article, setArticle] = useState<Article | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isLiking, setIsLiking] = useState(false);

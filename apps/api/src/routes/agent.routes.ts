@@ -162,7 +162,7 @@ export async function agentRoutes(fastify: FastifyInstance) {
 
       // Check if user has favorited
       let isFavorited = false;
-      let userRating = null;
+      let userRating: any = null;
       
       if (request.userId) {
         isFavorited = await agentService.isFavorited(id, request.userId);

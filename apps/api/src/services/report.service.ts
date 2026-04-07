@@ -156,7 +156,7 @@ class ReportService {
 
     return {
       reports: enrichedReports,
-      total: countResult.count,
+      total: countResult!.count,
     };
   }
 
@@ -214,7 +214,7 @@ class ReportService {
     // Take action based on resolution
     await this.takeAction(report.targetType, report.targetId, resolution);
 
-    return this.getById(updated.id) as Promise<ReportWithDetails>;
+    return this.getById(updated!.id) as Promise<ReportWithDetails>;
   }
 
   /**
@@ -245,7 +245,7 @@ class ReportService {
       .where(eq(reports.id, reportId))
       .returning();
 
-    return this.getById(updated.id) as Promise<ReportWithDetails>;
+    return this.getById(updated!.id) as Promise<ReportWithDetails>;
   }
 
   /**
@@ -421,8 +421,8 @@ class ReportService {
 
         return {
           type: 'User',
-          title: user.displayName || user.username,
-          url: `/users/${user.username}`,
+          title: user!.displayName || user!.username,
+          url: `/users/${user!.username}`,
         };
       }
       default:
