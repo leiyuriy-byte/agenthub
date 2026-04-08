@@ -32,7 +32,7 @@ export function Footer() {
           {/* Brand */}
           <div className="space-y-4">
             <Link href="/" className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center">
+              <div className="h-8 w-8 rounded-lg bg-[#4338ca] flex items-center justify-center">
                 <span className="text-white font-bold text-sm">AH</span>
               </div>
               <span className="text-xl font-bold text-foreground">
@@ -60,13 +60,13 @@ export function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h2 className="font-semibold text-sm mb-4 sr-only">快速链接</h2>
+            <h2 className="font-semibold text-sm mb-4">快速链接</h2>
             <ul className="space-y-2">
               {quickLinks.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-foreground transition-colors min-h-[44px] flex items-center"
+                    className="text-sm text-foreground transition-colors h-11 flex items-center"
                   >
                     {link.label}
                   </Link>
@@ -77,13 +77,13 @@ export function Footer() {
 
           {/* Resources */}
           <div>
-            <h2 className="font-semibold text-sm mb-4 sr-only">资源</h2>
+            <h2 className="font-semibold text-sm mb-4">资源</h2>
             <ul className="space-y-2">
               {resources.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-foreground transition-colors min-h-[44px] flex items-center"
+                    className="text-sm text-foreground transition-colors h-11 flex items-center"
                   >
                     {link.label}
                   </Link>
@@ -94,7 +94,7 @@ export function Footer() {
 
           {/* Newsletter / CTA */}
           <div>
-            <h2 className="font-semibold text-sm mb-4 sr-only">保持更新</h2>
+            <h2 className="font-semibold text-sm mb-4">保持更新</h2>
             <p className="text-sm text-muted-foreground mb-4">
               订阅我们的 newsletter，获取最新 Agent 和技术讨论。
             </p>

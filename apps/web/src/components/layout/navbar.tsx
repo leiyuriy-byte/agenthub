@@ -236,7 +236,7 @@ export function Navbar() {
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 shrink-0">
-          <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center">
+          <div className="h-8 w-8 rounded-lg bg-[#4338ca] flex items-center justify-center">
             <span className="text-white font-bold text-sm">AH</span>
           </div>
           <span className="text-xl font-bold text-foreground hidden sm:block">
@@ -245,12 +245,12 @@ export function Navbar() {
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-1" role="navigation" aria-label="主要导航">
+        <nav className="hidden md:flex items-center gap-1 h-11" role="navigation" aria-label="主要导航">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors min-h-[44px] flex items-center ${
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center ${
                 pathname === link.href || pathname.startsWith(link.href + '/')
                   ? 'bg-primary/10 text-primary'
                   : 'text-foreground hover:text-foreground hover:bg-accent'
@@ -435,6 +435,9 @@ export function Navbar() {
                 <button
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                   className="flex items-center gap-2 p-1 rounded-lg hover:bg-accent transition-colors"
+                  aria-label="用户菜单"
+                  aria-expanded={isUserMenuOpen}
+                  aria-haspopup="menu"
                 >
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={user.avatar} />

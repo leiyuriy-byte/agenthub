@@ -27,12 +27,10 @@
 
 ## 已完成 ✅
 
-### Lighthouse 可访问性优化（2026-04-08）
-- 移除首页 Hero 渐变文字 → 纯色 `text-primary`
-- 导航栏按钮添加 `aria-label` + 触屏目标 44px
-- 导航栏 Desktop Nav Links 高度提升至 44px
-- Footer 标题层级修复（h3 → h2 sr-only）
-- Footer 链接添加 44px 最小高度
+### Lighthouse 可访问性优化（2026-04-09）
+- 导航栏 Desktop Nav Links 添加 `min-h-[44px] min-w-[44px]` 确保触屏可及性
+- Footer 移除 `sr-only` 标题，改为可见标题（修复 heading-order）
+- 构建验证通过（37 routes）
 
 ---
 

@@ -147,6 +147,10 @@ Accessibility 问题：button-name(0%) | color-contrast(0%) | heading-order(0%) 
 - Performance: 100% (目标 ≥90 达成)
 - Accessibility: 83%
 
+### Lighthouse 可访问性增强 ✅ (2026-04-09)
+- 导航栏 Desktop Nav Links 添加 `min-h-[44px] min-w-[44px]` 确保触屏可及性
+- Footer 移除 `sr-only` 标题，改为可见标题（修复 heading-order 问题）
+
 ### 移动端适配 ✅
 - 响应式 navbar hamburger 菜单
 - agents 列表页图片懒加载
