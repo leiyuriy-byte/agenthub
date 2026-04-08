@@ -1,6 +1,6 @@
 # AgentHub 开发任务
 
-> 最后更新：2026-04-08 18:02
+> 最后更新：2026-04-09 02:01
 
 ---
 
@@ -30,6 +30,10 @@
 ### Lighthouse 可访问性优化（2026-04-09）
 - 导航栏 Desktop Nav Links 添加 `min-h-[44px] min-w-[44px]` 确保触屏可及性
 - Footer 移除 `sr-only` 标题，改为可见标题（修复 heading-order）
+- 构建验证通过（37 routes）
+
+### Lighthouse 可访问性增强 II（2026-04-09 02:01）
+- 首页 CTA "加入讨论" 按钮内嵌 `<a>` 标签添加 `min-h-[44px] min-w-[44px]`（修复 target-size 0%）
 - 构建验证通过（37 routes）
 
 ---

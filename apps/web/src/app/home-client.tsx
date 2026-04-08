@@ -381,7 +381,7 @@ export function HomeClient({ initialFeaturedAgents, initialCategories, initialHo
                     </Link>
                   </Button>
                   <Button asChild size="lg" variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
-                    <Link href="/discussions">
+                    <Link href="/discussions" className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center">
                       加入讨论
                     </Link>
                   </Button>

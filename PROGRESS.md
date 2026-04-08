@@ -1,5 +1,5 @@
 # AgentHub 开发进度
-最后更新：2026-04-08 18:02
+最后更新：2026-04-09 02:01
 
 ## 🎉 项目开发完成 - 构建验证通过
 
@@ -18,6 +18,12 @@ Accessibility 问题：button-name(0%) | color-contrast(0%) | heading-order(0%) 
 - ✅ 导航栏 Desktop Nav Links 高度从 `24px` 提升至 `44px`（触屏可及性）
 - ✅ Footer 链接列标题从 `h3` 改为 `h2 sr-only`（正确的标题层级）
 - ✅ Footer 链接添加 `min-h-[44px] flex items-center`（触屏可及性）
+
+## Lighthouse 可访问性增强 II（2026-04-09 02:01）
+
+**本轮修复：**
+- ✅ 首页 CTA "加入讨论" 按钮内嵌 `<a>` 标签添加 `min-h-[44px] min-w-[44px]`（修复 target-size 0% 违规）
+- ✅ 构建验证通过（37 routes）
 - ✅ 构建验证通过（37 routes）
 
 ---
