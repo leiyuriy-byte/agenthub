@@ -313,6 +313,44 @@ export const authService = {
 
     return { success: true };
   },
+
+  /**
+   * Change password (requires current password verification)
+   */
+  async changePassword(userId: string, currentPassword: string, newPassword: string) {
+    // Get user
+    const [user] = await db.select()
+      .from(schema.users)
+      .where(eq(schema.users.id, userId))
+      .limit(1);
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    if (!user.passwordHash) {
+      throw new Error('No password set for this account');
+    }
+
+    // Verify current password
+    const validPassword = await bcrypt.compare(currentPassword, user.passwordHash);
+    if (!validPassword) {
+      throw new Error('Current password is incorrect');
+    }
+
+    // Hash new password
+    const passwordHash = await bcrypt.hash(newPassword, 12);
+
+    // Update user password
+    await db.update(schema.users)
+      .set({ passwordHash, updatedAt: new Date() })
+      .where(eq(schema.users.id, userId));
+
+    // Delete all existing sessions except current one (optional: force re-login on other devices)
+    // We keep this simple and don't force re-login on other devices
+
+    return { success: true };
+  },
 };
 
 // Helper for ordering

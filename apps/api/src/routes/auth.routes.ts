@@ -210,6 +210,55 @@ export async function authRoutes(fastify: FastifyInstance) {
   });
 
   /**
+   * POST /api/auth/change-password - Change password (requires auth)
+   */
+  fastify.post('/change-password', async (
+    request: FastifyRequest,
+    reply: FastifyReply
+  ) => {
+    // Require authentication
+    if (!request.userId) {
+      return reply.code(401).send({
+        success: false,
+        error: 'Authentication required',
+      });
+    }
+
+    try {
+      const data = authSchemas.changePassword.parse(request.body);
+      
+      const result = await authService.changePassword(
+        request.userId,
+        data.currentPassword,
+        data.newPassword
+      );
+      
+      return reply.send(result);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return reply.code(400).send({
+          success: false,
+          error: 'Validation error',
+          details: error.errors,
+        });
+      }
+      
+      if (error instanceof Error) {
+        const statusCode = error.message === 'Current password is incorrect' ? 400 : 400;
+        return reply.code(statusCode).send({
+          success: false,
+          error: error.message,
+        });
+      }
+      
+      return reply.code(500).send({
+        success: false,
+        error: 'Internal server error',
+      });
+    }
+  });
+
+  /**
    * GET /api/auth/sessions - Get active sessions
    */
   fastify.get('/sessions', async (

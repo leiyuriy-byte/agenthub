@@ -67,17 +67,24 @@ export async function channelRoutes(fastify: FastifyInstance) {
   });
 
   /**
-   * POST /api/channels - Create channel (admin only - for future)
+   * POST /api/channels - Create channel (admin only)
    */
   fastify.post('/', async (
     request: FastifyRequest,
     reply: FastifyReply
   ) => {
-    // TODO: Add admin check
     if (!request.userId) {
       return reply.code(401).send({
         success: false,
         error: 'Authentication required',
+      });
+    }
+
+    // Admin only
+    if ((request.user as any)?.role !== 'admin') {
+      return reply.code(403).send({
+        success: false,
+        error: 'Admin access required',
       });
     }
 
@@ -106,17 +113,24 @@ export async function channelRoutes(fastify: FastifyInstance) {
   });
 
   /**
-   * PUT /api/channels/:id - Update channel (admin only - for future)
+   * PUT /api/channels/:id - Update channel (admin only)
    */
   fastify.put('/:id', async (
     request: FastifyRequest<{ Params: ChannelParams }>,
     reply: FastifyReply
   ) => {
-    // TODO: Add admin check
     if (!request.userId) {
       return reply.code(401).send({
         success: false,
         error: 'Authentication required',
+      });
+    }
+
+    // Admin only
+    if ((request.user as any)?.role !== 'admin') {
+      return reply.code(403).send({
+        success: false,
+        error: 'Admin access required',
       });
     }
 
@@ -140,17 +154,24 @@ export async function channelRoutes(fastify: FastifyInstance) {
   });
 
   /**
-   * DELETE /api/channels/:id - Delete channel (admin only - for future)
+   * DELETE /api/channels/:id - Delete channel (admin only)
    */
   fastify.delete('/:id', async (
     request: FastifyRequest<{ Params: ChannelParams }>,
     reply: FastifyReply
   ) => {
-    // TODO: Add admin check
     if (!request.userId) {
       return reply.code(401).send({
         success: false,
         error: 'Authentication required',
+      });
+    }
+
+    // Admin only
+    if ((request.user as any)?.role !== 'admin') {
+      return reply.code(403).send({
+        success: false,
+        error: 'Admin access required',
       });
     }
 

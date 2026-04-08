@@ -222,9 +222,22 @@ export default function SettingsPage() {
 
     setIsPasswordLoading(true);
     try {
-      // TODO: Implement change password API
-      toast.info('密码修改功能即将上线');
-      setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      const res = await fetch('/api/auth/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          currentPassword: passwordData.currentPassword,
+          newPassword: passwordData.newPassword,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.error || '修改失败');
+      } else {
+        toast.success('密码修改成功');
+        setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      }
     } catch {
       toast.error('修改失败');
     }

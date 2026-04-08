@@ -225,8 +225,7 @@ export async function messageRoutes(fastify: FastifyInstance) {
         
         const result = await sendMessage(senderId!, body);
         
-        // TODO: 通过 WebSocket 推送消息给接收者
-        // 这将在实时通讯功能中实现
+        // WebSocket push is handled in message.service.ts sendMessage()
         
         return reply.status(201).send(result);
       } catch (error) {

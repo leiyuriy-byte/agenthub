@@ -1,5 +1,7 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { pollService } from '../services/poll.service.js';
+import { db, schema } from '@agenthub/db';
+import { eq } from 'drizzle-orm';
 
 // Type definitions
 interface CreatePollBody {
@@ -183,8 +185,22 @@ export async function pollRoutes(fastify: FastifyInstance) {
           return reply.status(404).send({ error: 'Poll not found' });
         }
 
-        // TODO: Add ownership check (pollService should have a findById method)
-        // For now, just allow deletion
+        // Get the post that owns this poll to check ownership
+        const [post] = await db.select()
+          .from(schema.posts)
+          .where(eq(schema.posts.id, results.poll.postId))
+          .limit(1);
+
+        if (!post) {
+          return reply.status(404).send({ error: 'Post not found' });
+        }
+
+        // Ownership check: only post author or admin can delete
+        const isAdmin = (request.user as any)?.role === 'admin';
+        if (post.authorId !== userId && !isAdmin) {
+          return reply.status(403).send({ error: 'Not authorized to delete this poll' });
+        }
+
         await pollService.delete(id);
 
         return reply.send({ success: true });

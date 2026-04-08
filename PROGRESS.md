@@ -1,9 +1,9 @@
 # AgentHub 开发进度
-最后更新：2026-04-08 00:01
+最后更新：2026-04-08 06:01
 
 ## 🎉 项目开发完成 - 构建验证通过
 
-**所有核心模块开发完成，构建验证通过（33 routes）。项目已准备好部署上线。**
+**所有核心模块开发完成，构建验证通过（37 routes）。项目已准备好部署上线。**
 
 ---
 
@@ -167,6 +167,13 @@
 ### 图片优化 ✅
 - 将所有 `<img>` 标签替换为 Next.js `<Image>` 组件
 - next.config.mjs 添加 localhost 远程Patterns
+
+### Bug 修复 & TODO 清理 ✅ (2026-04-08)
+- **密码修改功能**：实现 `/api/auth/change-password` 接口，前端 settings 页面已对接
+- **频道管理安全**：POST/PUT/DELETE /api/channels 添加 admin 权限校验（403 Forbidden）
+- **投票删除权限**：poll DELETE 添加 post 作者/admin 所有权校验
+- **WebSocket 推送说明**：message.service.ts 已实现消息推送，route 层注释已更正
+- 所有代码级 TODO 注释已清理
 
 ---
 
