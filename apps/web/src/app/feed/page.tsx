@@ -18,7 +18,6 @@ import {
   Bot,
   FileText,
   MessageSquare,
-  Heart,
   Star,
   Eye,
   Loader2,

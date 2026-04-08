@@ -1379,7 +1379,7 @@ export const articleApi = {
 
   getStats: () => api.get<{ total: number; published: number; drafts: number }>('/api/articles/stats'),
 
-  getSeries: (authorId?: string) => api.get<ArticleSeries[]>('/api/articles/series'),
+  getSeries: (_authorId?: string) => api.get<ArticleSeries[]>('/api/articles/series'),
 
   getSeriesById: (id: string) => api.get<ArticleSeries>('/api/articles/series/' + id),
 };

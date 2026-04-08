@@ -11,7 +11,7 @@ interface PollComponentProps {
 }
 
 export function PollComponent({ postId }: PollComponentProps) {
-  const { user } = useAuth();
+  useAuth(); // Ensure auth is initialized
   const [poll, setPoll] = useState<Poll | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -32,7 +32,7 @@ export function PollComponent({ postId }: PollComponentProps) {
         setHasVoted((response.data.userVotedOptionIds?.length ?? 0) > 0);
         setSelectedOptions(response.data.userVotedOptionIds ?? []);
       }
-    } catch (err) {
+    } catch {
       // Poll might not exist for non-poll posts or error fetching
       setError('Failed to load poll');
     } finally {

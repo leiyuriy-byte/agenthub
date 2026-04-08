@@ -15,7 +15,6 @@ import {
   Heading2,
   Eye,
   Edit3,
-  Loader2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import ReactMarkdown from 'react-markdown';

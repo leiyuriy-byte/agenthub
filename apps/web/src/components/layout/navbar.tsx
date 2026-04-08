@@ -47,12 +47,10 @@ export function Navbar() {
   const [isLoadingNotifications, setIsLoadingNotifications] = useState(false);
   const [checkedIn, setCheckedIn] = useState(false);
   const [isCheckingIn, setIsCheckingIn] = useState(false);
-  const [userPoints, setUserPoints] = useState<{ points: number; level: number; levelName: string } | null>(null);
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
   const [searchResults, setSearchResults] = useState<QuickSearchResult | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
-  const notificationRef = useRef<HTMLDivElement>(null);
 
   // Check auth on mount
   useEffect(() => {
@@ -86,29 +84,17 @@ export function Navbar() {
     setIsLoadingNotifications(false);
   }, [user]);
 
-  // Fetch check-in status and user points
+  // Fetch check-in status
   const fetchCheckinStatus = useCallback(async () => {
     if (!user) {
       setCheckedIn(false);
-      setUserPoints(null);
       return;
     }
 
     try {
-      const [checkinRes, pointsRes] = await Promise.all([
-        pointsApi.hasCheckedIn(),
-        pointsApi.getMyPoints(),
-      ]);
-
+      const checkinRes = await pointsApi.hasCheckedIn();
       if (checkinRes.success && checkinRes.data) {
         setCheckedIn(checkinRes.data.checkedIn);
-      }
-      if (pointsRes.success && pointsRes.data) {
-        setUserPoints({
-          points: pointsRes.data.points,
-          level: pointsRes.data.level,
-          levelName: pointsRes.data.levelName,
-        });
       }
     } catch {
       // Silently fail
@@ -208,13 +194,12 @@ export function Navbar() {
       if (response.success && response.data) {
         if (response.data.success) {
           setCheckedIn(true);
-          setUserPoints((prev) => prev ? { ...prev, points: prev.points + (response.data?.points || 0) } : null);
           toast.success(`签到成功！+${response.data.points} 积分`);
         } else {
           toast.info(response.data.message || '今日已签到');
         }
       }
-    } catch (error) {
+    } catch {
       toast.error('签到失败，请稍后重试');
     }
     setIsCheckingIn(false);

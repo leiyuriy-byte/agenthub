@@ -264,7 +264,7 @@ function SearchContent() {
                               <div className="flex-1 min-w-0">
                                 <h3 className="font-medium line-clamp-1">{post.title}</h3>
                                 <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
-                                  {post.content.replace(/[#*`_\[\]]/g, '').slice(0, 150)}...
+                                  {post.content.replace(/[#*`_[\]]/g, '').slice(0, 150)}...
                                 </p>
                                 <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
                                   {post.author && (
