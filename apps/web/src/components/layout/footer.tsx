@@ -60,13 +60,13 @@ export function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="font-semibold text-sm mb-4">快速链接</h3>
+            <h2 className="font-semibold text-sm mb-4 sr-only">快速链接</h2>
             <ul className="space-y-2">
               {quickLinks.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-foreground transition-colors"
+                    className="text-sm text-foreground transition-colors min-h-[44px] flex items-center"
                   >
                     {link.label}
                   </Link>
@@ -77,13 +77,13 @@ export function Footer() {
 
           {/* Resources */}
           <div>
-            <h3 className="font-semibold text-sm mb-4">资源</h3>
+            <h2 className="font-semibold text-sm mb-4 sr-only">资源</h2>
             <ul className="space-y-2">
               {resources.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-foreground transition-colors"
+                    className="text-sm text-foreground transition-colors min-h-[44px] flex items-center"
                   >
                     {link.label}
                   </Link>
@@ -94,7 +94,7 @@ export function Footer() {
 
           {/* Newsletter / CTA */}
           <div>
-            <h3 className="font-semibold text-sm mb-4">保持更新</h3>
+            <h2 className="font-semibold text-sm mb-4 sr-only">保持更新</h2>
             <p className="text-sm text-muted-foreground mb-4">
               订阅我们的 newsletter，获取最新 Agent 和技术讨论。
             </p>

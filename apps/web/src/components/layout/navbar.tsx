@@ -250,7 +250,7 @@ export function Navbar() {
             <Link
               key={link.href}
               href={link.href}
-              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors min-h-[24px] ${
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors min-h-[44px] flex items-center ${
                 pathname === link.href || pathname.startsWith(link.href + '/')
                   ? 'bg-primary/10 text-primary'
                   : 'text-foreground hover:text-foreground hover:bg-accent'
@@ -401,8 +401,8 @@ export function Navbar() {
               {/* Notifications */}
               <button
                 onClick={handleNotificationClick}
-                className="relative p-2 text-muted-foreground hover:text-foreground transition-colors"
-                title="通知"
+                className="relative p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="通知"
               >
                 {isLoadingNotifications ? (
                   <Loader2 className="h-5 w-5 animate-spin" />
@@ -419,8 +419,8 @@ export function Navbar() {
               {/* Messages */}
               <Link
                 href="/messages"
-                className="relative p-2 text-muted-foreground hover:text-foreground transition-colors"
-                title="私信"
+                className="relative p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="私信"
               >
                 <MessageCircle className="h-5 w-5" />
                 {messageUnreadCount > 0 && (

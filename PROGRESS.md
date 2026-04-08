@@ -1,5 +1,5 @@
 # AgentHub 开发进度
-最后更新：2026-04-08 06:01
+最后更新：2026-04-08 18:02
 
 ## 🎉 项目开发完成 - 构建验证通过
 
@@ -7,7 +7,22 @@
 
 ---
 
-## 构建验证（2026-04-07 08:04）
+## Lighthouse 可访问性优化（2026-04-08 18:02）
+
+修复前评分：Performance 100% | Accessibility 83% | Best Practices 96% | SEO 100%
+Accessibility 问题：button-name(0%) | color-contrast(0%) | heading-order(0%) | target-size(0%)
+
+**本轮修复：**
+- ✅ 移除首页 Hero 渐变文字，替换为纯色 `text-primary`（WCAG 4.5:1 对比度）
+- ✅ 导航栏通知/私信按钮添加 `aria-label` + `min-h-[44px] min-w-[44px]`（触屏可及性）
+- ✅ 导航栏 Desktop Nav Links 高度从 `24px` 提升至 `44px`（触屏可及性）
+- ✅ Footer 链接列标题从 `h3` 改为 `h2 sr-only`（正确的标题层级）
+- ✅ Footer 链接添加 `min-h-[44px] flex items-center`（触屏可及性）
+- ✅ 构建验证通过（37 routes）
+
+---
+
+## 构建验证（2026-04-08 18:02）
 - `pnpm build` 成功 ✅
 - 33 个路由全部生成
 - Next.js 优化完成 ✅

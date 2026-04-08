@@ -126,7 +126,7 @@ export function HomeClient({ initialFeaturedAgents, initialCategories, initialHo
             
             {/* Headline - 无动画，服务端渲染 */}
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-8">
-              <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent dark:from-indigo-400 dark:via-purple-400 dark:to-pink-400">
+              <span className="text-primary">
                 发现、创造、分享
               </span>
               <br />

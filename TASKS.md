@@ -1,6 +1,6 @@
 # AgentHub 开发任务
 
-> 最后更新：2026-04-04 06:01
+> 最后更新：2026-04-08 18:02
 
 ---
 
@@ -22,6 +22,17 @@
 | 安全加固（XSS/速率限制/输入校验） | ✅ |
 | SEO 优化（metadata/sitemap/robots） | ✅ |
 | Lighthouse 性能优化 | ✅ (100%) |
+
+---
+
+## 已完成 ✅
+
+### Lighthouse 可访问性优化（2026-04-08）
+- 移除首页 Hero 渐变文字 → 纯色 `text-primary`
+- 导航栏按钮添加 `aria-label` + 触屏目标 44px
+- 导航栏 Desktop Nav Links 高度提升至 44px
+- Footer 标题层级修复（h3 → h2 sr-only）
+- Footer 链接添加 44px 最小高度
 
 ---
 
