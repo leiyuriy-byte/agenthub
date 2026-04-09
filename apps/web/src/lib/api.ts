@@ -442,6 +442,12 @@ export interface PostListResponse {
   offset: number;
 }
 
+// Vote response types
+export interface VoteResponse {
+  liked?: boolean;
+  disliked?: boolean;
+}
+
 export const postApi = {
   list: (params?: {
     limit?: number;
@@ -472,9 +478,9 @@ export const postApi = {
 
   delete: (id: string) => api.delete(`/api/posts/${id}`),
 
-  like: (id: string) => api.post(`/api/posts/${id}/like`),
+  like: (id: string) => api.post<VoteResponse>(`/api/posts/${id}/like`),
 
-  dislike: (id: string) => api.post(`/api/posts/${id}/dislike`),
+  dislike: (id: string) => api.post<VoteResponse>(`/api/posts/${id}/dislike`),
 
   favorite: (id: string) => api.post(`/api/posts/${id}/favorite`),
 

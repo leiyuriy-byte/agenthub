@@ -142,11 +142,11 @@ export default function AgentDetailPage() {
 
     if (response.success && response.data) {
       setAgent(response.data as AgentDetail);
-      if (response.data.screenshots?.length) {
+      if (response.data.screenshots && response.data.screenshots[0]) {
         setSelectedScreenshot(response.data.screenshots[0].url);
       }
       // Set default selected version to latest
-      if (response.data.versions?.length) {
+      if (response.data.versions && response.data.versions[0]) {
         setSelectedVersion(response.data.versions[0].version);
       }
     } else {
@@ -198,12 +198,14 @@ export default function AgentDetailPage() {
       });
 
       if (response.success && response.data) {
+        const comments = response.data.comments ?? [];
+        const total = response.data.total ?? 0;
         if (append) {
-          setComments((prev) => [...prev, ...response.data.comments]);
+          setComments((prev) => [...prev, ...comments]);
         } else {
-          setComments(response.data.comments);
+          setComments(comments);
         }
-        setCommentsTotal(response.data.total);
+        setCommentsTotal(total);
       }
     } catch (err) {
       console.error('Failed to fetch comments:', err);
@@ -455,16 +457,18 @@ export default function AgentDetailPage() {
 
   const prevScreenshot = () => {
     if (agent?.screenshots) {
+      const len = agent.screenshots.length;
       setLightboxIndex((prev) => 
-        prev === 0 ? agent.screenshots.length - 1 : prev - 1
+        prev === 0 ? len - 1 : prev - 1
       );
     }
   };
 
   const nextScreenshot = () => {
     if (agent?.screenshots) {
+      const len = agent.screenshots.length;
       setLightboxIndex((prev) => 
-        prev === agent.screenshots.length - 1 ? 0 : prev + 1
+        prev === len - 1 ? 0 : prev + 1
       );
     }
   };
@@ -825,7 +829,7 @@ export default function AgentDetailPage() {
                                   >
                                     <div className="flex flex-col items-center gap-1">
                                       <span className="text-lg">v{version.version}</span>
-                                      {agent.versions[0]?.id === version.id && (
+                                      {agent.versions?.[0]?.id === version.id && (
                                         <Badge variant="outline" className="text-xs">最新</Badge>
                                       )}
                                     </div>
@@ -839,15 +843,15 @@ export default function AgentDetailPage() {
                                 const allFeatures: Record<string, Record<string, boolean>> = {};
 
                                 agent.versions.forEach((version) => {
-                                  allFeatures[version.id] = {};
+                                  allFeatures[version.id] ??= {};
                                   if (version.features) {
                                     try {
                                       const features = JSON.parse(version.features);
                                       features.forEach((feature: string) => {
-                                        allFeatures[version.id][feature] = true;
+                                        allFeatures[version.id]![feature] = true;
                                       });
                                     } catch (e) {
-                                      allFeatures[version.id][version.features] = true;
+                                      allFeatures[version.id]![version.features] = true;
                                     }
                                   }
                                 });
@@ -922,7 +926,7 @@ export default function AgentDetailPage() {
                                 return features.map((feature) => (
                                   <tr key={feature}>
                                     <td className="p-3 border-b font-medium">{feature}</td>
-                                    {agent.versions.map((version) => {
+                                    {(agent.versions ?? []).map((version) => {
                                       const hasFeature = allFeatures[version.id]?.[feature];
                                       return (
                                         <td key={version.id} className="text-center p-3 border-b">
@@ -957,7 +961,7 @@ export default function AgentDetailPage() {
                                 }}
                               >
                                 v{version.version}
-                                {agent.versions[0]?.id === version.id && ' (最新)'}
+                                {agent.versions?.[0]?.id === version.id && ' (最新)'}
                               </Button>
                             ))}
                           </div>
@@ -1631,19 +1635,23 @@ export default function AgentDetailPage() {
             className="max-w-[90vw] max-h-[90vh]"
             onClick={(e) => e.stopPropagation()}
           >
-            <Image
-              src={agent.screenshots[lightboxIndex].url}
-              alt={agent.screenshots[lightboxIndex].caption || `Screenshot ${lightboxIndex + 1}`}
-              width={1200}
-              height={800}
-              className="max-w-full max-h-[90vh] object-contain rounded-lg"
-              priority
-            />
-            {/* Caption */}
-            {agent.screenshots[lightboxIndex].caption && (
-              <p className="text-center text-white/80 mt-4 text-sm">
-                {agent.screenshots[lightboxIndex].caption}
-              </p>
+            {agent.screenshots[lightboxIndex] && (
+              <>
+                <Image
+                  src={agent.screenshots[lightboxIndex].url}
+                  alt={agent.screenshots[lightboxIndex].caption || `Screenshot ${lightboxIndex + 1}`}
+                  width={1200}
+                  height={800}
+                  className="max-w-full max-h-[90vh] object-contain rounded-lg"
+                  priority
+                />
+                {/* Caption */}
+                {agent.screenshots[lightboxIndex].caption && (
+                  <p className="text-center text-white/80 mt-4 text-sm">
+                    {agent.screenshots[lightboxIndex].caption}
+                  </p>
+                )}
+              </>
             )}
             {/* Counter */}
             <p className="text-center text-white/60 mt-2 text-sm">

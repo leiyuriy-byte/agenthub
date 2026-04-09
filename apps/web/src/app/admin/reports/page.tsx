@@ -112,12 +112,14 @@ export default function AdminReportsPage() {
       });
 
       if (response.success && response.data) {
+        const reports = response.data.reports ?? [];
+        const total = response.data.total ?? 0;
         if (reset) {
-          setReports(response.data.reports);
+          setReports(reports);
         } else {
-          setReports((prev) => [...prev, ...response.data.reports]);
+          setReports((prev) => [...prev, ...reports]);
         }
-        setTotal(response.data.total);
+        setTotal(total);
       } else {
         setError(response.error || '获取举报列表失败');
       }
@@ -304,7 +306,7 @@ export default function AdminReportsPage() {
                           {report.reporter && (
                             <div className="flex items-center gap-1">
                               <Avatar className="h-4 w-4">
-                                <AvatarImage src={report.reporter.avatar} />
+                                <AvatarImage src={report.reporter.avatar ?? undefined} />
                                 <AvatarFallback className="text-[8px]">
                                   {report.reporter.username?.charAt(0)}
                                 </AvatarFallback>
@@ -409,7 +411,7 @@ export default function AdminReportsPage() {
                     <p className="text-sm text-muted-foreground">举报人</p>
                     <div className="flex items-center gap-2">
                       <Avatar className="h-6 w-6">
-                        <AvatarImage src={selectedReport.reporter.avatar} />
+                        <AvatarImage src={selectedReport.reporter.avatar ?? undefined} />
                         <AvatarFallback className="text-xs">
                           {selectedReport.reporter.username?.charAt(0)}
                         </AvatarFallback>

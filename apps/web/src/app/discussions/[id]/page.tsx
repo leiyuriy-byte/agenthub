@@ -302,7 +302,7 @@ export default function PostDetailPage() {
   };
 
   // Handle comment submit
-  const handleCommentSubmit = async (content: string, parentId?: string) => {
+  const handleCommentSubmit = async (commentId: string | null, content: string) => {
     if (!user) {
       router.push('/login');
       return;
@@ -315,11 +315,11 @@ export default function PostDetailPage() {
       const response = await commentApi.create({
         postId: post.id,
         content,
-        parentId,
+        parentId: commentId ?? undefined,
       });
 
       if (response.success && response.data) {
-        toast.success(parentId ? '回复成功' : '评论成功');
+        toast.success(commentId ? '回复成功' : '评论成功');
         setCommentContent('');
         setReplyingTo(null);
         // Refresh comments
@@ -665,7 +665,7 @@ export default function PostDetailPage() {
                         <div className="flex justify-end">
                           <Button 
                             size="sm" 
-                            onClick={() => handleCommentSubmit(commentContent)}
+                            onClick={() => handleCommentSubmit(null, commentContent)}
                             disabled={isSubmittingComment || !commentContent.trim()}
                           >
                             {isSubmittingComment && <Loader2 className="h-4 w-4 animate-spin mr-1" />}

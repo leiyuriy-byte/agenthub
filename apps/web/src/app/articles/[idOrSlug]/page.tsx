@@ -51,8 +51,8 @@ export default function ArticleDetailPage() {
     const headings: { id: string; text: string; level: number }[] = [];
     let match;
     while ((match = headingRegex.exec(content)) !== null) {
-      const level = match[1].length;
-      const text = match[2];
+      const level = match[1]!.length;
+      const text = match[2] ?? '';
       const id = text.toLowerCase().replace(/[^\u4e00-\u9fa5a-z0-9]+/g, '-');
       headings.push({ id, text, level });
     }

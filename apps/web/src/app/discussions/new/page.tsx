@@ -82,7 +82,10 @@ export default function NewPostPage() {
         setChannels(response.data);
         // Set default channel if available
         if (response.data.length > 0) {
-          setFormData((prev) => ({ ...prev, channelId: response.data![0].id }));
+          const firstChannel = response.data[0];
+          if (firstChannel) {
+            setFormData((prev) => ({ ...prev, channelId: firstChannel.id }));
+          }
         }
       }
     };

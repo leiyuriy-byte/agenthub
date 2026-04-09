@@ -94,12 +94,13 @@ export default function FeedPage() {
       });
 
       if (response.success && response.data) {
+        const feedData = response.data;
         if (reset) {
-          setFeed(response.data.feed);
+          setFeed(feedData.feed ?? []);
         } else {
-          setFeed(prev => [...prev, ...response.data.feed]);
+          setFeed(prev => [...prev, ...(feedData.feed ?? [])]);
         }
-        setHasMore(response.data.pagination.hasMore);
+        setHasMore(feedData.pagination?.hasMore ?? false);
         setOffset(currentOffset + limit);
       }
     } catch (error) {

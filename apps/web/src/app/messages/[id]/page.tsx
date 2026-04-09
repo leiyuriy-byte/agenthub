@@ -79,11 +79,12 @@ export default function ConversationPage() {
     try {
       const response = await messageApi.getMessages(conversationId, { 
         limit: 50, 
-        beforeId: messages[messages.length - 1].id 
+        beforeId: messages[messages.length - 1]?.id 
       });
       if (response.success && response.data) {
-        setMessages(prev => [...prev, ...response.data!.messages]);
-        setHasMore(response.data.messages.length === 50);
+        const data = response.data;
+        setMessages(prev => [...prev, ...(data.messages ?? [])]);
+        setHasMore((data.messages?.length ?? 0) === 50);
       }
     } catch (err) {
       console.error('Failed to load more messages');
@@ -256,14 +257,14 @@ export default function ConversationPage() {
               {/* Date separator */}
               <div className="flex items-center justify-center my-6">
                 <span className="px-3 py-1 text-xs text-zinc-500 bg-zinc-800/50 rounded-full">
-                  {formatDate(msgs[0].createdAt)}
+                  {formatDate(msgs[0]?.createdAt ?? new Date().toISOString())}
                 </span>
               </div>
               
               {/* Messages for this date */}
               {msgs.map((message, index) => {
                 const isOwn = message.senderId === user?.id;
-                const showAvatar = index === 0 || msgs[index - 1].senderId !== message.senderId;
+                const showAvatar = index === 0 || msgs[index - 1]?.senderId !== message.senderId;
                 
                 return (
                   <motion.div

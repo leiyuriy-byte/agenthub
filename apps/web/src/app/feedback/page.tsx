@@ -78,12 +78,13 @@ export default function FeedbackPage() {
       });
 
       if (response.success && response.data) {
+        const data = response.data;
         if (append) {
-          setFeedbacks((prev) => [...prev, ...response.data.feedbacks]);
+          setFeedbacks((prev) => [...prev, ...(data.feedbacks ?? [])]);
         } else {
-          setFeedbacks(response.data.feedbacks);
+          setFeedbacks(data.feedbacks ?? []);
         }
-        setTotal(response.data.total);
+        setTotal(data.total ?? 0);
       }
     } catch (err) {
       console.error('Failed to fetch feedbacks:', err);

@@ -1,9 +1,24 @@
 # AgentHub 开发进度
-最后更新：2026-04-09 02:01
+最后更新：2026-04-10 02:01
 
 ## 🎉 项目开发完成 - 构建验证通过
 
 **所有核心模块开发完成，构建验证通过（37 routes）。项目已准备好部署上线。**
+
+---
+
+## TypeScript 严格模式修复（2026-04-10 02:01）
+
+修复了 17 个 TypeScript 严格模式编译错误：
+
+- ✅ `admin/reports/page.tsx`: 修复 `response.data` 在闭包中可能未定义的问题；修复 `AvatarImage src` 接收 `null` 值的问题
+- ✅ `agents/[id]/page.tsx`: 修复 `screenshots`/`versions` 数组可能未定义的问题；修复闭包中 `response.data` 未定义的问题；修复 `allFeatures[version.id]` 索引可能返回 undefined 的问题
+- ✅ `articles/[idOrSlug]/page.tsx`: 修复 `match[1]` 可选链访问
+- ✅ `discussions/[id]/page.tsx`: 修复 `handleCommentSubmit` 缺少 `null` 参数（顶级评论应传 `commentId=null`）
+- ✅ `discussions/new/page.tsx`: 修复 `response.data[0].id` 可能为 undefined
+- ✅ `messages/[id]/page.tsx`: 修复 `messages[messages.length - 1].id` 访问
+
+**构建验证通过（37 routes）✅**
 
 ---
 
