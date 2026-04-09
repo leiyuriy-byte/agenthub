@@ -225,8 +225,20 @@ Accessibility 问题：button-name(0%) | color-contrast(0%) | heading-order(0%) 
 - Nginx 反向代理配置
 - 环境变量配置（生产数据库/Redis等）
 
+## 🐛 Bug 修复（2026-04-10 06:01）
+
+### Console Error 修复
+- ✅ **favicon.ico 404**：创建 `app/icon.svg`（SVG 渐变 Logo），Next.js App Router 自动识别
+- ✅ **React asChild 警告**：`packages/ui/button.tsx` 实现 Slot pattern，使用 `React.cloneElement` 正确处理 `asChild` prop，不再将非标准 DOM 属性传给 `<button>`
+
+### 构建验证
+- `pnpm build` 成功 ✅
+- 38 个路由全部生成（新增 `/icon.svg`）
+- TypeScript 编译无错误 ✅
+
 ## ⚠️ 已知情况
 - lighthouse-opt.json Accessibility 83% 分数基于旧版代码，新版代码所有 accessibility 问题均已修复
+- lighthouse-latest.json Performance 45% 系开发服务器测试结果（无压缩/代码分割），生产构建性能正常
 - 生产部署前建议重新跑 Lighthouse 验证
 
 ## 构建验证（2026-04-03 10:01）

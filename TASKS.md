@@ -31,6 +31,11 @@
 - 修复 17 个 TS 严格模式编译错误
 - 构建验证通过（37 routes）
 
+### Console Error 修复（2026-04-10 06:01）
+- ✅ favicon.ico 404 → 创建 app/icon.svg
+- ✅ React asChild 警告 → Button 组件实现 Slot pattern
+- ✅ 构建验证通过（38 routes）
+
 ### Lighthouse 可访问性优化（2026-04-09）
 - 导航栏 Desktop Nav Links 添加 `min-h-[44px] min-w-[44px]` 确保触屏可及性
 - Footer 移除 `sr-only` 标题，改为可见标题（修复 heading-order）
