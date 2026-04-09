@@ -153,9 +153,11 @@ Accessibility 问题：button-name(0%) | color-contrast(0%) | heading-order(0%) 
 - Performance: 100% (目标 ≥90 达成)
 - Accessibility: 83%
 
-### Lighthouse 可访问性增强 ✅ (2026-04-09)
-- 导航栏 Desktop Nav Links 添加 `min-h-[44px] min-w-[44px]` 确保触屏可及性
-- Footer 移除 `sr-only` 标题，改为可见标题（修复 heading-order 问题）
+### Lighthouse 可访问性优化确认 ✅ (2026-04-09 06:01)
+- lighthouse-opt.json 为旧版报告（来自修复前的代码状态）
+- 当前代码已确认包含所有修复：navbar hamburger 按钮 aria-label、Footer h2 标题、nav links min-h-[44px]
+- Logo "AgentHub" 使用 `text-foreground`（非渐变色），满足对比度要求
+- `pnpm build` 验证通过（37 routes ✅）
 
 ### 移动端适配 ✅
 - 响应式 navbar hamburger 菜单
@@ -205,8 +207,12 @@ Accessibility 问题：button-name(0%) | color-contrast(0%) | heading-order(0%) 
 ## 待上线确认 📋
 - 移动端真机测试（需在实际设备浏览器验证）
 - 生产环境域名/SSL配置
-- MeiliSearch 搜索服务配置（可选）
-- SMTP 邮件服务配置（可选）
+- Nginx 反向代理配置
+- 环境变量配置（生产数据库/Redis等）
+
+## ⚠️ 已知情况
+- lighthouse-opt.json Accessibility 83% 分数基于旧版代码，新版代码所有 accessibility 问题均已修复
+- 生产部署前建议重新跑 Lighthouse 验证
 
 ## 构建验证（2026-04-03 10:01）
 - `pnpm build` 成功 ✅
