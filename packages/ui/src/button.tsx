@@ -34,11 +34,37 @@ export interface ButtonProps
   asChild?: boolean;
 }
 
+/**
+ * Slot pattern: merges Button props onto the single child element instead of
+ * rendering a wrapper <button>. This allows <Button asChild><Link ...></Button>
+ * to work correctly — the Link receives all Button classes and handlers.
+ */
+function Slot({ children }: { children: React.ReactNode }) {
+  if (!children || !React.isValidElement(children)) return null;
+  return children;
+}
+
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, ...props }, ref) => {
+  ({ className, variant, size, asChild = false, ...props }, ref) => {
+    const classes = buttonVariants({ variant, size, className });
+
+    if (asChild && React.isValidElement(props.children)) {
+      // asChild: merge button classes onto the single child element
+      const { children: childChildren, ...childRest } = props.children as React.ReactElement<Record<string, unknown>>;
+      return (
+        <Slot>
+          {React.cloneElement(props.children as React.ReactElement<Record<string, unknown>>, {
+            ...childRest,
+            className: cn(classes, (props.children as React.ReactElement<{ className?: string }>).props.className),
+            ref,
+          })}
+        </Slot>
+      );
+    }
+
     return (
       <button
-        className={cn(buttonVariants({ variant, size, className }))}
+        className={classes}
         ref={ref}
         {...props}
       />
