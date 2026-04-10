@@ -58,6 +58,13 @@ export const userSchemas = {
   addTag: z.object({
     tag: z.string().max(30).min(1),
   }),
+
+  deleteAccount: z.object({
+    password: z.string().min(1, 'Password is required to delete account'),
+    confirmText: z.string().refine(val => val === 'DELETE', {
+      message: 'Please type DELETE to confirm',
+    }),
+  }),
 };
 
 /**

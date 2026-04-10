@@ -345,4 +345,90 @@ export async function userRoutes(fastify: FastifyInstance) {
       data: { isFollowing },
     });
   });
+
+  /**
+   * GET /api/users/me/export - Export all user data (GDPR compliance)
+   */
+  fastify.get('/me/export', async (
+    request: FastifyRequest,
+    reply: FastifyReply
+  ) => {
+    if (!request.userId) {
+      return reply.code(401).send({
+        success: false,
+        error: 'Not authenticated',
+      });
+    }
+
+    try {
+      const data = await userService.exportUserData(request.userId);
+      
+      return reply.send({
+        success: true,
+        data,
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        return reply.code(404).send({
+          success: false,
+          error: error.message,
+        });
+      }
+      return reply.code(500).send({
+        success: false,
+        error: 'Internal server error',
+      });
+    }
+  });
+
+  /**
+   * DELETE /api/users/me - Delete user account (GDPR compliance - right to erasure)
+   * Requires password confirmation and typing "DELETE" to confirm
+   */
+  fastify.delete('/me', async (
+    request: FastifyRequest,
+    reply: FastifyReply
+  ) => {
+    if (!request.userId) {
+      return reply.code(401).send({
+        success: false,
+        error: 'Not authenticated',
+      });
+    }
+
+    try {
+      const data = userSchemas.deleteAccount.parse(request.body);
+      
+      await userService.deleteAccount(request.userId, data.password);
+      
+      return reply.send({
+        success: true,
+        message: 'Account deleted successfully. All your data has been removed.',
+      });
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return reply.code(400).send({
+          success: false,
+          error: 'Validation error',
+          details: error.errors,
+        });
+      }
+      if (error instanceof Error) {
+        if (error.message === 'Invalid password') {
+          return reply.code(403).send({
+            success: false,
+            error: 'Invalid password. Account deletion rejected.',
+          });
+        }
+        return reply.code(404).send({
+          success: false,
+          error: error.message,
+        });
+      }
+      return reply.code(500).send({
+        success: false,
+        error: 'Internal server error',
+      });
+    }
+  });
 }
