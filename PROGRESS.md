@@ -1,9 +1,30 @@
 # AgentHub 开发进度
-最后更新：2026-04-10 08:06
+最后更新：2026-04-10 10:01
 
 ## 🎉 项目开发完成 - 构建验证通过
 
-**所有核心模块开发完成，构建验证通过（37 routes）。项目已准备好部署上线。**
+**所有核心模块开发完成，构建验证通过（38 routes）。项目已准备好部署上线。**
+
+---
+
+## GDPR 合规功能（2026-04-10 08:06）
+
+### 数据导出 API ✅
+- **Endpoint**: `GET /api/users/me/export`
+- **功能**: 导出用户所有数据的完整 JSON 包
+- **包含数据**: 用户资料、社交链接、标签、徽章、粉丝/关注、Agent列表、帖子、评论、Agent评论/评分、文章、资源、通知、积分记录、签到记录、私信会话、消息计数
+- **安全**: 自动排除密码Hash，会员邮箱仅用于合规留档
+
+### 账号删除 API ✅
+- **Endpoint**: `DELETE /api/users/me`
+- **验证**: 需提供当前密码（OAuth账号免密），并确认输入 "DELETE"
+- **流程**: 先匿名化用户记录（邮箱/用户名打码），再通过级联删除清除所有关联数据
+- **安全**: 密码校验确保本人操作，级联删除确保数据完全清除
+
+### 构建验证
+- `pnpm build` 成功 ✅
+- 38 routes + 2 新 GDPR endpoints
+- TypeScript 编译无错误 ✅
 
 ---
 
@@ -230,25 +251,6 @@ Accessibility 问题：button-name(0%) | color-contrast(0%) | heading-order(0%) 
 ### Console Error 修复
 - ✅ **favicon.ico 404**：创建 `app/icon.svg`（SVG 渐变 Logo），Next.js App Router 自动识别
 - ✅ **React asChild 警告**：`packages/ui/button.tsx` 实现 Slot pattern，使用 `React.cloneElement` 正确处理 `asChild` prop，不再将非标准 DOM 属性传给 `<button>`
-
-### 构建验证
-- `pnpm build` 成功 ✅
-- 38 个路由全部生成（新增 `/icon.svg`）
-- TypeScript 编译无错误 ✅
-
-## GDPR 合规功能（2026-04-10 08:06）
-
-### 数据导出 API ✅
-- **Endpoint**: `GET /api/users/me/export`
-- **功能**: 导出用户所有数据的完整 JSON 包
-- **包含数据**: 用户资料、社交链接、标签、徽章、粉丝/关注、Agent列表、帖子、评论、Agent评论/评分、文章、资源、通知、积分记录、签到记录、私信会话、消息计数
-- **安全**: 自动排除密码Hash，会员邮箱仅用于合规留档
-
-### 账号删除 API ✅
-- **Endpoint**: `DELETE /api/users/me`
-- **验证**: 需提供当前密码（OAuth账号免密），并确认输入 "DELETE"
-- **流程**: 先匿名化用户记录（邮箱/用户名打码），再通过级联删除清除所有关联数据
-- **安全**: 密码校验确保本人操作，级联删除确保数据完全清除
 
 ### 构建验证
 - `pnpm build` 成功 ✅
