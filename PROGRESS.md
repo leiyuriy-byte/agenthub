@@ -1,9 +1,37 @@
 # AgentHub 开发进度
-最后更新：2026-04-10 14:01
+最后更新：2026-04-10 20:01
 
 ## 🎉 项目开发完成 - 构建验证通过
 
 **所有核心模块开发完成，构建验证通过（38 routes）。项目已准备好部署上线。**
+
+---
+
+## 项目状态巡检（2026-04-10 18:01）
+
+### 构建验证 ✅
+- `pnpm build` 成功 ✅
+- 38 routes 全部生成
+- API TypeScript 编译无错误 ✅
+
+### 代码质量检查 ✅
+- 无 TODO/FIXME 残留
+- 无 placeholder/lorem ipsum 残留
+- 无 TypeScript 严格模式错误
+
+### 项目结构确认
+- **前端**: Next.js 14 App Router，37 个页面路由
+- **后端**: Fastify API，22 个 route 文件
+- **数据库**: SQLite (532KB)，完整 schema
+- **组件**: shadcn/ui 基础组件 + 自定义业务组件
+- **实时通讯**: Socket.io WebSocket 已集成
+
+### 部署就绪状态
+- ✅ Dockerfile 多阶段构建
+- ✅ docker-compose.yml
+- ✅ 环境变量配置（.env.example）
+- ✅ DEPLOY.md 部署文档
+- ⚠️ 生产环境配置（域名/SSL/Nginx）待配置
 
 ---
 
@@ -241,9 +269,13 @@ Accessibility 问题：button-name(0%) | color-contrast(0%) | heading-order(0%) 
   - 支持 Bug 报告和功能建议
   - 状态跟踪：pending/in_progress/resolved/rejected
 
-### 图片优化 ✅
-- 将所有 `<img>` 标签替换为 Next.js `<Image>` 组件
-- next.config.mjs 添加 localhost 远程Patterns
+### 文章目录自动生成 ✅ (2026-04-10 20:01)
+- Agent 详情页文章详情页实现目录自动生成
+- 桌面端：右侧 sticky 侧边栏展示目录
+- 移动端：可折叠详情（`<details>`）展示目录
+- 自定义 heading 组件为 h1/h2/h3 添加 ID，支持平滑滚动定位
+- rehype-sanitize 配置保留 heading ID 属性
+- 标题提取算法与 rehype-slug 行为一致（中文/英文混合处理）
 
 ### Bug 修复 & TODO 清理 ✅ (2026-04-08)
 - **密码修改功能**：实现 `/api/auth/change-password` 接口，前端 settings 页面已对接
