@@ -5,7 +5,7 @@
 import { toast } from 'sonner';
 export { useAuthStore } from '@/stores/auth-store';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '';
 
 /** Build a query string, filtering out undefined/null/'' values that would otherwise
  *  serialize as the literal string "undefined" or "null" in URLSearchParams. */

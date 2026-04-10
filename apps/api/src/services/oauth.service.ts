@@ -205,7 +205,7 @@ export const oauthService = {
    */
   getGitHubAuthUrl(state: string): string {
     const clientId = process.env.GITHUB_CLIENT_ID;
-    const redirectUri = process.env.OAUTH_REDIRECT_URI || 'http://localhost:3001/api/auth/github/callback';
+    const redirectUri = process.env.OAUTH_GITHUB_REDIRECT_URI || process.env.OAUTH_REDIRECT_URI || 'https://nexarb.top/api/auth/github/callback';
     
     if (!clientId) {
       throw new Error('GITHUB_CLIENT_ID not configured');
@@ -227,7 +227,7 @@ export const oauthService = {
   getGoogleAuthUrl(state: string): string {
     const clientId = process.env.GOOGLE_CLIENT_ID;
     const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-    const redirectUri = process.env.OAUTH_REDIRECT_URI || 'http://localhost:3001/api/auth/google/callback';
+    const redirectUri = process.env.OAUTH_GOOGLE_REDIRECT_URI || process.env.OAUTH_REDIRECT_URI || 'https://nexarb.top/api/auth/google/callback';
     
     if (!clientId) {
       throw new Error('GOOGLE_CLIENT_ID not configured');
@@ -252,7 +252,7 @@ export const oauthService = {
   async exchangeGitHubCode(code: string): Promise<{ providerId: string; accessToken: string; email: string; name?: string; avatar?: string }> {
     const clientId = process.env.GITHUB_CLIENT_ID;
     const clientSecret = process.env.GITHUB_CLIENT_SECRET;
-    const redirectUri = process.env.OAUTH_REDIRECT_URI || 'http://localhost:3001/api/auth/github/callback';
+    const redirectUri = process.env.OAUTH_GITHUB_REDIRECT_URI || process.env.OAUTH_REDIRECT_URI || 'https://nexarb.top/api/auth/github/callback';
 
     if (!clientId || !clientSecret) {
       throw new Error('GitHub OAuth not configured');
@@ -320,7 +320,7 @@ export const oauthService = {
   async exchangeGoogleCode(code: string): Promise<{ providerId: string; email: string; name?: string; avatar?: string }> {
     const clientId = process.env.GOOGLE_CLIENT_ID;
     const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-    const redirectUri = process.env.OAUTH_REDIRECT_URI || 'http://localhost:3001/api/auth/google/callback';
+    const redirectUri = process.env.OAUTH_GOOGLE_REDIRECT_URI || process.env.OAUTH_REDIRECT_URI || 'https://nexarb.top/api/auth/google/callback';
 
     if (!clientId || !clientSecret) {
       throw new Error('Google OAuth not configured');

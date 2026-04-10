@@ -155,7 +155,7 @@ export default function SettingsPage() {
     setIsLoading(true);
     try {
       // Add social link via API
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/users/me/social-links`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/users/me/social-links`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -181,7 +181,7 @@ export default function SettingsPage() {
   const handleRemoveSocialLink = async (platform: string) => {
     setIsLoading(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/users/me/social-links/${platform}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/users/me/social-links/${platform}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('agenthub_token')}`,

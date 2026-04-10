@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 
 // API Base URL - 服务端调用
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
 
 async function fetchApi<T>(endpoint: string): Promise<T> {
   try {
