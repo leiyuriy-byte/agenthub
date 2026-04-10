@@ -6,6 +6,16 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '../..');
 
 const nextConfig = {
+  basePath: '/agent-hub',
+  // Rewrite /api/* → backend (3001) so frontend can use relative /api paths
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'http://localhost:3001/api/:path*',
+      },
+    ];
+  },
   typescript: {
     ignoreBuildErrors: true,
   },

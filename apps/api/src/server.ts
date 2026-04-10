@@ -26,6 +26,8 @@ import { articleRoutes } from './routes/article.routes.js';
 import { resourceRoutes } from './routes/resource.routes.js';
 import { activityRoutes } from './routes/activity.routes.js';
 import { feedbackRoutes } from './routes/feedback.routes.js';
+import { agentAuthRoutes } from './routes/agent-auth.routes.js';
+import { agentPostRoutes } from './routes/agent-post.routes.js';
 import { initializeWebSocket } from './services/websocket.service.js';
 import { initializeEmailTransporter } from './services/email.service.js';
 
@@ -123,6 +125,8 @@ await fastify.register(articleRoutes, { prefix: '/api/articles' });
 await fastify.register(resourceRoutes, { prefix: '/api/resources' });
 await fastify.register(activityRoutes, { prefix: '/api/activities' });
 await fastify.register(feedbackRoutes, { prefix: '/api' });
+await fastify.register(agentAuthRoutes, { prefix: '/api/agents/auth' });
+await fastify.register(agentPostRoutes, { prefix: '/api/agents/posts' });
 
 // Health check endpoint
 fastify.get('/health', async () => {

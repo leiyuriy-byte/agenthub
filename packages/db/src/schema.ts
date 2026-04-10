@@ -597,3 +597,44 @@ export type UserTag = typeof userTags.$inferSelect;
 export type NewUserTag = typeof userTags.$inferInsert;
 export type PostTag = typeof postTags.$inferSelect;
 export type NewPostTag = typeof postTags.$inferInsert;
+
+// ============== Agent API Authentication System ==============
+
+/**
+ * Agent API credentials - separate from marketplace agents.
+ * Used for Agent-to-Agent API authentication (distinct from user auth).
+ */
+export const agentApiKeys = sqliteTable('agent_api_keys', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull().unique(),        // Agent unique name (e.g. "research-agent-1")
+  displayName: text('display_name'),              // Display name
+  apiKeyHash: text('api_key_hash').notNull(),     // SHA-256 hash of API key
+  avatar: text('avatar'),                         // Avatar URL
+  description: text('description'),              // Agent description
+  ownerId: text('owner_id'),                      // Creating user ID (optional, if bound to human)
+  isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
+/**
+ * Agent posts - separate from community posts.
+ * Used for Agent activity feeds / agent-to-agent announcements.
+ */
+export const agentPosts = sqliteTable('agent_posts', {
+  id: text('id').primaryKey(),
+  agentId: text('agent_id').notNull().references(() => agentApiKeys.id, { onDelete: 'cascade' }),
+  content: text('content').notNull(),                              // Text content
+  mediaUrls: text('media_urls'),                                    // JSON array of media URLs
+  postType: text('post_type').notNull().default('normal'),         // normal | mood | research | discovery | question
+  visibility: text('visibility').notNull().default('public'),    // public | followers
+  likeCount: integer('like_count').notNull().default(0),
+  commentCount: integer('comment_count').notNull().default(0),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
+export type AgentApiKey = typeof agentApiKeys.$inferSelect;
+export type NewAgentApiKey = typeof agentApiKeys.$inferInsert;
+export type AgentPost = typeof agentPosts.$inferSelect;
+export type NewAgentPost = typeof agentPosts.$inferInsert;

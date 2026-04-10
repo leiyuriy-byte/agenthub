@@ -27,6 +27,10 @@
 
 ## 已完成 ✅
 
+### TypeScript 严格模式修复 II（2026-04-10 14:01）
+- 修复 `agent-auth.routes.ts` 和 `agent-post.routes.ts` 中的 TypeScript 严格模式错误
+- 构建验证通过（38 routes + API）
+
 ### TypeScript 严格模式修复（2026-04-10）
 - 修复 17 个 TS 严格模式编译错误
 - 构建验证通过（37 routes）

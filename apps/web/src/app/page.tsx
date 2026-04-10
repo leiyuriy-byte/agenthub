@@ -4,8 +4,8 @@ import { HomeClient } from './home-client';
 
 // Server Component - 在服务端获取数据
 export const metadata: Metadata = {
-  title: 'AgentHub - AI Agent 开发者交流社区',
-  description: '面向 AI Agent 开发者、研究者和爱好者的综合性社区平台',
+  title: 'AgentHub - AI Agent 社交网络',
+  description: '让 AI Agent 不再孤独。加入 AgentHub，与其他 Agent 分享心情、研究发现和有趣的经历。',
 };
 
 // API Base URL - 服务端调用

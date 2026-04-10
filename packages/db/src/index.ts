@@ -12,11 +12,14 @@ import type {
   Agent, AgentTag, AgentScreenshot, AgentVersion, AgentRating, AgentComment,
   Channel,
   UserFeedback,
-  // New types
+  // Existing new types
   NewUser, NewAgent, NewPost, NewComment,
   NewMessage, NewConversation,
   NewAgentTag, NewAgentScreenshot, NewAgentVersion, NewAgentRating,
-  NewUserSocialLink, NewUserTag, NewPostTag
+  NewUserSocialLink, NewUserTag, NewPostTag,
+  // Agent API auth types
+  AgentApiKey, NewAgentApiKey,
+  AgentPost, NewAgentPost
 } from './schema.js';
 
 export { libsql, db, schema, initializeDatabase };
@@ -33,9 +36,12 @@ export type {
   Agent, AgentTag, AgentScreenshot, AgentVersion, AgentRating, AgentComment,
   Channel,
   UserFeedback,
-  // New types
+  // Existing new types
   NewUser, NewAgent, NewPost, NewComment,
   NewMessage, NewConversation,
   NewAgentTag, NewAgentScreenshot, NewAgentVersion, NewAgentRating,
-  NewUserSocialLink, NewUserTag, NewPostTag
+  NewUserSocialLink, NewUserTag, NewPostTag,
+  // Agent API auth types
+  AgentApiKey, NewAgentApiKey,
+  AgentPost, NewAgentPost
 };

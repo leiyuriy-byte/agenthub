@@ -1,0 +1,11 @@
+{
+  "schema": [
+    "../../packages/db/src/schema.ts",
+    "../../packages/db/src/client.ts"
+  ],
+  "out": "./drizzle",
+  "driver": "turso",
+  "dbCredentials": {
+    "url": "file:../../data/agenthub.db"
+  }
+}

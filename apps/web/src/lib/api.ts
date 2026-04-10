@@ -7,6 +7,17 @@ export { useAuthStore } from '@/stores/auth-store';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
+/** Build a query string, filtering out undefined/null/'' values that would otherwise
+ *  serialize as the literal string "undefined" or "null" in URLSearchParams. */
+function buildQuery(
+  params: Record<string, string | number | boolean | undefined | null> | undefined
+): string {
+  const clean = Object.fromEntries(
+    Object.entries(params ?? {}).filter(([, v]) => v !== undefined && v !== null && v !== '')
+  );
+  return new URLSearchParams(clean as Record<string, string>).toString();
+}
+
 interface ApiResponse<T> {
   success: boolean;
   data?: T;
@@ -275,7 +286,7 @@ export const agentApi = {
     sortBy?: 'createdAt' | 'viewCount' | 'starCount' | 'avgRating';
     sortOrder?: 'asc' | 'desc';
     ownerId?: string;
-  }) => api.get<AgentListResponse>('/api/agents?' + new URLSearchParams(params as Record<string, string>)),
+  }) => api.get<AgentListResponse>('/api/agents?' + buildQuery(params)),
 
   get: (id: string) => api.get<Agent>(`/api/agents/${id}`),
 
@@ -301,7 +312,7 @@ export const agentApi = {
   getRelated: (id: string, limit?: number) => api.get<Agent[]>(`/api/agents/${id}/related?limit=${limit || 6}`),
 
   getRatings: (id: string, params?: { limit?: number; offset?: number }) => {
-    const query = new URLSearchParams(params as Record<string, string>);
+    const query = buildQuery(params);
     return api.get<{
       stats: {
         total: number;
@@ -459,7 +470,7 @@ export const postApi = {
     sortOrder?: 'asc' | 'desc';
     type?: 'normal' | 'question' | 'poll' | 'share';
   }) => {
-    const query = new URLSearchParams(params as Record<string, string>);
+    const query = buildQuery(params);
     return api.get<PostListResponse>(`/api/posts?${query}`);
   },
 
@@ -560,12 +571,12 @@ export const userApi = {
     api.put<User>('/api/users/me', data),
 
   getFollowers: (id: string, params?: { limit?: number; offset?: number }) => {
-    const query = new URLSearchParams(params as Record<string, string>);
+    const query = buildQuery(params);
     return api.get<User[]>(`/api/users/${id}/followers?${query}`);
   },
 
   getFollowing: (id: string, params?: { limit?: number; offset?: number }) => {
-    const query = new URLSearchParams(params as Record<string, string>);
+    const query = buildQuery(params);
     return api.get<User[]>(`/api/users/${id}/following?${query}`);
   },
 
@@ -602,7 +613,7 @@ export const notificationApi = {
     offset?: number;
     unreadOnly?: boolean;
   }) => {
-    const query = new URLSearchParams(params as Record<string, string>);
+    const query = buildQuery(params);
     return api.get<NotificationListResponse>(`/api/notifications?${query}`);
   },
 
@@ -914,7 +925,7 @@ export const feedApi = {
     offset?: number;
     type?: 'following' | 'global';
   }) => {
-    const query = new URLSearchParams(params as Record<string, string>);
+    const query = buildQuery(params);
     return api.get<FeedResponse>(`/api/feed?${query}`);
   },
 };
@@ -925,7 +936,7 @@ export const adminApi = {
 
   // Users
   getUsers: (params?: { limit?: number; offset?: number; search?: string }) => {
-    const query = new URLSearchParams(params as Record<string, string>);
+    const query = buildQuery(params);
     return api.get<{ users: AdminUser[]; total: number }>(`/api/admin/users?${query}`);
   },
 
@@ -936,7 +947,7 @@ export const adminApi = {
 
   // Agents
   getAgents: (params?: { limit?: number; offset?: number; search?: string; status?: string }) => {
-    const query = new URLSearchParams(params as Record<string, string>);
+    const query = buildQuery(params);
     return api.get<{ agents: AdminAgent[]; total: number }>(`/api/admin/agents?${query}`);
   },
 
@@ -950,7 +961,7 @@ export const adminApi = {
 
   // Posts
   getPosts: (params?: { limit?: number; offset?: number; search?: string }) => {
-    const query = new URLSearchParams(params as Record<string, string>);
+    const query = buildQuery(params);
     return api.get<{ posts: AdminPost[]; total: number }>(`/api/admin/posts?${query}`);
   },
 
@@ -961,7 +972,7 @@ export const adminApi = {
 
   // Comments
   getComments: (params?: { limit?: number; offset?: number; search?: string }) => {
-    const query = new URLSearchParams(params as Record<string, string>);
+    const query = buildQuery(params);
     return api.get<{ comments: AdminComment[]; total: number }>(`/api/admin/comments?${query}`);
   },
 
@@ -1351,8 +1362,7 @@ export const articleApi = {
     offset?: number;
     orderBy?: 'createdAt' | 'publishedAt' | 'viewCount' | 'likeCount';
   }) => {
-    const query = new URLSearchParams(params as Record<string, string>);
-    return api.get<ArticleListResponse>(`/api/articles?${query}`);
+    return api.get<ArticleListResponse>(`/api/articles?${buildQuery(params ?? {})}`);
   },
 
   get: (idOrSlug: string) => api.get<Article>(`/api/articles/${idOrSlug}`),
@@ -1440,7 +1450,7 @@ export const resourceApi = {
     offset?: number;
     orderBy?: 'createdAt' | 'viewCount' | 'likeCount';
   }) => {
-    const query = new URLSearchParams(params as Record<string, string>);
+    const query = buildQuery(params);
     return api.get<ResourceListResponse>(`/api/resources?${query}`);
   },
 
@@ -1528,7 +1538,7 @@ export const activityApi = {
     offset?: number;
     orderBy?: 'startTime' | 'createdAt' | 'viewCount';
   }) => {
-    const query = new URLSearchParams(params as Record<string, string>);
+    const query = buildQuery(params);
     return api.get<ActivityListResponse>(`/api/activities?${query}`);
   },
 
