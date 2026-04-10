@@ -7,7 +7,7 @@ const rootDir = path.resolve(__dirname, '../..');
 
 const nextConfig = {
   basePath: '/agent-hub',
-  // Rewrite /api/* → backend (3001) so frontend can use relative /api paths
+  trailingSlash: true,
   async rewrites() {
     return [
       {
