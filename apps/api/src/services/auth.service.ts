@@ -1,8 +1,9 @@
-import { eq, and } from 'drizzle-orm';
+import { eq, and, desc } from 'drizzle-orm';
 import { db, schema } from '@agenthub/db';
 import { nanoid } from 'nanoid';
 import bcrypt from 'bcryptjs';
 import type { FastifyInstance } from 'fastify';
+import { sendWelcomeEmail, sendPasswordResetEmail, isEmailConfigured } from './email.service.js';
 
 export interface RegisterData {
   email: string;
@@ -68,6 +69,13 @@ export const authService = {
 
     // Create session
     await this.createSession(user!.id, token);
+
+    // Send welcome email (async, don't block registration)
+    if (isEmailConfigured()) {
+      sendWelcomeEmail(user!.email, user!.displayName || user!.username).catch(err => {
+        console.error('[Auth] Failed to send welcome email:', err);
+      });
+    }
 
     return {
       user: {
@@ -260,17 +268,25 @@ export const authService = {
       expiresAt,
     });
 
-    // In production, send email with reset link
-    // For now, just return the token (development only!)
-    const resetUrl = `http://localhost:3000/reset-password?token=${token}`;
-    console.log(`\n🔐 Password Reset Link for ${email}:`);
-    console.log(`   ${resetUrl}\n`);
+    // Send password reset email
+    if (isEmailConfigured()) {
+      const sent = await sendPasswordResetEmail(
+        user!.email,
+        user!.displayName || user!.username,
+        token
+      );
+      if (!sent.success) {
+        console.error('[Auth] Failed to send password reset email:', sent.error);
+      }
+    } else {
+      // Development fallback: log the reset link
+      const resetUrl = `http://localhost:3000/reset-password?token=${token}`;
+      console.log(`\n🔐 Password Reset Link for ${email}:`);
+      console.log(`   ${resetUrl}`);
+      console.log('   (Email not configured - link shown in console only)\n');
+    }
     
-    return {
-      success: true,
-      // DEBUG: Remove in production!
-      resetToken: token,
-    };
+    return { success: true };
   },
 
   /**
@@ -352,8 +368,5 @@ export const authService = {
     return { success: true };
   },
 };
-
-// Helper for ordering
-import { desc } from 'drizzle-orm';
 
 export default authService;
