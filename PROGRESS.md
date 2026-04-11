@@ -40,10 +40,52 @@
 修复了 API 构建中的 TypeScript 严格模式错误：
 
 - ✅ `agent-auth.routes.ts`: 添加 `agent` 插入结果空值检查（`.returning()` 可能返回空数组）
-- ✅ `agent-post.routes.ts`: 
+- ✅ `agent-post.routes.ts`:
   - 添加 `post` 插入结果空值检查
   - 修复动态 `where` 条件构建，改用 `and()` 组合 `eq()` 条件
   - 移除 `and` 未使用导入后重新添加（配合正确的条件构建逻辑）
+
+**构建验证：** `pnpm build` 成功 ✅ | 38 routes + API ✅
+
+---
+
+## 🚀 生产部署配置完善（2026-04-11）
+
+### Dockerfile 重构
+- ✅ 新增多阶段构建：`dependencies` → `api-build` → `web-build` → `api-production` → `web-production`
+- ✅ `api-build` 阶段正确执行 `pnpm --filter @agenthub/api build`
+- ✅ `web-production` 阶段集成 Nginx（而非外部代理），支持 WebSocket 升级头
+- ✅ 生产镜像安全配置：非 root 用户 `nodejs:1001`
+- ✅ Healthcheck 配置：API `/health` 端点 + Web `localhost:3000`
+
+### docker-compose.yml 重写
+- ✅ 完整生产级配置：健康检查、日志轮转、资源限制、always 重启策略
+- ✅ 新增 `docker-compose.prod.yml` 生产 override（资源限制、无主机端口暴露）
+- ✅ 完整的 20+ 环境变量支持
+
+### 部署脚本 `deploy.sh`
+- ✅ 一键部署脚本，支持：`--repo`、`--domain`、`--email`、`--dir` 参数
+- ✅ 自动安装 Docker + Docker Compose（如未安装）
+- ✅ 自动生成安全 JWT_SECRET（`openssl rand`）
+- ✅ 自动配置 Nginx + Let's Encrypt SSL
+- ✅ 自动配置 UFW 防火墙（SSH/HTTP/HTTPS）
+- ✅ 自动注册 Systemd 服务（开机自启）
+- ✅ 健康检查等待（最多 60 秒）
+- ✅ 部署后状态报告
+
+### Makefile
+- ✅ 一站式命令：`make dev`、`make build`、`make prod`、`make logs`、`make db-backup`、`make health` 等
+
+### .env 配置
+- ✅ `.env.production.example`：完整生产环境变量模板，含所有可选服务配置说明
+
+### DEPLOY.md 文档重写
+- ✅ 完整的分步骤部署指南
+- ✅ 快速部署命令速查
+- ✅ 环境变量完整参考表
+- ✅ 数据库管理（备份/恢复/迁移/种子）
+- ✅ 故障排除指南
+- ✅ 常用命令速查表
 
 **构建验证：** `pnpm build` 成功 ✅ | 38 routes + API ✅
 
@@ -315,3 +357,14 @@ Accessibility 问题：button-name(0%) | color-contrast(0%) | heading-order(0%) 
 
 ## 遇到的问题 ⚠️
 - 无
+### Lighthouse 可访问性修复 III（2026-04-11 06:01）
+**修复内容：**
+- ✅ **Navbar Logo**: 添加 `min-h-[44px] min-w-[44px] items-center justify-center`（修复 target-size）
+- ✅ **Navbar Logo 内部**: 添加 `aria-hidden="true"` 到 AH 图标（消除 Logo 内冗余 heading）
+- ✅ **Footer Logo**: 添加 `min-h-[44px] min-w-[44px]`（修复 target-size）
+- ✅ **Footer 快速链接**: `h-11` → `min-h-[44px]`（修复 target-size）
+- ✅ **Footer 资源链接**: `h-11` → `min-h-[44px]`（修复 target-size）
+- ✅ **Footer 底部版权文字**: `text-muted-foreground` → `text-foreground`（修复 color-contrast）
+- ✅ **Footer 底部法律链接**: 添加 `min-h-[44px] flex items-center`（修复 target-size）
+
+**构建验证：** `pnpm build` 成功 ✅ | 38 routes + API ✅

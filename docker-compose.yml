@@ -1,25 +1,73 @@
 version: '3.8'
 
+# ============================================================
+# AgentHub Production Deployment
+# ============================================================
+#
+# Usage:
+#   Development: docker-compose up -d
+#   With logs:  docker-compose up -d && docker-compose logs -f
+#   Stop:       docker-compose down
+#   Rebuild:    docker-compose build --no-cache && docker-compose up -d
+#
+# Ports:
+#   Web:  http://localhost:3000  (Nginx + Next.js static)
+#   API:  http://localhost:3001  (Fastify REST + WebSocket)
+# ============================================================
+
 services:
-  # API Server
+  # ---------------------------
+  # Fastify API Server
+  # ---------------------------
   api:
     build:
       context: .
       dockerfile: Dockerfile
       target: api-production
     container_name: agenthub-api
-    restart: unless-stopped
+    restart: always
     ports:
       - "3001:3001"
     environment:
+      # Required - CHANGE IN PRODUCTION!
+      - JWT_SECRET=${JWT_SECRET:-change-this-to-a-very-long-random-secret-in-production}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN:-7d}
+
+      # Environment
       - NODE_ENV=production
       - PORT=3001
+
+      # Database
       - DATABASE_URL=libsql:file:/app/data/agenthub.db
-      - JWT_SECRET=${JWT_SECRET:-your-super-secret-jwt-key-change-in-production}
-      - JWT_EXPIRES_IN=7d
-      - ALLOWED_ORIGINS=http://localhost:3000
+
+      # CORS - restrict to your domain in production
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:3000}
+
+      # OAuth (optional - fill in if using OAuth login)
+      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID:-}
+      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET:-}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
+      - OAUTH_REDIRECT_URI=${OAUTH_REDIRECT_URI:-http://localhost:3001/api/auth/github/callback}
+
+      # Email (optional - for notifications)
+      - SMTP_HOST=${SMTP_HOST:-}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_USER=${SMTP_USER:-}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-}
+      - SMTP_FROM=${SMTP_FROM:-noreply@agenthub.com}
+
+      # MeiliSearch (optional - for advanced search)
+      - MEILISEARCH_URL=${MEILISEARCH_URL:-}
+      - MEILISEARCH_API_KEY=${MEILISEARCH_API_KEY:-}
+
+      # Frontend URL for OAuth redirects
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:3000}
     volumes:
+      # Persistent database storage
       - agenthub-data:/app/data
+      # File uploads
+      - agenthub-uploads:/app/uploads
     networks:
       - agenthub-network
     healthcheck:
@@ -27,31 +75,55 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 10s
+      start_period: 15s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
 
-  # Web Server (Nginx + Next.js static)
+  # ---------------------------
+  # Next.js Web + Nginx
+  # ---------------------------
   web:
     build:
       context: .
       dockerfile: Dockerfile
       target: web-production
     container_name: agenthub-web
-    restart: unless-stopped
+    restart: always
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:3001
-      - NEXT_PUBLIC_APP_URL=http://localhost:3000
+      # Frontend build-time vars
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:3001}
+      - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+      - NEXT_TELEMETRY_DISABLED=1
     networks:
       - agenthub-network
     depends_on:
       api:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
 
 networks:
   agenthub-network:
     driver: bridge
 
 volumes:
+  # SQLite database file
   agenthub-data:
+    driver: local
+  # Uploaded files
+  agenthub-uploads:
     driver: local

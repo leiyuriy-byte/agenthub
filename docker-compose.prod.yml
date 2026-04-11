@@ -1,0 +1,49 @@
+# ============================================================
+# AgentHub Production Docker Compose Override
+# ============================================================
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+# OR:   docker-compose --env-file .env.production up -d
+#
+# This file contains production-only overrides:
+#   - Resource limits
+#   - Production logging
+#   - No exposed ports (access via Nginx only)
+#   - Restart policy: always
+# ============================================================
+
+services:
+  api:
+    # No host port binding - only accessible via Nginx internal network
+    ports: []
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "10"
+
+  web:
+    # No host port binding - only accessible via Nginx
+    ports: []
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"

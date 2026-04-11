@@ -31,8 +31,8 @@ export function Footer() {
         <div className="grid gap-8 md:grid-cols-4">
           {/* Brand */}
           <div className="space-y-4">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-lg bg-[#4338ca] flex items-center justify-center">
+            <Link href="/" className="flex items-center gap-2 min-h-[44px] min-w-[44px]">
+              <div className="h-8 w-8 rounded-lg bg-[#4338ca] flex items-center justify-center" aria-hidden="true">
                 <span className="text-white font-bold text-sm">AH</span>
               </div>
               <span className="text-xl font-bold text-foreground">
@@ -66,7 +66,7 @@ export function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-foreground transition-colors h-11 flex items-center"
+                    className="text-sm text-foreground transition-colors min-h-[44px] flex items-center"
                   >
                     {link.label}
                   </Link>
@@ -83,7 +83,7 @@ export function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-foreground transition-colors h-11 flex items-center"
+                    className="text-sm text-foreground transition-colors min-h-[44px] flex items-center"
                   >
                     {link.label}
                   </Link>
@@ -107,25 +107,25 @@ export function Footer() {
 
         {/* Bottom Bar */}
         <div className="mt-12 pt-6 border-t flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-foreground">
             © {currentYear} AgentHub. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
             <Link
               href="/privacy"
-              className="text-xs text-foreground transition-colors"
+              className="text-xs text-foreground transition-colors min-h-[44px] flex items-center"
             >
               隐私政策
             </Link>
             <Link
               href="/terms"
-              className="text-xs text-foreground transition-colors"
+              className="text-xs text-foreground transition-colors min-h-[44px] flex items-center"
             >
               服务条款
             </Link>
             <Link
               href="/api-docs"
-              className="text-xs text-foreground transition-colors"
+              className="text-xs text-foreground transition-colors min-h-[44px] flex items-center"
             >
               API 文档
             </Link>

@@ -1,6 +1,6 @@
 # AgentHub 开发任务
 
-> 最后更新：2026-04-10 20:01
+> 最后更新：2026-04-11 00:01
 
 ---
 
@@ -21,9 +21,9 @@
 
 ### 生产环境准备
 - [ ] 移动端真机测试
-- [ ] 域名绑定 + SSL 证书
-- [ ] Nginx 反向代理配置
-- [ ] 环境变量配置（生产数据库/Redis等）
+- [x] 域名绑定 + SSL 证书（`deploy.sh` 一键配置 Let's Encrypt）
+- [x] Nginx 反向代理配置（`deploy.sh` + `docker-compose.prod.yml`）
+- [x] 环境变量配置（`.env.production.example` + `deploy.sh` 自动生成）
 
 ### 可选增强
 - [ ] MeiliSearch 全文搜索（当前使用 SQLite LIKE 搜索）
@@ -102,14 +102,30 @@
 
 ### 生产环境准备
 - [ ] 移动端真机测试
-- [ ] 域名绑定 + SSL 证书
-- [ ] Nginx 反向代理配置
-- [ ] 环境变量配置（生产数据库/Redis等）
+- [x] 域名绑定 + SSL 证书（`deploy.sh` 一键配置 Let's Encrypt）
+- [x] Nginx 反向代理配置（`deploy.sh` + `docker-compose.prod.yml`）
+- [x] 环境变量配置（`.env.production.example` + `deploy.sh` 自动生成）
 
 ### 可选增强
-- [ ] MeiliSearch 全文搜索
-- [ ] SMTP 邮件服务
-- [ ] 图片 CDN 配置
+- [ ] MeiliSearch 全文搜索（当前使用 SQLite LIKE 搜索）
+- [ ] SMTP 邮件服务（通知邮件、验证邮件）
+- [ ] 图片 CDN 配置（当前为本地存储）
+
+---
+
+## 生产部署配置 ✅（2026-04-11 00:01）
+
+- ✅ Dockerfile 多阶段构建重构（`dependencies` → `api-build` → `web-build` → `api-production` → `web-production`）
+- ✅ `api-build` 阶段正确构建 API（修复了原 Dockerfile 缺少构建步骤的问题）
+- ✅ `web-production` 集成 Nginx，支持 WebSocket 升级头
+- ✅ `docker-compose.yml` 生产级配置（健康检查、日志轮转、资源限制、always 重启）
+- ✅ `docker-compose.prod.yml` 生产 override（资源限制、无主机端口暴露）
+- ✅ `deploy.sh` 一键部署脚本（自动安装 Docker/Nginx/SSL/防火墙/Systemd）
+- ✅ `Makefile` 一站式命令（dev/build/prod/logs/backup/health）
+- ✅ `.env.production.example` 完整生产环境变量模板
+- ✅ `DEPLOY.md` 完整部署文档重写
+
+**构建验证：** `pnpm build` 成功 ✅ | 38 routes + API ✅
 
 ---
 
