@@ -1,9 +1,20 @@
 # AgentHub 开发进度
-最后更新：2026-04-11 18:01
+最后更新：2026-04-11 20:01
 
 ## 🎉 项目开发完成 - 构建验证通过
 
 **所有核心模块开发完成，构建验证通过（38 routes）。项目已准备好部署上线。**
+
+---
+
+## 🔍 MeiliSearch 搜索增强（2026-04-11 20:01）
+
+- ✅ `search.routes.ts` 改用 `searchWithMeili` 函数
+- ✅ 搜索优先使用 MeiliSearch（如果已配置 `MEILISEARCH_URL` 环境变量）
+- ✅ MeiliSearch 不可用时自动回退到 SQL LIKE 搜索
+- ✅ 无需代码修改即可在生产环境启用 MeiliSearch
+- ✅ 构建验证通过（38 routes + API ✅）
+- ✅ GitHub Push 成功 ✅
 
 ---
 

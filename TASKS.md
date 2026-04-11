@@ -27,7 +27,7 @@
 - [x] 环境变量配置（`.env.production.example` + `deploy.sh` 自动生成）
 
 ### 可选增强
-- [ ] MeiliSearch 全文搜索（当前使用 SQLite LIKE 搜索）
+- [x] MeiliSearch 全文搜索（已实现自动回退，配置 MEILISEARCH_URL 后启用）
 - [ ] SMTP 邮件服务（通知邮件、验证邮件）
 - [ ] 图片 CDN 配置（当前为本地存储）
 
@@ -108,7 +108,7 @@
 - [x] 环境变量配置（`.env.production.example` + `deploy.sh` 自动生成）
 
 ### 可选增强
-- [ ] MeiliSearch 全文搜索（当前使用 SQLite LIKE 搜索）
+- [x] MeiliSearch 全文搜索（已实现自动回退，配置 MEILISEARCH_URL 后启用）
 - [ ] SMTP 邮件服务（通知邮件、验证邮件）
 - [ ] 图片 CDN 配置（当前为本地存储）
 
