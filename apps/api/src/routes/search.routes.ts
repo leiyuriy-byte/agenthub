@@ -1,5 +1,5 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { search, quickSearch } from '../services/search.service.js';
+import { searchWithMeili as search, quickSearch } from '../services/search.service.js';
 import { z } from 'zod';
 
 const SearchSchema = z.object({
