@@ -1,6 +1,6 @@
 # AgentHub 开发任务
 
-> 最后更新：2026-04-11 12:01
+> 最后更新：2026-04-12 00:04
 
 ---
 
@@ -8,7 +8,7 @@
 
 **所有核心模块开发完成，已通过构建验证。项目已准备好部署上线。**
 
-### 构建验证（2026-04-11 12:01）
+### 构建验证（2026-04-12 00:04）
 - ✅ `pnpm build` 成功
 - ✅ 38 routes 全部生成
 - ✅ API TypeScript 编译无错误
@@ -21,15 +21,15 @@
 ## 待部署清单 📋
 
 ### 生产环境准备
-- [ ] 移动端真机测试
+- [ ] 移动端真机测试（需在真机上验证 UI 响应式）
 - [x] 域名绑定 + SSL 证书（`deploy.sh` 一键配置 Let's Encrypt）
 - [x] Nginx 反向代理配置（`deploy.sh` + `docker-compose.prod.yml`）
 - [x] 环境变量配置（`.env.production.example` + `deploy.sh` 自动生成）
 
 ### 可选增强
 - [x] MeiliSearch 全文搜索（已实现自动回退，配置 MEILISEARCH_URL 后启用）
-- [ ] SMTP 邮件服务（通知邮件、验证邮件）
-- [ ] 图片 CDN 配置（当前为本地存储）
+- [x] SMTP 邮件服务（已集成到 auth.service.ts，配置 SMTP_* 环境变量后启用）
+- [ ] 图片 CDN 配置（当前为本地存储，生产环境建议配置 S3/OSS）
 
 ---
 
@@ -48,94 +48,60 @@
 | SEO 优化（metadata/sitemap/robots） | ✅ |
 | Lighthouse 性能优化 | ✅ (100%) |
 | GDPR 合规（数据导出/账号删除） | ✅ |
-
-### 已完成功能清单
-
-| 模块 | 状态 |
-|------|------|
-| 用户系统（注册/登录/OAuth/个人主页/等级积分） | ✅ |
-| Agent 展示（CRUD/分类/搜索/排行榜/版本管理） | ✅ |
-| 社区交流（讨论区/帖子/评论/问答/投票） | ✅ |
-| 实时通讯（私信/群组/WebSocket） | ✅ |
-| 评价与反馈（评分/评论/用户反馈） | ✅ |
-| 内容管理（文章/资源/活动） | ✅ |
-| 后台管理（仪表盘/用户/内容/审核/统计） | ✅ |
-| 安全加固（XSS/速率限制/输入校验） | ✅ |
-| SEO 优化（metadata/sitemap/robots） | ✅ |
-| Lighthouse 性能优化 | ✅ (100%) |
+| 邮件通知（SMTP 集成，欢迎/密码重置/通知邮件） | ✅ |
 
 ---
 
 ## 已完成 ✅
 
-### TypeScript 严格模式修复 II（2026-04-10 14:01）
-- 修复 `agent-auth.routes.ts` 和 `agent-post.routes.ts` 中的 TypeScript 严格模式错误
-- 构建验证通过（38 routes + API）
+### 邮件服务集成（2026-04-12 00:04）
+- ✅ `auth.service.ts` 集成邮件发送（欢迎邮件 + 密码重置邮件）
+- ✅ SMTP 环境变量已定义（`.env.production.example`）
+- ✅ 无 SMTP 时降级到控制台日志（开发友好）
+- ✅ 构建验证通过（38 routes ✅）
 
-### TypeScript 严格模式修复（2026-04-10）
-- 修复 17 个 TS 严格模式编译错误
-- 构建验证通过（37 routes）
+### MeiliSearch 搜索增强（2026-04-11 20:01）
+- ✅ `search.routes.ts` 改用 `searchWithMeili` 函数
+- ✅ MeiliSearch 不可用时自动回退到 SQL LIKE 搜索
+- ✅ 无需代码修改即可在生产环境启用 MeiliSearch
+- ✅ GitHub Push 成功 ✅
+
+### 生产部署配置（2026-04-11 00:01）
+- ✅ Dockerfile 多阶段构建（dependencies → api-build → web-build → api/web-production）
+- ✅ docker-compose.yml + docker-compose.prod.yml
+- ✅ deploy.sh 一键部署脚本
+- ✅ Makefile 一站式命令
+- ✅ .env.production.example
+- ✅ DEPLOY.md 完整部署文档
+
+### TypeScript 严格模式修复 II（2026-04-10 14:01）
+- ✅ 修复 `agent-auth.routes.ts` 和 `agent-post.routes.ts` 中的 TypeScript 严格模式错误
 
 ### Console Error 修复（2026-04-10 06:01）
 - ✅ favicon.ico 404 → 创建 app/icon.svg
 - ✅ React asChild 警告 → Button 组件实现 Slot pattern
-- ✅ 构建验证通过（38 routes）
 
 ### 文章目录自动生成（2026-04-10 20:01）
 - ✅ articles/[idOrSlug]/page.tsx 实现目录自动生成
 - ✅ 桌面端 sticky 侧边栏 + 移动端可折叠 details
-- ✅ 自定义 heading 组件添加 ID，平滑滚动定位
 - ✅ rehype-sanitize 配置保留 heading ID
-- ✅ 构建验证通过（38 routes）
 
-### Lighthouse 可访问性优化（2026-04-09）
-- 导航栏 Desktop Nav Links 添加 `min-h-[44px] min-w-[44px]` 确保触屏可及性
-- Footer 移除 `sr-only` 标题，改为可见标题（修复 heading-order）
-- 构建验证通过（37 routes）
+### Lighthouse 可访问性优化（2026-04-11 06:01）
+- ✅ Navbar/Footer target-size 修复（min-h-[44px]）
+- ✅ Footer color-contrast 修复
 
-### Lighthouse 可访问性增强 II（2026-04-09 02:01）
-- 首页 CTA "加入讨论" 按钮内嵌 `<a>` 标签添加 `min-h-[44px] min-w-[44px]`（修复 target-size 0%）
-- 构建验证通过（37 routes）
+### GDPR 合规（2026-04-10 08:06）
+- ✅ GET /api/users/me/export 数据导出
+- ✅ DELETE /api/users/me 账号删除
 
----
-
-## 待部署清单 📋
-
-### 生产环境准备
-- [ ] 移动端真机测试
-- [x] 域名绑定 + SSL 证书（`deploy.sh` 一键配置 Let's Encrypt）
-- [x] Nginx 反向代理配置（`deploy.sh` + `docker-compose.prod.yml`）
-- [x] 环境变量配置（`.env.production.example` + `deploy.sh` 自动生成）
-
-### 可选增强
-- [x] MeiliSearch 全文搜索（已实现自动回退，配置 MEILISEARCH_URL 后启用）
-- [ ] SMTP 邮件服务（通知邮件、验证邮件）
-- [ ] 图片 CDN 配置（当前为本地存储）
+### 密码重置流程（2026-04-10）
+- ✅ 后端 forgot-password/reset-password routes
+- ✅ 前端 forgot-password + reset-password 页面
 
 ---
 
-## 生产部署配置 ✅（2026-04-11 00:01）
+## 🎉 AgentHub 项目开发完成！
 
-- ✅ Dockerfile 多阶段构建重构（`dependencies` → `api-build` → `web-build` → `api-production` → `web-production`）
-- ✅ `api-build` 阶段正确构建 API（修复了原 Dockerfile 缺少构建步骤的问题）
-- ✅ `web-production` 集成 Nginx，支持 WebSocket 升级头
-- ✅ `docker-compose.yml` 生产级配置（健康检查、日志轮转、资源限制、always 重启）
-- ✅ `docker-compose.prod.yml` 生产 override（资源限制、无主机端口暴露）
-- ✅ `deploy.sh` 一键部署脚本（自动安装 Docker/Nginx/SSL/防火墙/Systemd）
-- ✅ `Makefile` 一站式命令（dev/build/prod/logs/backup/health）
-- ✅ `.env.production.example` 完整生产环境变量模板
-- ✅ `DEPLOY.md` 完整部署文档重写
+**项目已准备好部署上线。所有核心功能开发完毕，构建验证通过。**
 
-**构建验证：** `pnpm build` 成功 ✅ | 38 routes + API ✅
-
----
-
-## 构建验证结果（2026-04-04 02:01）
-
-```
-apps/api build$ tsc && tsc-alias
-apps/api build: Done ✅
-apps/web build: Done（37 routes）✅
-```
-
-**🎉 AgentHub 项目主体开发完成！**
+部署方式：配置 `.env.production.example` 中的环境变量，运行 `deploy.sh` 或 `docker-compose up -f docker-compose.yml -f docker-compose.prod.yml up -d`
