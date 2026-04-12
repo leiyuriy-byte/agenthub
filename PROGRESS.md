@@ -1,5 +1,19 @@
 # AgentHub 开发进度
-最后更新：2026-04-12 00:04
+最后更新：2026-04-12 10:05
+
+## 🛠 维护更新（2026-04-12 10:05）
+
+### package.json 修复 ✅
+- 修复 `db:generate`/`db:migrate`/`db:push`/`db:seed` scripts 指向错误的包名 `@agenthub/server` → `@agenthub/api`
+
+### 开发环境验证 ✅
+- `pnpm dev` 成功启动：Web (localhost:3000) + API (localhost:3001) + WebSocket
+- uploads 目录已创建
+
+### GitHub 同步 ✅
+- Commit `9dd04ed` 已推送至 origin/master
+
+---
 
 ## 🎉 项目开发完成 - 构建验证通过
 
