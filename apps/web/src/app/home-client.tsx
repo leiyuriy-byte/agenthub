@@ -380,11 +380,12 @@ export function HomeClient({ initialFeaturedAgents, initialCategories, initialHo
                       发布 Agent
                     </Link>
                   </Button>
-                  <Button asChild size="lg" variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
-                    <Link href="/discussions" className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center">
-                      加入讨论
-                    </Link>
-                  </Button>
+                  <Link
+                    href="/discussions"
+                    className="inline-flex items-center justify-center min-h-[44px] min-w-[44px] rounded-lg bg-white/10 border border-white/20 text-white hover:bg-white/20 px-6 py-3 text-base font-medium transition-colors"
+                  >
+                    加入讨论
+                  </Link>
                 </div>
               </div>
             </div>

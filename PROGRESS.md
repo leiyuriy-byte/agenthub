@@ -471,6 +471,10 @@ Accessibility 问题：button-name(0%) | color-contrast(0%) | heading-order(0%) 
 
 ## 遇到的问题 ⚠️
 - 无
+### Lighthouse 可访问性修复 IV（2026-04-12 20:01）
+- ✅ 修复首页 CTA "加入讨论" 按钮：移除无效的 `<button><a>` 嵌套结构，替换为独立 `<Link>` 元素并保留 `min-h-[44px] min-w-[44px]` 可访问性尺寸
+- 构建验证通过（38 routes ✅）
+
 ### Lighthouse 可访问性修复 III（2026-04-11 06:01）
 **修复内容：**
 - ✅ **Navbar Logo**: 添加 `min-h-[44px] min-w-[44px] items-center justify-center`（修复 target-size）
