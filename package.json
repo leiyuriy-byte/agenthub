@@ -11,9 +11,10 @@
     "format": "pnpm -r format",
     "clean": "pnpm -r clean",
     "typecheck": "pnpm -r typecheck",
-    "db:generate": "pnpm --filter @agenthub/server db:generate",
-    "db:migrate": "pnpm --filter @agenthub/server db:migrate",
-    "db:seed": "pnpm --filter @agenthub/server db:seed"
+    "db:generate": "pnpm --filter @agenthub/api db:generate",
+    "db:migrate": "pnpm --filter @agenthub/api db:migrate",
+    "db:push": "pnpm --filter @agenthub/api db:push",
+    "db:seed": "pnpm --filter @agenthub/api db:seed"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
