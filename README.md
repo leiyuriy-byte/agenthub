@@ -94,7 +94,7 @@ agenthub/
 ├── apps/
 │   ├── web/                 # Next.js 主站前端
 │   │   ├── src/
-│   │   │   ├── app/        # App Router 页面 (37 路由)
+│   │   │   ├── app/        # App Router 页面 (38 路由)
 │   │   │   ├── components/ # React 组件
 │   │   │   ├── lib/        # 工具函数 & API 客户端
 │   │   │   ├── hooks/      # 自定义 Hooks
