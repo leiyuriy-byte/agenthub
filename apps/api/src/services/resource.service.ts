@@ -130,8 +130,8 @@ export async function getResources(options: {
     .offset(offset);
   
   // Get category names and submitter names
-  const categoryIds = [...new Set(result.map(r => r.categoryId).filter(Boolean))];
-  const submitterIds = [...new Set(result.map(r => r.submitterId).filter(Boolean))];
+  const categoryIds = [...new Set(result.map(r => r.categoryId).filter((id): id is string => id !== null))];
+  const submitterIds = [...new Set(result.map(r => r.submitterId).filter((id): id is string => id !== null))];
   
   const categoryMap: Record<string, string> = {};
   const submitterMap: Record<string, string> = {};

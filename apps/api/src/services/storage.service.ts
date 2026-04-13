@@ -165,7 +165,7 @@ async function uploadToS3(
   const config = getStorageConfig();
   const key = `${subdir}/${filename}`;
   
-  const client = getS3Client();
+  const client = getS3Client() as any;
   
   await client.send(new PutObjectCommand({
     Bucket: config.s3Bucket,
@@ -240,7 +240,7 @@ async function deleteFromS3(filename: string, subdir: string): Promise<DeleteRes
   const key = filename.startsWith(`${subdir}/`) ? filename : `${subdir}/${filename}`;
   
   try {
-    const client = getS3Client();
+    const client = getS3Client() as any;
     await client.send(new DeleteObjectCommand({
       Bucket: config.s3Bucket,
       Key: key,
