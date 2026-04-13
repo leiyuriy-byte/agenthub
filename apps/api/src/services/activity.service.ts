@@ -1,5 +1,5 @@
 import { db } from '@agenthub/db';
-import { eq, desc, and, sql, asc, SQL } from 'drizzle-orm';
+import { eq, desc, and, sql, asc, SQL, inArray } from 'drizzle-orm';
 import { schema } from '@agenthub/db';
 const { activities, activityRegistrations, users } = schema;
 
@@ -97,7 +97,7 @@ export async function getActivities(options: {
         username: users.username,
       })
       .from(users)
-      .where(sql`${users.id} IN ${organizerIds}`);
+      .where(inArray(users.id, organizerIds.length > 0 ? organizerIds : ['__no_ids__']));
     organizers.forEach(u => {
       organizerMap[u.id] = u.displayName || u.username;
     });
@@ -115,7 +115,7 @@ export async function getActivities(options: {
       })
       .from(activityRegistrations)
       .where(and(
-        sql`${activityRegistrations.activityId} IN ${activityIds}`,
+        inArray(activityRegistrations.activityId, activityIds.length > 0 ? activityIds : ['__no_ids__']),
         eq(activityRegistrations.status, 'registered')
       ))
       .groupBy(activityRegistrations.activityId);

@@ -6,7 +6,7 @@
  */
 import { MeiliSearch, Index } from 'meilisearch';
 import { db, schema } from '@agenthub/db';
-import { eq, or, like, desc, sql } from 'drizzle-orm';
+import { eq, or, like, desc, sql, inArray } from 'drizzle-orm';
 
 // MeiliSearch client singleton
 let meiliClient: MeiliSearch | null = null;
@@ -302,7 +302,7 @@ export async function syncPostsToMeiliSearch(): Promise<number> {
     const allPostTags = postIds.length > 0 
       ? await db.select({ postId: schema.postTags.postId, tag: schema.postTags.tag })
           .from(schema.postTags)
-          .where(sql`${schema.postTags.postId} IN (${sql.join(postIds, sql`, `)})`)
+          .where(inArray(schema.postTags.postId, postIds))
       : [];
     
     const postTagsMap = new Map<string, string[]>();
@@ -396,7 +396,7 @@ export async function syncUsersToMeiliSearch(): Promise<number> {
     const allUserTags = userIds.length > 0
       ? await db.select({ userId: schema.userTags.userId, tag: schema.userTags.tag })
           .from(schema.userTags)
-          .where(sql`${schema.userTags.userId} IN (${sql.join(userIds, sql`, `)})`)
+          .where(inArray(schema.userTags.userId, userIds))
       : [];
     
     const userTagsMap = new Map<string, string[]>();

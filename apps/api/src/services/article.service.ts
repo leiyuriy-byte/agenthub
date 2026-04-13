@@ -1,5 +1,5 @@
 import { db } from '@agenthub/db';
-import { eq, desc, and, like, sql, SQL } from 'drizzle-orm';
+import { eq, desc, and, like, sql, SQL, inArray } from 'drizzle-orm';
 import { schema } from '@agenthub/db';
 const { articles, articleCategories, articleTags, articleSeries, articleSeriesItems, users } = schema;
 
@@ -197,7 +197,7 @@ export async function getArticles(options: {
         avatar: users.avatar,
       })
       .from(users)
-      .where(sql`${users.id} IN ${authorIds}`);
+      .where(inArray(users.id, authorIds.length > 0 ? authorIds : ['__no_ids__']));
     
     authors.forEach(author => {
       authorMap[author.id] = {

@@ -9,7 +9,7 @@ import {
   messages,
   users 
 } from '@agenthub/db/schema';
-import { eq, and, desc, or, sql, like } from 'drizzle-orm';
+import { eq, ne, and, desc, or, sql, like, inArray } from 'drizzle-orm';
 import { randomUUID } from 'crypto';
 import { sendMessageToUser } from './websocket.service.js';
 
@@ -210,7 +210,7 @@ export async function getConversations(
           and(
             eq(messages.conversationId, convId),
             sql`${messages.createdAt} > ${currentParticipant.lastReadAt}`,
-            eq(messages.senderId, sql`NOT ${currentUserId}`)
+            ne(messages.senderId, currentUserId)
           )
         );
       unreadCount = unreadMsgs.length;
@@ -222,7 +222,7 @@ export async function getConversations(
         .where(
           and(
             eq(messages.conversationId, convId),
-            eq(messages.senderId, sql`NOT ${currentUserId}`)
+            ne(messages.senderId, currentUserId)
           )
         );
       unreadCount = allMsgs.length;
@@ -558,7 +558,7 @@ export async function searchMessages(
     .from(messages)
     .where(
       and(
-        sql`${messages.conversationId} IN ${conversationIds}`,
+        inArray(messages.conversationId, conversationIds.length > 0 ? conversationIds : ['__no_ids__']),
         sql`${messages.content} LIKE ${`%${query}%`}`
       )
     )

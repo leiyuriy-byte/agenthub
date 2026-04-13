@@ -1,5 +1,5 @@
 import { db } from '@agenthub/db';
-import { eq, desc, and, sql, SQL } from 'drizzle-orm';
+import { eq, desc, and, sql, SQL, inArray } from 'drizzle-orm';
 import { schema } from '@agenthub/db';
 const { resources, resourceCategories, users } = schema;
 
@@ -140,7 +140,7 @@ export async function getResources(options: {
     const categories = await db
       .select({ id: resourceCategories.id, name: resourceCategories.name })
       .from(resourceCategories)
-      .where(sql`${resourceCategories.id} IN ${categoryIds}`);
+      .where(inArray(resourceCategories.id, categoryIds.length > 0 ? categoryIds : ['__no_ids__']));
     categories.forEach(c => categoryMap[c.id] = c.name);
   }
   
@@ -152,7 +152,7 @@ export async function getResources(options: {
         username: users.username,
       })
       .from(users)
-      .where(sql`${users.id} IN ${submitterIds}`);
+      .where(inArray(users.id, submitterIds.length > 0 ? submitterIds : ['__no_ids__']));
     submitters.forEach(u => {
       submitterMap[u.id] = u.displayName || u.username;
     });

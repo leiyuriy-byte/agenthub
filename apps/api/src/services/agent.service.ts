@@ -1,4 +1,4 @@
-import { eq, and, desc, asc, like, sql, or, type SQL } from 'drizzle-orm';
+import { eq, and, desc, asc, like, sql, or, type SQL, notInArray } from 'drizzle-orm';
 import { db, schema, type AgentCategory } from '@agenthub/db';
 import { nanoid } from 'nanoid';
 import { awardPointsForAction } from './points.service.js';
@@ -651,7 +651,7 @@ export const agentService = {
         .where(
           and(
             eq(schema.agents.status, 'published'),
-            sql`${schema.agents.id} NOT IN (${sql.raw(agents.map(a => `'${a.id}'`).join(',')) || "''"})`,
+            notInArray(schema.agents.id, agents.map(a => a.id)),
             sql`${schema.agents.id} != ${agentId}`
           )
         )

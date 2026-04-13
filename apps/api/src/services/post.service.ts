@@ -1,4 +1,4 @@
-import { eq, and, desc, asc, like, sql, or, SQL } from 'drizzle-orm';
+import { eq, and, desc, asc, like, sql, or, SQL, notInArray } from 'drizzle-orm';
 import { db, schema } from '@agenthub/db';
 import { nanoid } from 'nanoid';
 import { awardPointsForAction } from './points.service.js';
@@ -308,7 +308,7 @@ export const postService = {
         .where(
           and(
             eq(schema.posts.channelId, currentPost.channelId),
-            sql`${schema.posts.id} NOT IN (${sql.join(Array.from(existingIds), sql`, `)})`
+            notInArray(schema.posts.id, Array.from(existingIds))
           )
         )
         .orderBy(desc(schema.posts.createdAt))

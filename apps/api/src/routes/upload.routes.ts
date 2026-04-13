@@ -1,37 +1,44 @@
+import path from 'path';
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { randomUUID } from 'crypto';
-import { extname, join } from 'path';
-import { mkdirSync, existsSync, writeFileSync, unlinkSync } from 'fs';
+import { uploadFile, deleteFile, isStorageConfigured } from '../services/storage.service.js';
 
 // Allowed file types
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
-
-// Upload directory
-const UPLOAD_DIR = process.env.UPLOAD_DIR || join(process.cwd(), 'uploads');
-
-// Ensure upload directory exists
-function ensureUploadDir() {
-  const imagesDir = join(UPLOAD_DIR, 'images');
-  if (!existsSync(imagesDir)) {
-    mkdirSync(imagesDir, { recursive: true });
-  }
-  return imagesDir;
-}
+const MAX_IMAGE_SIZE = 2 * 1024 * 1024; // 2MB
+const MAX_AVATAR_SIZE = 1 * 1024 * 1024; // 1MB
 
 export async function uploadRoutes(fastify: FastifyInstance) {
   // Register multipart plugin for file uploads
   await fastify.register(import('@fastify/multipart'), {
     limits: {
-      fileSize: MAX_FILE_SIZE,
+      fileSize: MAX_IMAGE_SIZE,
     },
   });
 
-  // Register static file serving for uploads
-  await fastify.register(import('@fastify/static'), {
-    root: UPLOAD_DIR,
-    prefix: '/uploads/',
-    decorateReply: false,
+  // Register static file serving for uploads (only for local storage)
+  const storageStatus = isStorageConfigured();
+  if (storageStatus.provider === 'local') {
+    const UPLOAD_DIR = process.env.UPLOAD_DIR
+      ? path.resolve(process.env.UPLOAD_DIR)
+      : path.resolve('uploads');
+    await fastify.register(import('@fastify/static'), {
+      root: UPLOAD_DIR,
+      prefix: '/uploads/',
+      decorateReply: false,
+    });
+  }
+
+  /**
+   * GET /api/upload/status - Check storage configuration
+   */
+  fastify.get('/status', async (
+    request: FastifyRequest,
+    reply: FastifyReply
+  ) => {
+    return reply.send({
+      success: true,
+      data: isStorageConfigured(),
+    });
   });
 
   /**
@@ -68,37 +75,28 @@ export async function uploadRoutes(fastify: FastifyInstance) {
       }
 
       // Check file size
-      const fileSize = await data.toBuffer().then(buf => buf.length);
-      if (fileSize > MAX_FILE_SIZE) {
+      const buffer = await data.toBuffer();
+      const fileSize = buffer.length;
+      if (fileSize > MAX_IMAGE_SIZE) {
         return reply.code(400).send({
           success: false,
-          error: 'File too large. Maximum size: 2MB',
+          error: `File too large. Maximum size: ${MAX_IMAGE_SIZE / 1024 / 1024}MB`,
         });
       }
 
-      // Generate unique filename
-      const buffer = await data.toBuffer();
-      const ext = extname(data.filename || '.jpg').toLowerCase();
-      const filename = `${randomUUID()}${ext}`;
-
-      // Save file
-      const uploadDir = ensureUploadDir();
-      const filepath = join(uploadDir, filename);
-      writeFileSync(filepath, buffer);
-
-      // Return the URL
-      const imageUrl = `/uploads/images/${filename}`;
+      // Upload using storage service
+      const result = await uploadFile(
+        buffer,
+        data.filename || 'image.jpg',
+        data.mimetype,
+        'images'
+      );
 
       return reply.send({
         success: true,
-        data: {
-          url: imageUrl,
-          filename,
-          size: fileSize,
-          mimetype: data.mimetype,
-        },
+        data: result,
       });
-    } catch (error) {
+    } catch (error: any) {
       request.log.error(error);
       return reply.code(500).send({
         success: false,
@@ -132,25 +130,14 @@ export async function uploadRoutes(fastify: FastifyInstance) {
         });
       }
 
-      // Security: prevent directory traversal
-      if (filename.includes('..') || filename.includes('/')) {
-        return reply.code(400).send({
-          success: false,
-          error: 'Invalid filename',
-        });
-      }
-
-      const filepath = join(UPLOAD_DIR, 'images', filename);
-
-      if (existsSync(filepath)) {
-        unlinkSync(filepath);
-      }
+      // Security: prevent directory traversal (done in storage service)
+      const result = await deleteFile(filename, 'images');
 
       return reply.send({
-        success: true,
-        message: 'Image deleted',
+        success: result.success,
+        message: result.message,
       });
-    } catch (error) {
+    } catch (error: any) {
       request.log.error(error);
       return reply.code(500).send({
         success: false,
@@ -195,35 +182,26 @@ export async function uploadRoutes(fastify: FastifyInstance) {
       // Check file size (avatar max 1MB)
       const buffer = await data.toBuffer();
       const fileSize = buffer.length;
-      if (fileSize > 1024 * 1024) {
+      if (fileSize > MAX_AVATAR_SIZE) {
         return reply.code(400).send({
           success: false,
-          error: 'File too large. Maximum size: 1MB',
+          error: `File too large. Maximum size: ${MAX_AVATAR_SIZE / 1024 / 1024}MB`,
         });
       }
 
-      // Generate unique filename with user ID prefix
-      const ext = extname(data.filename || '.jpg').toLowerCase();
-      const filename = `avatar_${request.userId}_${randomUUID()}${ext}`;
-
-      // Save file
-      const uploadDir = ensureUploadDir();
-      const filepath = join(uploadDir, filename);
-      writeFileSync(filepath, buffer);
-
-      // Return the URL
-      const avatarUrl = `/uploads/images/${filename}`;
+      // Upload to avatars subdir
+      const result = await uploadFile(
+        buffer,
+        data.filename || 'avatar.jpg',
+        data.mimetype,
+        'avatars'
+      );
 
       return reply.send({
         success: true,
-        data: {
-          url: avatarUrl,
-          filename,
-          size: fileSize,
-          mimetype: data.mimetype,
-        },
+        data: result,
       });
-    } catch (error) {
+    } catch (error: any) {
       request.log.error(error);
       return reply.code(500).send({
         success: false,
