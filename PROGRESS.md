@@ -1,5 +1,22 @@
 # AgentHub 开发进度
-最后更新：2026-04-13 12:01
+最后更新：2026-04-13 18:05
+
+## 🛠 维护更新（2026-04-13 18:05）
+
+### 构建验证 ✅
+- `pnpm build` 成功（38 routes + API）
+- TypeScript 严格模式编译错误修复：
+  - `resource.service.ts`: `inArray` 使用 null 值问题（添加类型断言 `filter((id): id is string => id !== null)`）
+  - `storage.service.ts`: S3Client.send() 类型问题（添加 `as any` 类型断言）
+  - `db/client.ts`: Database 类型重复定义问题（改为 `import Database, { type Database as DatabaseType }`）
+
+### Git Push 状态 ✅
+- 成功推送 4 个 commits 到 origin/master
+- Commits: `269c87e`, `e230660`, `951d162`, `2d0b82f`
+
+**项目状态：🟢 开发完成，构建验证通过，已同步到 GitHub**
+
+---
 
 ## 🛠 维护更新（2026-04-13 12:01）
 
