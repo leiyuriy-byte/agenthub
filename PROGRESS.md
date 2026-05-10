@@ -1,7 +1,7 @@
 # AgentHub 开发进度
-最后更新：2026-05-10 20:01
+最后更新：2026-05-11 02:01
 
-## 🛠 状态巡检（2026-05-10 20:01）
+## 🛠 状态巡检（2026-05-11 02:01）
 
 ### 构建验证 ✅
 - `pnpm build` 成功（38 routes + API ✅）
@@ -9,11 +9,6 @@
 - Git 工作区干净，origin/master 已同步（commit 299ee17 ✅）
 - 无 TODO/FIXME 残留
 - 数据库文件正常（agenthub.db ✅）
-
-### 本次巡检修复
-- ✅ `packages/ui/src/button.tsx` asChild Slot pattern 改进
-  - 修复 `asChild` 模式下 `childRest` 未定义问题
-  - 改用 `childEl.props` 直接传递，避免解构丢失
 
 **项目状态：🟢 开发完成，构建验证通过，代码已同步至 GitHub**
 
