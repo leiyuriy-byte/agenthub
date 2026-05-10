@@ -50,12 +50,12 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     if (asChild && React.isValidElement(props.children)) {
       // asChild: merge button classes onto the single child element
-      const { children: childChildren, ...childRest } = props.children as React.ReactElement<Record<string, unknown>>;
+      const childEl = props.children as React.ReactElement<Record<string, unknown>>;
       return (
         <Slot>
-          {React.cloneElement(props.children as React.ReactElement<Record<string, unknown>>, {
-            ...childRest,
-            className: cn(classes, (props.children as React.ReactElement<{ className?: string }>).props.className),
+          {React.cloneElement(childEl, {
+            ...childEl.props,
+            className: cn(classes, (childEl.props as { className?: string }).className),
             ref,
           })}
         </Slot>
