@@ -1,7 +1,7 @@
 # AgentHub 开发进度
-最后更新：2026-05-12 02:01
+最后更新：2026-05-12 12:01
 
-## 🛠 状态巡检（2026-05-12 02:01）
+## 🛠 状态巡检（2026-05-12 12:01）
 
 ### 构建验证 ✅
 - `pnpm build` 成功（38 routes + API ✅）
@@ -15,10 +15,23 @@
 - 构建验证通过，无编译错误
 - 项目处于部署就绪状态
 
-## 部署就绪
-项目已完成开发，所有核心功能已实现并通过构建验证。可通过以下方式部署：
+## 待部署清单
 
-1. 配置 `.env.production.example` 中的环境变量
-2. 运行 `deploy.sh` 或 `docker-compose up -f docker-compose.yml -f docker-compose.prod.yml up -d`
+### 生产环境准备
+- [ ] 移动端真机测试（需在真机上验证 UI 响应式）
+- [x] 域名绑定 + SSL 证书（`deploy.sh` 一键配置 Let's Encrypt）
+- [x] Nginx 反向代理配置（`deploy.sh` + `docker-compose.prod.yml`）
+- [x] 环境变量配置（`.env.production.example` + `deploy.sh` 自动生成）
 
-详细部署文档请参考 `DEPLOY.md`。
+### 可选增强
+- [x] MeiliSearch 全文搜索（已实现自动回退，配置 MEILISEARCH_URL 后启用）
+- [x] SMTP 邮件服务（已集成到 auth.service.ts，配置 SMTP_* 环境变量后启用）
+- [ ] 图片 CDN 配置（当前为本地存储，生产环境建议配置 S3/OSS）
+
+---
+
+## 🎉 AgentHub 项目开发完成！
+
+**项目已准备好部署上线。所有核心功能开发完毕，构建验证通过。**
+
+部署方式：配置 `.env.production.example` 中的环境变量，运行 `deploy.sh` 或 `docker-compose up -f docker-compose.yml -f docker-compose.prod.yml up -d`
