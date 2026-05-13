@@ -6,7 +6,7 @@
 ### 构建验证 ✅
 - `pnpm build` 成功（38 routes + API ✅）
 - TypeScript 编译无错误
-- Git 工作区干净（本地已 commit，待推送 — GitHub 认证未配置）
+- GitHub 远程仓库已同步（master branch ✅）
 - 无 TODO/FIXME 残留
 - 数据库文件正常
 
