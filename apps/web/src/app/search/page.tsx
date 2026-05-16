@@ -21,8 +21,6 @@ import {
   Star,
   Eye,
   MessageCircle,
-  ChevronLeft,
-  ChevronRight,
   SearchX,
 } from 'lucide-react';
 

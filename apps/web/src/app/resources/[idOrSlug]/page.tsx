@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
 import { Badge } from '@agenthub/ui/badge';
 import { Button } from '@agenthub/ui/button';
 import { Skeleton } from '@agenthub/ui/skeleton';

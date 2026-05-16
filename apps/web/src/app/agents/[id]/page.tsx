@@ -11,7 +11,7 @@ import { Button } from '@agenthub/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@agenthub/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@agenthub/ui/card';
 import { Input } from '@agenthub/ui/input';
-import { agentApi, Agent, AgentCategory, User, reportApi, agentCommentApi } from '@/lib/api';
+import { agentApi, Agent, reportApi, agentCommentApi } from '@/lib/api';
 import { formatRelativeTime, formatNumber, cn } from '@/lib/utils';
 import {
   ArrowLeft,
@@ -36,7 +36,6 @@ import {
   ChevronLeft,
   ChevronDown,
   ZoomIn,
-  Flag,
   GitCompare,
   ThumbsUp,
 } from 'lucide-react';

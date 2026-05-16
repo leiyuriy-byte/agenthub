@@ -10,7 +10,6 @@
  * Uses Nodemailer with configurable SMTP settings
  */
 import nodemailer, { Transporter, SendMailOptions } from 'nodemailer';
-import type { FastifyInstance } from 'fastify';
 
 // Email configuration
 interface EmailConfig {

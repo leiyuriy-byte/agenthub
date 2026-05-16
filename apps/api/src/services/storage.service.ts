@@ -18,8 +18,8 @@
 
 import { randomUUID } from 'crypto';
 import { extname, join } from 'path';
-import { existsSync, mkdirSync, writeFileSync, unlinkSync, createReadStream } from 'fs';
-import { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import { existsSync, mkdirSync, writeFileSync, unlinkSync } from 'fs';
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 
 // Configuration types
 interface StorageConfig {

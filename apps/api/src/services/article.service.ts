@@ -1,5 +1,5 @@
 import { db } from '@agenthub/db';
-import { eq, desc, and, like, sql, SQL, inArray } from 'drizzle-orm';
+import { eq, desc, and, sql, SQL, inArray } from 'drizzle-orm';
 import { schema } from '@agenthub/db';
 const { articles, articleCategories, articleTags, articleSeries, articleSeriesItems, users } = schema;
 

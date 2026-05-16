@@ -26,7 +26,6 @@ import {
   Users,
   Bot as BotIcon,
   FileText as PostIcon,
-  MessageCircle,
   TrendingUp,
   Eye,
   Star,

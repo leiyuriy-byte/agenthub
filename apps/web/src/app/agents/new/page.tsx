@@ -1,17 +1,15 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
 import { z } from 'zod';
 import { Button } from '@agenthub/ui/button';
 import { Input } from '@agenthub/ui/input';
 import { Textarea } from '@agenthub/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@agenthub/ui/card';
 import { Badge } from '@agenthub/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@agenthub/ui/avatar';
 import { ImageUpload, ScreenshotsUpload } from '@agenthub/ui/image-upload';
 import { agentApi, AgentCategory } from '@/lib/api';
 import { useAuthStore } from '@/stores/auth-store';
@@ -20,12 +18,10 @@ import { toast } from 'sonner';
 import {
   ArrowLeft,
   Loader2,
-  Plus,
   X,
   ExternalLink,
   Github,
   BookOpen,
-  ImageIcon,
   Eye,
   Save,
   Send,

@@ -11,14 +11,11 @@ import { Input } from '@agenthub/ui/input';
 import { channelApi, postApi, Channel, Post } from '@/lib/api';
 import { formatRelativeTime, formatNumber, cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/auth-store';
-import { toast } from 'sonner';
 import {
   MessageSquare,
   ThumbsUp,
-  ThumbsDown,
   Eye,
   Clock,
-  TrendingUp,
   Star,
   Plus,
   Loader2,

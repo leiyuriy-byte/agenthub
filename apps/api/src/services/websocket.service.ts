@@ -9,7 +9,6 @@
 
 import { Server as SocketIOServer, Socket } from 'socket.io';
 import { FastifyInstance } from 'fastify';
-import jwt from '@fastify/jwt';
 
 interface AuthenticatedSocket extends Socket {
   userId?: string;
@@ -79,7 +78,7 @@ export function initializeWebSocket(fastify: FastifyInstance): SocketIOServer {
       };
 
       next();
-    } catch (error) {
+    } catch {
       // Allow connection even if JWT verification fails
       // This is useful for development/demo
       next();

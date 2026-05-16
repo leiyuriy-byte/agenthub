@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { agentApi, postApi } from '@/lib/api';
 import { HomeClient } from './home-client';
 
 // Server Component - 在服务端获取数据

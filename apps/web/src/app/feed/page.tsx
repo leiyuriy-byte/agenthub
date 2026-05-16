@@ -18,11 +18,7 @@ import {
   Bot,
   FileText,
   MessageSquare,
-  Star,
-  Eye,
   Loader2,
-  UserPlus,
-  PenLine,
   Sparkles,
 } from 'lucide-react';
 

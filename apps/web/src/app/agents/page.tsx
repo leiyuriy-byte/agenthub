@@ -10,8 +10,8 @@ import { Button } from '@agenthub/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@agenthub/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@agenthub/ui/avatar';
 import { agentApi, Agent, AgentCategory } from '@/lib/api';
-import { formatRelativeTime, formatNumber, cn } from '@/lib/utils';
-import { Search, Star, Eye, MessageCircle, Filter, ArrowUpDown, Loader2, Plus } from 'lucide-react';
+import { formatNumber } from '@/lib/utils';
+import { Search, Star, Eye, MessageCircle, Filter, ArrowUpDown, Loader2 } from 'lucide-react';
 
 type SortOption = 'createdAt' | 'viewCount' | 'starCount' | 'avgRating';
 type SortOrder = 'asc' | 'desc';

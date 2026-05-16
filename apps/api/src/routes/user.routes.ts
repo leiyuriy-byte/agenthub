@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { userService } from '../services/user.service.js';
-import { userSchemas, idParam, paginationSchema } from '@agenthub/validators';
+import { userSchemas } from '@agenthub/validators';
 import { ZodError } from 'zod';
 
 interface IdParams {

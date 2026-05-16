@@ -1,4 +1,4 @@
-import { eq, and, desc, inArray, or, sql } from 'drizzle-orm';
+import { eq, desc, inArray } from 'drizzle-orm';
 import { db, schema } from '@agenthub/db';
 
 export interface FeedItem {
@@ -116,7 +116,7 @@ export const feedService = {
     latestPosts.forEach(post => {
       // Extract excerpt from content
       const excerpt = post.content 
-        ? post.content.replace(/[#*`\[\]]/g, '').slice(0, 150) + (post.content.length > 150 ? '...' : '')
+        ? post.content.replace(/[#*`[]]/g, '').slice(0, 150) + (post.content.length > 150 ? '...' : '')
         : '';
       
       feedItems.push({
@@ -250,7 +250,7 @@ export const feedService = {
 
     latestPosts.forEach(post => {
       const excerpt = post.content 
-        ? post.content.replace(/[#*`\[\]]/g, '').slice(0, 150) + (post.content.length > 150 ? '...' : '')
+        ? post.content.replace(/[#*`[]]/g, '').slice(0, 150) + (post.content.length > 150 ? '...' : '')
         : '';
       
       feedItems.push({

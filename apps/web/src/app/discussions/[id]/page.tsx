@@ -30,8 +30,6 @@ import {
   Star,
   AlertCircle,
   X as XIcon,
-  Sparkles,
-  ArrowRight,
   HelpCircle,
   Flag,
   CheckCircle,
@@ -41,7 +39,7 @@ import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeSanitize from 'rehype-sanitize';
 import 'highlight.js/styles/github-dark.css';
-import { CommentList, CommentForm } from '@/components/comment/comment-list';
+import { CommentList } from '@/components/comment/comment-list';
 import { PollComponent } from '@/components/poll/poll-component';
 
 export default function PostDetailPage() {

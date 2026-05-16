@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { db, schema } from '@agenthub/db';
-import { eq, desc, count, and, gte, lte, sql } from 'drizzle-orm';
+import { eq, desc, count, gte, sql } from 'drizzle-orm';
 import { AnyColumn, Table } from 'drizzle-orm';
 
 interface AdminStats {

@@ -1,4 +1,4 @@
-import { eq, and, desc, asc, sql, or } from 'drizzle-orm';
+import { eq, and, desc, sql } from 'drizzle-orm';
 import { db, schema } from '@agenthub/db';
 import { nanoid } from 'nanoid';
 import { sendNotificationToUser } from './websocket.service.js';

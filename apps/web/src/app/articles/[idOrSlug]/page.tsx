@@ -6,15 +6,14 @@ import { useParams, useRouter } from 'next/navigation';
 import ReactMarkdown, { Components } from 'react-markdown';
 import rehypeSanitize from 'rehype-sanitize';
 import remarkGfm from 'remark-gfm';
-import { motion } from 'framer-motion';
 import { Badge } from '@agenthub/ui/badge';
 import { Button } from '@agenthub/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@agenthub/ui/avatar';
 import { Skeleton } from '@agenthub/ui/skeleton';
 import { useAuth } from '@/hooks/useAuth';
-import { articleApi, Article, ArticleCategory, User } from '@/lib/api';
+import { articleApi, Article } from '@/lib/api';
 import { formatRelativeTime, formatNumber } from '@/lib/utils';
-import { Eye, Heart, MessageCircle, Share2, ChevronLeft, Calendar, Clock, Edit, Trash2, Loader2, List } from 'lucide-react';
+import { Eye, Heart, Share2, ChevronLeft, Calendar, Clock, Edit, Trash2, Loader2, List } from 'lucide-react';
 import { toast } from 'sonner';
 
 /** Generate a slug id from heading text (matches rehype-slug behavior) */

@@ -1,10 +1,9 @@
 'use client';
 
-import { useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '@agenthub/ui/button';
 import { Card, CardContent } from '@agenthub/ui/card';
-import { FileQuestion, Home, ArrowLeft, Search } from 'lucide-react';
+import { FileQuestion, Home, ArrowLeft } from 'lucide-react';
 
 export default function NotFound() {
   return (

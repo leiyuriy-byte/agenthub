@@ -1,4 +1,4 @@
-import { eq, desc, and, sql, gte, lte } from 'drizzle-orm';
+import { eq, desc, and, sql, gte } from 'drizzle-orm';
 import { db, schema } from '@agenthub/db';
 import { nanoid } from 'nanoid';
 import { sendPointsUpdateToUser } from './websocket.service.js';

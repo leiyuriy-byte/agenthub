@@ -5,11 +5,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Button } from '@agenthub/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@agenthub/ui/card';
+import { Card, CardContent } from '@agenthub/ui/card';
 import { Badge } from '@agenthub/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@agenthub/ui/avatar';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@agenthub/ui/tabs';
-import { reportApi, Report, reportApi as reportApiModule } from '@/lib/api';
+import { Tabs, TabsList, TabsTrigger } from '@agenthub/ui/tabs';
+import { reportApi, Report } from '@/lib/api';
 import { formatRelativeTime, cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/auth-store';
 import { toast } from 'sonner';
@@ -28,7 +28,6 @@ import {
   FileText,
   Loader2,
   ExternalLink,
-  Filter,
   RefreshCw,
   Shield,
   AlertCircle,

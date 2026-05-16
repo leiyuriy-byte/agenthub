@@ -6,7 +6,7 @@
  */
 import { MeiliSearch, Index } from 'meilisearch';
 import { db, schema } from '@agenthub/db';
-import { eq, or, like, desc, sql, inArray } from 'drizzle-orm';
+import { eq, inArray } from 'drizzle-orm';
 
 // MeiliSearch client singleton
 let meiliClient: MeiliSearch | null = null;

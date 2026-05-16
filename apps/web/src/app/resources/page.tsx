@@ -6,11 +6,11 @@ import { motion } from 'framer-motion';
 import { Input } from '@agenthub/ui/input';
 import { Badge } from '@agenthub/ui/badge';
 import { Button } from '@agenthub/ui/button';
-import { Card, CardContent, CardFooter, CardHeader } from '@agenthub/ui/card';
+import { Card, CardContent, CardFooter } from '@agenthub/ui/card';
 import { Skeleton } from '@agenthub/ui/skeleton';
 import { resourceApi, Resource, ResourceCategory } from '@/lib/api';
-import { formatRelativeTime, formatNumber, cn } from '@/lib/utils';
-import { Search, Eye, Heart, Loader2, Plus, Wrench, Database, Code, GraduationCap } from 'lucide-react';
+import { formatNumber, cn } from '@/lib/utils';
+import { Search, Eye, Heart, Plus, Wrench, Database, Code, GraduationCap } from 'lucide-react';
 
 type SortOption = 'createdAt' | 'viewCount' | 'likeCount';
 type ResourceType = 'tool' | 'dataset' | 'api' | 'learning';

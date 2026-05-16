@@ -2,15 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
 import { z } from 'zod';
 import { Button } from '@agenthub/ui/button';
 import { Input } from '@agenthub/ui/input';
 import { Textarea } from '@agenthub/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@agenthub/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@agenthub/ui/avatar';
-import { Badge } from '@agenthub/ui/badge';
-import { userApi, authApi, User } from '@/lib/api';
+import { userApi } from '@/lib/api';
 import { useAuthStore } from '@/stores/auth-store';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -23,7 +21,6 @@ import {
   Github,
   Linkedin,
   Youtube,
-  ImageIcon,
   Loader2,
   Check,
   AlertCircle,

@@ -409,7 +409,7 @@ export const feedbackService = {
 
     // Note: For complex filtering, you'd build a proper where clause
     // Here we just get all and filter in memory for simplicity
-    let query = db
+    const query = db
       .select()
       .from(schema.userFeedback)
       .orderBy(desc(schema.userFeedback.createdAt))

@@ -1,6 +1,6 @@
 import { db, schema } from '@agenthub/db';
-import { eq, like, or, desc, count, and, sql } from 'drizzle-orm';
-import { meilisearchService, INDEX_NAMES, type MeiliAgent, type MeiliPost, type MeiliUser } from './meilisearch.service';
+import { eq, like, or, desc, count } from 'drizzle-orm';
+import { meilisearchService } from './meilisearch.service';
 
 export interface SearchResult {
   agents: SearchAgent[];

@@ -4,7 +4,7 @@
 
 import { db } from '@agenthub/db';
 import { reports, users, agents, posts, comments } from '@agenthub/db/schema';
-import { eq, and, desc, sql, like, or, inArray, SQL } from 'drizzle-orm';
+import { eq, and, desc, sql, SQL } from 'drizzle-orm';
 
 export interface CreateReportInput {
   reporterId: string;

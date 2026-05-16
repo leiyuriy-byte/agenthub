@@ -3,13 +3,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
 import { Badge } from '@agenthub/ui/badge';
 import { Button } from '@agenthub/ui/button';
 import { Skeleton } from '@agenthub/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@agenthub/ui/avatar';
 import { useAuth } from '@/hooks/useAuth';
-import { useAuthStore } from '@/lib/api';
 import { activityApi, Activity } from '@/lib/api';
 import { formatRelativeTime, formatNumber } from '@/lib/utils';
 import { ChevronLeft, Calendar, MapPin, Video, Users, Eye, Share2, Loader2, Plus, Check } from 'lucide-react';

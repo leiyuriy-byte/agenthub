@@ -1,5 +1,5 @@
-import { sqliteTable, text, integer, real, primaryKey, uniqueIndex, index } from 'drizzle-orm/sqlite-core';
-import { sql, eq, and, desc } from 'drizzle-orm';
+import { sqliteTable, text, integer, real } from 'drizzle-orm/sqlite-core';
+import { sql } from 'drizzle-orm';
 
 // ============== User System ==============
 

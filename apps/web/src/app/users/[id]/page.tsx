@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Button } from '@agenthub/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@agenthub/ui/card';
+import { Card, CardContent } from '@agenthub/ui/card';
 import { Badge } from '@agenthub/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@agenthub/ui/avatar';
 import { userApi, postApi, agentApi, pointsApi, User, Post, Agent, UserPointsInfo } from '@/lib/api';
@@ -15,10 +15,8 @@ import { useAuthStore } from '@/stores/auth-store';
 import { toast } from 'sonner';
 import {
   Loader2,
-  ArrowLeft,
   UserPlus,
   UserMinus,
-  MapPin,
   Calendar,
   Link as LinkIcon,
   Star,
@@ -27,7 +25,6 @@ import {
   Heart,
   Eye,
   Clock,
-  ExternalLink,
   Github,
   Twitter,
   Globe,
@@ -35,7 +32,6 @@ import {
   Youtube,
   Bot,
   AlertCircle,
-  Trophy,
   Zap,
   Flame,
 } from 'lucide-react';

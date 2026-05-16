@@ -6,15 +6,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@agenthub/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@agenthub/ui/avatar';
 import { Textarea } from '@agenthub/ui/textarea';
-import { commentApi, Comment, User } from '@/lib/api';
+import { Comment } from '@/lib/api';
 import { formatRelativeTime, formatNumber, cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/auth-store';
 import { toast } from 'sonner';
 import {
   ThumbsUp,
   MessageSquare,
-  MoreHorizontal,
-  Edit,
   Trash2,
   Check,
   Loader2,

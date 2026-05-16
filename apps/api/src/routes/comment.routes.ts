@@ -1,6 +1,5 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { commentService } from '../services/comment.service';
-import { commentSchemas, idParam, paginationSchema } from '@agenthub/validators';
 
 export async function commentRoutes(fastify: FastifyInstance) {
 

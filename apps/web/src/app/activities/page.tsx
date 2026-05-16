@@ -7,11 +7,11 @@ import { motion } from 'framer-motion';
 import { Input } from '@agenthub/ui/input';
 import { Badge } from '@agenthub/ui/badge';
 import { Button } from '@agenthub/ui/button';
-import { Card, CardContent, CardFooter, CardHeader } from '@agenthub/ui/card';
+import { Card, CardContent, CardFooter } from '@agenthub/ui/card';
 import { Skeleton } from '@agenthub/ui/skeleton';
 import { activityApi, Activity } from '@/lib/api';
-import { formatRelativeTime, formatNumber, cn } from '@/lib/utils';
-import { Search, Eye, Users, Calendar, MapPin, Video, Loader2, Plus, CalendarDays } from 'lucide-react';
+import { formatNumber, cn } from '@/lib/utils';
+import { Search, Eye, Users, Calendar, MapPin, Video, Plus, CalendarDays } from 'lucide-react';
 
 type SortOption = 'startTime' | 'createdAt' | 'viewCount';
 type ActivityStatus = 'upcoming' | 'ongoing' | 'ended';

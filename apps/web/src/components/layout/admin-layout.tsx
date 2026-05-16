@@ -16,7 +16,6 @@ import {
   LogOut,
   Menu,
   X,
-  Loader2,
   BarChart3,
   Flag,
 } from 'lucide-react';

@@ -19,12 +19,8 @@ import {
   Settings,
   LogOut,
   ChevronDown,
-  LogIn,
   Loader2,
   MessageCircle,
-  Calendar,
-  Flame,
-  Trophy,
   Bot,
   FileText,
 } from 'lucide-react';

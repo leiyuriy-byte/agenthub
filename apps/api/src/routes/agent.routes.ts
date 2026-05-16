@@ -4,7 +4,7 @@ import { db, schema } from '@agenthub/db';
 import { agentService } from '../services/agent.service.js';
 import { agentSchemas } from '@agenthub/validators';
 import { ZodError } from 'zod';
-import { isInteger, parseInteger } from '../utils/validators.js';
+import { parseInteger } from '../utils/validators.js';
 
 // Types for route params
 interface AgentParams {

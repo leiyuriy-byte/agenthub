@@ -4,22 +4,19 @@ import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter, useParams } from 'next/navigation';
-import { motion } from 'framer-motion';
 import { z } from 'zod';
 import { Button } from '@agenthub/ui/button';
 import { Input } from '@agenthub/ui/input';
 import { Textarea } from '@agenthub/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@agenthub/ui/card';
 import { Badge } from '@agenthub/ui/badge';
-import { ImageUpload, ScreenshotsUpload } from '@agenthub/ui/image-upload';
 import { agentApi, AgentCategory, Agent } from '@/lib/api';
 import { useAuthStore } from '@/stores/auth-store';
-import { slugify, cn } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import {
   ArrowLeft,
   Loader2,
-  Plus,
   X,
   ExternalLink,
   Github,
@@ -27,7 +24,6 @@ import {
   ImageIcon,
   Eye,
   Save,
-  Send,
   Trash2,
   AlertCircle,
 } from 'lucide-react';

@@ -410,7 +410,7 @@ export const userService = {
     }
 
     // Build export object (exclude sensitive fields)
-    const { passwordHash, ...userPublic } = user;
+    const { passwordHash: _, ...userPublic } = user;
 
     return {
       exportedAt: new Date().toISOString(),

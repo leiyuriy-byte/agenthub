@@ -5,11 +5,10 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Avatar, AvatarFallback, AvatarImage } from '@agenthub/ui/avatar';
 import { Button } from '@agenthub/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@agenthub/ui/card';
+import { Card, CardContent } from '@agenthub/ui/card';
 import { pointsApi, LeaderboardEntry } from '@/lib/api';
 import { formatNumber, cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/auth-store';
-import { toast } from 'sonner';
 import {
   Loader2,
   Trophy,
@@ -17,8 +16,6 @@ import {
   Crown,
   Flame,
   Zap,
-  ChevronLeft,
-  ChevronRight,
 } from 'lucide-react';
 
 // Level names

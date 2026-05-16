@@ -31,10 +31,11 @@ async function generateRandomPassword(): Promise<string> {
  * Generate a unique username from email or provider name
  */
 async function generateUniqueUsername(baseName: string): Promise<string> {
-  let username = baseName.toLowerCase().replace(/[^a-z0-9_]/g, '_');
+  const username = baseName.toLowerCase().replace(/[^a-z0-9_]/g, '_');
   let counter = 0;
   let finalUsername = username;
 
+  // eslint-disable-next-line no-constant-condition
   while (true) {
     const existing = await db.select()
       .from(schema.users)

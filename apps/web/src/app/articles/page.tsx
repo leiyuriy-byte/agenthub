@@ -7,12 +7,12 @@ import { motion } from 'framer-motion';
 import { Input } from '@agenthub/ui/input';
 import { Badge } from '@agenthub/ui/badge';
 import { Button } from '@agenthub/ui/button';
-import { Card, CardContent, CardFooter, CardHeader } from '@agenthub/ui/card';
+import { Card, CardContent, CardFooter } from '@agenthub/ui/card';
 import { Skeleton } from '@agenthub/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@agenthub/ui/avatar';
 import { articleApi, Article, ArticleCategory } from '@/lib/api';
 import { formatRelativeTime, formatNumber, cn } from '@/lib/utils';
-import { Search, Eye, MessageCircle, Heart, Loader2, Plus, PenLine, BookOpen } from 'lucide-react';
+import { Search, Eye, MessageCircle, Heart, Plus, PenLine, BookOpen } from 'lucide-react';
 
 type SortOption = 'publishedAt' | 'viewCount' | 'likeCount' | 'createdAt';
 

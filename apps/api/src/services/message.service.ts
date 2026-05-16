@@ -9,7 +9,7 @@ import {
   messages,
   users 
 } from '@agenthub/db/schema';
-import { eq, ne, and, desc, or, sql, like, inArray } from 'drizzle-orm';
+import { eq, ne, and, desc, sql, inArray } from 'drizzle-orm';
 import { randomUUID } from 'crypto';
 import { sendMessageToUser } from './websocket.service.js';
 
