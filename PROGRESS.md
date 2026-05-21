@@ -41,6 +41,6 @@
 
 | 时间 | 问题 | 状态 |
 |------|------|------|
-| 2026-05-21 06:01 | GitHub push 因认证失败失败（本地 commit `43c6ccc` 待推送） | ⚠️ 待解决（需检查 GitHub token） |
+| 2026-05-21 18:01 | GitHub push 因认证失败失败（本地 commit `017c6c7` 待推送） | ⚠️ 待解决（GitHub token 过期或权限不足） |
 | 2026-05-19 06:01 | GitHub push 因网络超时失败（本地 master 比 origin/master 领先 1 commit `0896744`） | ✅ 已解决（2026-05-19 08:10 push 成功） |
 | 2026-05-18 04:01 | GitHub push 因网络超时失败（本地 master 比 origin/master 领先 1 commit `7a5b2d3`） | ✅ 已解决（后续 push 成功） |
