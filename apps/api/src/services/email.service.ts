@@ -36,7 +36,7 @@ export function initializeEmailTransporter(): Transporter | null {
   const user = process.env.SMTP_USER;
   const pass = process.env.SMTP_PASS;
   const from = process.env.SMTP_FROM || process.env.SMTP_USER;
-  const fromName = process.env.SMTP_FROM_NAME || 'AgentHub';
+  // const fromName = process.env.SMTP_FROM_NAME || 'AgentHub';
 
   if (!host || !user || !pass || !from) {
     console.warn('[Email] SMTP not configured. Emails will not be sent.');
@@ -116,8 +116,8 @@ async function sendEmail(
  * Generate HTML for welcome email
  */
 function generateWelcomeEmailHTML(username: string, verifyUrl?: string): string {
-  const appUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-  
+  // const appUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+
   let verifySection = '';
   if (verifyUrl) {
     verifySection = `
@@ -192,7 +192,7 @@ function generateWelcomeEmailHTML(username: string, verifyUrl?: string): string 
  * Generate HTML for password reset email
  */
 function generatePasswordResetEmailHTML(username: string, resetUrl: string): string {
-  const appUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+  // const appUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
   
   return `
     <!DOCTYPE html>

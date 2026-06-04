@@ -50,7 +50,7 @@ type PostFormData = z.infer<typeof postFormSchema>;
 
 export default function NewPostPage() {
   const router = useRouter();
-  const { user, checkAuth } = useAuthStore();
+  const { checkAuth } = useAuthStore();
   const [channels, setChannels] = useState<Channel[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [tagInput, setTagInput] = useState('');

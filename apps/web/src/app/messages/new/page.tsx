@@ -48,7 +48,7 @@ export default function NewConversationPage() {
         } else {
           setUsers([]);
         }
-      } catch (err) {
+      } catch (_err) {
         setUsers([]);
       } finally {
         setIsSearching(false);
@@ -88,7 +88,7 @@ export default function NewConversationPage() {
       } else {
         setError(sendResponse.error || 'Failed to send message');
       }
-    } catch (err) {
+    } catch (_err) {
       setError('Failed to start conversation');
     } finally {
       setIsCreating(false);

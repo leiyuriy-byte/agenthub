@@ -40,7 +40,7 @@ const statusLabels: Record<string, string> = {
 
 export default function FeedbackPage() {
   const router = useRouter();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [, setIsLoggedIn] = useState(false);
   const [feedbacks, setFeedbacks] = useState<UserFeedback[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [total, setTotal] = useState(0);

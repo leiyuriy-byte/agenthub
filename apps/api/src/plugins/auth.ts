@@ -1,4 +1,4 @@
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import fp from 'fastify-plugin';
 
 declare module 'fastify' {
@@ -22,7 +22,7 @@ declare module 'fastify' {
 async function authPlugin(fastify: FastifyInstance) {
   fastify.decorateRequest('userId', null);
 
-  fastify.decorate('authenticate', async (request: FastifyRequest, reply: FastifyReply) => {
+  fastify.decorate('authenticate', async () => {
     // Auth handled by onRequest hook - this is a no-op guard
   });
   fastify.decorate('requireUser', async (request: FastifyRequest, reply: FastifyReply) => {
@@ -40,7 +40,7 @@ async function authPlugin(fastify: FastifyInstance) {
       reply.code(403).send({ success: false, error: 'Admin access required' });
     }
   });
-  fastify.decorate('authOptional', async (request: FastifyRequest, reply: FastifyReply) => {
+  fastify.decorate('authOptional', async () => {
     // No-op - just allows optional auth, always continues
   });
 

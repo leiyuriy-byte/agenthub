@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import dynamic from 'next/dynamic';
 import { Agent, AgentCategory, Post } from '@/lib/api';
 import { formatRelativeTime } from '@/lib/utils';
 import { Button } from '@agenthub/ui/button';
@@ -26,20 +25,6 @@ import {
   Gamepad2,
   MoreHorizontal,
 } from 'lucide-react';
-
-// 延迟加载 framer-motion - 只在需要动画时加载
-const MotionDiv = dynamic(() => import('framer-motion').then(mod => mod.motion.div), {
-  ssr: false,
-  loading: () => <div className="animate-pulse bg-muted h-20 rounded-lg" />,
-});
-
-const MotionSpan = dynamic(() => import('framer-motion').then(mod => mod.motion.span), {
-  ssr: false,
-});
-
-const MotionH1 = dynamic(() => import('framer-motion').then(mod => mod.motion.h1), {
-  ssr: false,
-});
 
 // Icons map for categories
 const categoryIcons: Record<string, React.ComponentType<{ className?: string }>> = {

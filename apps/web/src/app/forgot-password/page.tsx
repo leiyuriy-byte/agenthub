@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+// No routing needed
 import { motion } from 'framer-motion';
 import { z } from 'zod';
 import { Button } from '@agenthub/ui/button';
@@ -19,7 +19,7 @@ const forgotPasswordSchema = z.object({
 type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
 
 export default function ForgotPasswordPage() {
-  const router = useRouter();
+  // Form submission only
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [formData, setFormData] = useState<ForgotPasswordFormData>({

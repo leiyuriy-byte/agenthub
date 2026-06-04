@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { z } from 'zod';
 import { Button } from '@agenthub/ui/button';
@@ -25,7 +25,7 @@ const resetPasswordSchema = z.object({
 type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
 
 export default function ResetPasswordPage() {
-  const router = useRouter();
+  // Direct navigation via Link
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
   

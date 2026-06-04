@@ -90,7 +90,7 @@ export default function UserProfilePage() {
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
   const [pointsInfo, setPointsInfo] = useState<UserPointsInfo | null>(null);
-  const [streak, setStreak] = useState(0);
+  // Streak feature removed
 
   // Fetch profile
   const fetchProfile = useCallback(async () => {
@@ -126,20 +126,6 @@ export default function UserProfilePage() {
       }
     } catch (error) {
       console.error('Failed to fetch points info:', error);
-    }
-  }, [profile?.id]);
-
-  // Fetch user streak
-  const fetchStreak = useCallback(async () => {
-    if (!profile?.id) return;
-
-    try {
-      const response = await pointsApi.getUserPoints(profile.id);
-      if (response.success && response.data) {
-        // Streak is included in points info
-      }
-    } catch (error) {
-      console.error('Failed to fetch streak:', error);
     }
   }, [profile?.id]);
 

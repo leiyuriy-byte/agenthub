@@ -26,7 +26,7 @@ export default function NotificationsPage() {
   const router = useRouter();
   const { user } = useAuthStore();
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [total, setTotal] = useState(0);
+  const [, setTotal] = useState(0);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isMarkingAllRead, setIsMarkingAllRead] = useState(false);
