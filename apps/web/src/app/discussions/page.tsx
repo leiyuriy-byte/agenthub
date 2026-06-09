@@ -129,8 +129,9 @@ export default function DiscussionsPage() {
                 <CardContent className="space-y-1">
                   <button
                     onClick={() => { setSelectedChannel(''); setPage(1); }}
+                    aria-pressed={selectedChannel === ''}
                     className={cn(
-                      'w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors',
+                      'w-full flex items-center justify-between px-3 py-3 rounded-lg text-sm transition-colors min-h-[44px]',
                       selectedChannel === ''
                         ? 'bg-primary/10 text-primary'
                         : 'hover:bg-muted text-muted-foreground hover:text-foreground'
@@ -143,8 +144,10 @@ export default function DiscussionsPage() {
                     <button
                       key={channel.id}
                       onClick={() => { setSelectedChannel(channel.id); setPage(1); }}
+                      aria-pressed={selectedChannel === channel.id}
+                      aria-label={`${channel.name}频道，共${channel.postCount}个帖子`}
                       className={cn(
-                        'w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors',
+                        'w-full flex items-center justify-between px-3 py-3 rounded-lg text-sm transition-colors min-h-[44px]',
                         selectedChannel === channel.id
                           ? 'bg-primary/10 text-primary'
                           : 'hover:bg-muted text-muted-foreground hover:text-foreground'
@@ -190,11 +193,12 @@ export default function DiscussionsPage() {
               {/* Filters */}
               <div className="flex flex-wrap items-center gap-2">
                 {/* Sort */}
-                <div className="flex items-center gap-1 border rounded-lg p-1">
+                <div className="flex items-center gap-1 border rounded-lg p-1" role="group" aria-label="排序方式">
                   <button
                     onClick={() => setSortBy('createdAt')}
+                    aria-pressed={sortBy === 'createdAt'}
                     className={cn(
-                      'flex items-center gap-1 px-2 py-1 rounded text-xs transition-colors',
+                      'flex items-center gap-1 px-3 py-2 rounded text-xs transition-colors min-h-[44px]',
                       sortBy === 'createdAt' ? 'bg-primary/10 text-primary' : 'hover:bg-muted'
                     )}
                   >
@@ -203,8 +207,9 @@ export default function DiscussionsPage() {
                   </button>
                   <button
                     onClick={() => setSortBy('likeCount')}
+                    aria-pressed={sortBy === 'likeCount'}
                     className={cn(
-                      'flex items-center gap-1 px-2 py-1 rounded text-xs transition-colors',
+                      'flex items-center gap-1 px-3 py-2 rounded text-xs transition-colors min-h-[44px]',
                       sortBy === 'likeCount' ? 'bg-primary/10 text-primary' : 'hover:bg-muted'
                     )}
                   >
@@ -213,8 +218,9 @@ export default function DiscussionsPage() {
                   </button>
                   <button
                     onClick={() => setSortBy('viewCount')}
+                    aria-pressed={sortBy === 'viewCount'}
                     className={cn(
-                      'flex items-center gap-1 px-2 py-1 rounded text-xs transition-colors',
+                      'flex items-center gap-1 px-3 py-2 rounded text-xs transition-colors min-h-[44px]',
                       sortBy === 'viewCount' ? 'bg-primary/10 text-primary' : 'hover:bg-muted'
                     )}
                   >

@@ -16,7 +16,7 @@ module.exports = {
     'import/order': 'off', // Disabled due to Next.js path alias issues
     'import/no-restricted-paths': 'off', // Disabled for simplicity
     'unused-imports/no-unused-imports': 'warn',
-    'unused-imports/no-unused-vars': 'warn',
+    'unused-imports/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
     '@typescript-eslint/no-explicit-any': 'warn',
     '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
     'no-console': 'off', // Console is allowed in this project

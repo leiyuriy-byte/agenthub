@@ -19,7 +19,13 @@
 - 代码质量清理（lint warnings: 160 → 96）
 
 ## 进行中 🔨
-- 可访问性优化：修复 Lighthouse 颜色对比度、触摸目标尺寸、aria-label 问题
+- 可访问性优化：修复 Lighthouse 颜色对比度、触摸目标尺寸、aria-label 问题（进行中）
+
+## 已完成的可访问性修复 ✅
+- 按钮组件：触摸目标尺寸提升至 44px（h-10→h-11, icon h-10→h-11）
+- 输入框：触摸目标尺寸提升至 44px（h-10→h-11）
+- 讨论区页面：频道筛选按钮添加 aria-pressed 和 aria-label
+- 讨论区页面：排序按钮组添加 role="group" 和 aria-label
 
 ## 待开发 📋
 - 可访问性修复（颜色对比度、触摸目标尺寸、aria-label）

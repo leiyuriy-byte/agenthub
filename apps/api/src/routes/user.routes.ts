@@ -32,7 +32,7 @@ export async function userRoutes(fastify: FastifyInstance) {
     }
 
     // Don't expose sensitive data
-    const { passwordHash, ...userWithoutSensitive } = profile;
+    const { ...userWithoutSensitive } = profile;
     
     return reply.send({
       success: true,

@@ -29,22 +29,22 @@ const SendMessageSchema = z.object({
   metadata: z.string().optional(),
 });
 
-const GetMessagesSchema = z.object({
+const _GetMessagesSchema = z.object({
   conversationId: z.string(),
   limit: z.coerce.number().min(1).max(100).optional().default(50),
   beforeId: z.string().optional(),
 });
 
-const MarkReadSchema = z.object({
+const _MarkReadSchema = z.object({
   conversationId: z.string(),
 });
 
-const SearchMessagesSchema = z.object({
+const _SearchMessagesSchema = z.object({
   q: z.string().min(1),
   limit: z.coerce.number().min(1).max(50).optional().default(20),
 });
 
-const CreateDmSchema = z.object({
+const _CreateDmSchema = z.object({
   userId: z.string(),
 });
 
@@ -66,7 +66,7 @@ interface GetMessagesQuery {
   beforeId?: string;
 }
 
-interface MarkReadQuery {
+interface _MarkReadQuery {
   conversationId: string;
 }
 
@@ -75,7 +75,7 @@ interface SearchMessagesQuery {
   limit?: number;
 }
 
-interface CreateDmQuery {
+interface _CreateDmQuery {
   userId: string;
 }
 

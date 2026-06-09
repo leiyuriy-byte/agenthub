@@ -281,13 +281,11 @@ export function CommentList({
   return (
     <div className="space-y-6">
       {comments.map((comment) => (
-        <CommentItem
+         <CommentItem
           key={comment.id}
           comment={comment}
           postAuthorId={postAuthorId}
-          onReply={(commentId) => {
-            // Parent handles reply via modal
-          }}
+          onReply={onReply}
           onDelete={onDelete}
           onLike={onLike}
           onAccept={isQuestion ? onAccept : undefined}

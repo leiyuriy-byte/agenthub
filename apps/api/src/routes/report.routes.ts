@@ -13,12 +13,12 @@ const createReportSchema = z.object({
   reason: z.string().min(10).max(500),
 });
 
-const resolveReportSchema = z.object({
+const _resolveReportSchema = z.object({
   resolution: z.enum(['ignored', 'warning', 'deleted', 'banned']),
   targetAction: z.string().optional(),
 });
 
-const listQuerySchema = z.object({
+const _listQuerySchema = z.object({
   limit: z.number().optional(),
   offset: z.number().optional(),
   status: z.enum(['pending', 'reviewed', 'resolved', 'rejected']).optional(),

@@ -13,7 +13,7 @@ interface CreatePollBody {
   endsAt?: string;
 }
 
-interface VoteBody {
+interface _VoteBody {
   pollId: string;
   optionIds: string[];
 }
@@ -88,7 +88,7 @@ export async function pollRoutes(fastify: FastifyInstance) {
     },
     async (request: FastifyRequest<{ Body: CreatePollBody }>, reply: FastifyReply) => {
       try {
-        const userId = (request as any).user.id;
+        const _userId = (request as any).user.id;
         const body = request.body;
         const { postId, question, options, isAnonymous, isMultiSelect, endsAt } = body;
 

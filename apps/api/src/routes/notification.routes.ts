@@ -2,7 +2,7 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { notificationService } from '../services/notification.service';
 import { z } from 'zod';
 
-const notificationSchemas = {
+const _notificationSchemas = {
   list: z.object({
     limit: z.number().min(1).max(100).default(20),
     offset: z.number().min(0).default(0),

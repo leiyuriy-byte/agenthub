@@ -11,9 +11,9 @@ import {
 } from '../services/points.service.js';
 
 // Schemas
-const getPointsSchema = z.object({});
+const _getPointsSchema = z.object({});
 
-const checkinSchema = z.object({});
+const _checkinSchema = z.object({});
 
 const leaderboardSchema = z.object({
   type: z.enum(['total', 'weekly', 'monthly']).default('total'),
