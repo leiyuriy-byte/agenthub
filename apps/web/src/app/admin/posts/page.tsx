@@ -75,8 +75,8 @@ export default function AdminPostsPage() {
           setPosts(response.data.posts);
           setTotal(response.data.total);
         }
-      } catch (error) {
-        console.error('Failed to fetch posts:', error);
+      } catch (err) {
+        console.error('Failed to fetch posts:', err);
         toast.error('加载帖子失败');
       } finally {
         setIsLoading(false);
@@ -100,7 +100,7 @@ export default function AdminPostsPage() {
       } else {
         toast.error(response.error || '操作失败');
       }
-    } catch (error) {
+    } catch {
       toast.error('操作失败');
     } finally {
       setActionLoading(null);
@@ -120,7 +120,7 @@ export default function AdminPostsPage() {
       } else {
         toast.error(response.error || '删除失败');
       }
-    } catch (error) {
+    } catch {
       toast.error('删除失败');
     } finally {
       setActionLoading(null);

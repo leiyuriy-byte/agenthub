@@ -36,7 +36,7 @@ export default function MessagesPage() {
         } else {
           setError(response.error || 'Failed to load conversations');
         }
-      } catch (_err) {
+      } catch {
         setError('Failed to load conversations');
       } finally {
         setIsLoading(false);

@@ -57,10 +57,8 @@ export default function PostDetailPage() {
   const [comments, setComments] = useState<Comment[]>([]);
   const [isLoadingComments, setIsLoadingComments] = useState(false);
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
-  const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [commentContent, setCommentContent] = useState('');
   const [similarPosts, setSimilarPosts] = useState<Post[]>([]);
-  const [isLoadingSimilar, setIsLoadingSimilar] = useState(false);
 
   // Report state
   const [showReportModal, setShowReportModal] = useState(false);
@@ -319,7 +317,6 @@ export default function PostDetailPage() {
       if (response.success && response.data) {
         toast.success(commentId ? '回复成功' : '评论成功');
         setCommentContent('');
-        setReplyingTo(null);
         // Refresh comments
         fetchComments();
         // Update comment count

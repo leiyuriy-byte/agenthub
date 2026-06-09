@@ -71,8 +71,8 @@ export default function AdminAgentsPage() {
           setAgents(response.data.agents);
           setTotal(response.data.total);
         }
-      } catch (error) {
-        console.error('Failed to fetch agents:', error);
+      } catch (err) {
+        console.error('Failed to fetch agents:', err);
         toast.error('加载 Agent 失败');
       } finally {
         setIsLoading(false);
@@ -96,7 +96,7 @@ export default function AdminAgentsPage() {
       } else {
         toast.error(response.error || '更新失败');
       }
-    } catch (error) {
+    } catch {
       toast.error('更新失败');
     } finally {
       setActionLoading(null);
@@ -114,7 +114,7 @@ export default function AdminAgentsPage() {
       } else {
         toast.error(response.error || '操作失败');
       }
-    } catch (error) {
+    } catch {
       toast.error('操作失败');
     } finally {
       setActionLoading(null);
@@ -134,7 +134,7 @@ export default function AdminAgentsPage() {
       } else {
         toast.error(response.error || '删除失败');
       }
-    } catch (error) {
+    } catch {
       toast.error('删除失败');
     } finally {
       setActionLoading(null);

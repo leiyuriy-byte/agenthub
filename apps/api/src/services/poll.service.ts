@@ -111,9 +111,9 @@ export const pollService = {
     if (userId || ipAddress) {
       const voteConditions = [eq(schema.pollVotes.pollId, poll.id)];
       if (userId) {
-        voteConditions.push(eq(schema.pollVotes.userId, userId) as any);
+        voteConditions.push(eq(schema.pollVotes.userId, userId));
       } else if (ipAddress) {
-        voteConditions.push(eq(schema.pollVotes.ipAddress, ipAddress) as any);
+        voteConditions.push(eq(schema.pollVotes.ipAddress, ipAddress));
       }
 
       const userVotes = await db
@@ -175,11 +175,11 @@ export const pollService = {
     }
 
     // Remove existing votes for this user/IP on this poll (to handle "change vote")
-    const deleteConditions = [eq(schema.pollVotes.pollId, pollId)];
+    const deleteConditions: ReturnType<typeof eq>[] = [eq(schema.pollVotes.pollId, pollId)];
     if (userId) {
-      deleteConditions.push(eq(schema.pollVotes.userId, userId) as any);
+      deleteConditions.push(eq(schema.pollVotes.userId, userId));
     } else if (ipAddress) {
-      deleteConditions.push(eq(schema.pollVotes.ipAddress, ipAddress) as any);
+      deleteConditions.push(eq(schema.pollVotes.ipAddress, ipAddress));
     }
 
     await db.delete(schema.pollVotes).where(and(...deleteConditions));
@@ -223,12 +223,12 @@ export const pollService = {
    * Check if user has voted on a poll
    */
   async hasVoted(pollId: string, userId?: string, ipAddress?: string) {
-    const conditions = [eq(schema.pollVotes.pollId, pollId)];
+    const conditions: ReturnType<typeof eq>[] = [eq(schema.pollVotes.pollId, pollId)];
 
     if (userId) {
-      conditions.push(eq(schema.pollVotes.userId, userId) as any);
+      conditions.push(eq(schema.pollVotes.userId, userId));
     } else if (ipAddress) {
-      conditions.push(eq(schema.pollVotes.ipAddress, ipAddress) as any);
+      conditions.push(eq(schema.pollVotes.ipAddress, ipAddress));
     } else {
       return false;
     }

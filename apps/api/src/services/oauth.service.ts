@@ -227,7 +227,6 @@ export const oauthService = {
    */
   getGoogleAuthUrl(state: string): string {
     const clientId = process.env.GOOGLE_CLIENT_ID;
-    const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
     const redirectUri = process.env.OAUTH_GOOGLE_REDIRECT_URI || process.env.OAUTH_REDIRECT_URI || 'https://nexarb.top/api/auth/google/callback';
     
     if (!clientId) {

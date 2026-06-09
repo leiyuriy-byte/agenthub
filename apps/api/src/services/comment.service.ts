@@ -65,13 +65,13 @@ export const commentService = {
       }
     }
 
-    const [comment] = await db.insert(schema.comments).values({
+    await db.insert(schema.comments).values({
       id,
       postId: data.postId,
       authorId: data.authorId,
       content: data.content,
       parentId: data.parentId || null,
-    }).returning();
+    });
 
     // Increment post comment count
     await db.update(schema.posts)
@@ -314,13 +314,12 @@ export const commentService = {
       throw new Error('Not authorized to update this comment');
     }
 
-    const [updated] = await db.update(schema.comments)
+    await db.update(schema.comments)
       .set({
         content: data.content,
         updatedAt: new Date(),
       })
-      .where(eq(schema.comments.id, id))
-      .returning();
+      .where(eq(schema.comments.id, id));
 
     return this.findById(id);
   },

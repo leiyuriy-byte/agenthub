@@ -8,7 +8,7 @@ import { useAuthStore, User, notificationApi, messageApi, pointsApi, searchApi }
 import { Button } from '@agenthub/ui/button';
 import { Input } from '@agenthub/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@agenthub/ui/avatar';
-import { toast } from 'sonner';
+
 import {
   Search,
   Plus,
@@ -41,8 +41,7 @@ export function Navbar() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [messageUnreadCount, setMessageUnreadCount] = useState(0);
   const [isLoadingNotifications, setIsLoadingNotifications] = useState(false);
-  const [checkedIn, setCheckedIn] = useState(false);
-  const [isCheckingIn, setIsCheckingIn] = useState(false);
+  const [, setCheckedIn] = useState(false);
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
   const [searchResults, setSearchResults] = useState<QuickSearchResult | null>(null);
   const [isSearching, setIsSearching] = useState(false);
@@ -154,7 +153,7 @@ export function Navbar() {
         setSearchResults(response.data);
         setShowSearchDropdown(hasResults);
       }
-    } catch (error) {
+    } catch {
       // Silently fail
     }
     setIsSearching(false);
@@ -179,28 +178,6 @@ export function Navbar() {
     setIsUserMenuOpen(false);
     router.push('/');
   }, [logout, router]);
-
-  // Handle daily check-in
-  const handleCheckin = useCallback(async () => {
-    if (!user || isCheckingIn || checkedIn) return;
-
-    setIsCheckingIn(true);
-    try {
-      const response = await pointsApi.checkin();
-      if (response.success && response.data) {
-        if (response.data.success) {
-          setCheckedIn(true);
-          toast.success(`签到成功！+${response.data.points} 积分`);
-        } else {
-          toast.info(response.data.message || '今日已签到');
-        }
-      }
-    } catch {
-      toast.error('签到失败，请稍后重试');
-    }
-    setIsCheckingIn(false);
-    setIsUserMenuOpen(false);
-  }, [user, isCheckingIn, checkedIn, router]);
 
   // Handle notification click
   const handleNotificationClick = () => {

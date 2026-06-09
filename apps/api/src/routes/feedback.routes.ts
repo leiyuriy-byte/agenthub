@@ -97,7 +97,7 @@ export async function agentCommentRoutes(fastify: FastifyInstance) {
   // Get comments for an agent
   fastify.get<{ Params: AgentIdParams; Querystring: PaginationParams }>(
     '/agents/:agentId/comments',
-    async (request: FastifyRequest<{ Params: AgentIdParams; Querystring: PaginationParams }>, reply: FastifyReply) => {
+    async (request: FastifyRequest<{ Params: AgentIdParams; Querystring: PaginationParams }>) => {
       const { agentId } = request.params;
       const { limit, offset, sortBy } = request.query;
 
@@ -243,7 +243,7 @@ export async function feedbackRoutes(fastify: FastifyInstance) {
   fastify.get<{ Querystring: PaginationParams }>(
     '/feedback/my',
     { preHandler: [fastify.authenticate] },
-    async (request: FastifyRequest<{ Querystring: PaginationParams }>, reply: FastifyReply) => {
+    async (request: FastifyRequest<{ Querystring: PaginationParams }>) => {
       const { limit, offset } = request.query;
 
       const result = await feedbackService.getByUser(request.userId!, { limit, offset });
@@ -295,7 +295,7 @@ export async function feedbackRoutes(fastify: FastifyInstance) {
   fastify.get<{ Querystring: FeedbackListParams }>(
     '/admin/feedback',
     { preHandler: [fastify.authenticate, fastify.requireAdmin] },
-    async (request: FastifyRequest<{ Querystring: FeedbackListParams }>, reply: FastifyReply) => {
+    async (request: FastifyRequest<{ Querystring: FeedbackListParams }>) => {
       const { limit, offset, status, type, search } = request.query;
 
       const result = await feedbackService.getAll({ limit, offset, status, type, search });
@@ -328,7 +328,7 @@ export async function feedbackRoutes(fastify: FastifyInstance) {
   fastify.get(
     '/admin/feedback/stats',
     { preHandler: [fastify.authenticate, fastify.requireAdmin] },
-    async (request: FastifyRequest, reply: FastifyReply) => {
+    async () => {
       const stats = await feedbackService.getStats();
       return stats;
     }

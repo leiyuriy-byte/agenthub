@@ -35,7 +35,7 @@ export default function DiscussionsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedChannel, setSelectedChannel] = useState<string>('');
   const [sortBy, setSortBy] = useState<SortOption>('createdAt');
-  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
+  const [sortOrder] = useState<SortOrder>('desc');
   const [postType, setPostType] = useState<PostType>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(1);

@@ -410,6 +410,7 @@ export const userService = {
     }
 
     // Build export object (exclude sensitive fields)
+    // eslint-disable-next-line unused-imports/no-unused-vars
     const { passwordHash: _, ...userPublic } = user;
 
     return {

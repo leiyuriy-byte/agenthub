@@ -1,5 +1,5 @@
 import { eq, and, desc, asc, like, sql, or, SQL, notInArray } from 'drizzle-orm';
-import { db, schema } from '@agenthub/db';
+import { db, schema, Post } from '@agenthub/db';
 import { nanoid } from 'nanoid';
 import { awardPointsForAction } from './points.service.js';
 import { notificationService } from './notification.service.js';
@@ -43,14 +43,14 @@ export const postService = {
   async create(data: CreatePostData) {
     const id = nanoid();
 
-    const [post] = await db.insert(schema.posts).values({
+    await db.insert(schema.posts).values({
       id,
       authorId: data.authorId,
       channelId: data.channelId,
       title: data.title,
       content: data.content,
       type: data.type || 'normal',
-    }).returning();
+    });
 
     // Add tags if provided
     if (data.tags && data.tags.length > 0) {
@@ -262,7 +262,7 @@ export const postService = {
 
     // Find posts with similar tags or same channel
     // Priority: same tags > same channel > recent
-    let similarPosts: any[] = [];
+    let similarPosts: Post[] = [];
 
     if (tagList.length > 0) {
       // Get posts with matching tags
@@ -369,13 +369,12 @@ export const postService = {
       throw new Error('Not authorized to update this post');
     }
 
-    const [updated] = await db.update(schema.posts)
+    await db.update(schema.posts)
       .set({
         ...data,
         updatedAt: new Date(),
       })
-      .where(eq(schema.posts.id, id))
-      .returning();
+      .where(eq(schema.posts.id, id));
 
     // Update tags if provided
     if (data.tags !== undefined) {

@@ -62,7 +62,7 @@ const getFeedActionText = (type: FeedItem['type']) => {
 };
 
 export default function FeedPage() {
-  const { user, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [feed, setFeed] = useState<FeedItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [feedType, setFeedType] = useState<'following' | 'global'>('global');

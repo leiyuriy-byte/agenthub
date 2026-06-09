@@ -5,11 +5,6 @@ interface ChannelParams {
   id: string;
 }
 
-interface ListQuery {
-  limit?: number;
-  offset?: number;
-}
-
 export async function channelRoutes(fastify: FastifyInstance) {
   /**
    * GET /api/channels - List all channels

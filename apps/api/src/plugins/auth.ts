@@ -22,7 +22,7 @@ declare module 'fastify' {
 async function authPlugin(fastify: FastifyInstance) {
   fastify.decorateRequest('userId', null);
 
-  fastify.decorate('authenticate', async () => {
+  fastify.decorate('authenticate', async (_request: FastifyRequest, _reply: FastifyReply) => {
     // Auth handled by onRequest hook - this is a no-op guard
   });
   fastify.decorate('requireUser', async (request: FastifyRequest, reply: FastifyReply) => {
@@ -35,7 +35,7 @@ async function authPlugin(fastify: FastifyInstance) {
       reply.code(401).send({ success: false, error: 'Not authenticated' });
       return;
     }
-    const user = (request as any).user;
+    const user = request.userData;
     if (user?.role !== 'admin' && user?.role !== 'moderator') {
       reply.code(403).send({ success: false, error: 'Admin access required' });
     }
@@ -66,7 +66,7 @@ async function authPlugin(fastify: FastifyInstance) {
         username: decoded.username,
         role: decoded.role,
       };
-    } catch (err) {
+    } catch {
       return;
     }
   });

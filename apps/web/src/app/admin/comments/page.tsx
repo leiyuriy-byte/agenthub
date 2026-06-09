@@ -62,8 +62,8 @@ export default function AdminCommentsPage() {
           setComments(response.data.comments);
           setTotal(response.data.total);
         }
-      } catch (error) {
-        console.error('Failed to fetch comments:', error);
+      } catch (err) {
+        console.error('Failed to fetch comments:', err);
         toast.error('加载评论失败');
       } finally {
         setIsLoading(false);
@@ -89,7 +89,7 @@ export default function AdminCommentsPage() {
       } else {
         toast.error(response.error || '删除失败');
       }
-    } catch (error) {
+    } catch {
       toast.error('删除失败');
     } finally {
       setActionLoading(null);

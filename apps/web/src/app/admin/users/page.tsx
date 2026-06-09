@@ -60,8 +60,8 @@ export default function AdminUsersPage() {
           setUsers(response.data.users);
           setTotal(response.data.total);
         }
-      } catch (error) {
-        console.error('Failed to fetch users:', error);
+      } catch (err) {
+        console.error('Failed to fetch users:', err);
         toast.error('加载用户失败');
       } finally {
         setIsLoading(false);
@@ -85,7 +85,7 @@ export default function AdminUsersPage() {
       } else {
         toast.error(response.error || '更新失败');
       }
-    } catch (error) {
+    } catch {
       toast.error('更新失败');
     } finally {
       setActionLoading(null);
@@ -105,7 +105,7 @@ export default function AdminUsersPage() {
       } else {
         toast.error(response.error || '删除失败');
       }
-    } catch (error) {
+    } catch {
       toast.error('删除失败');
     } finally {
       setActionLoading(null);

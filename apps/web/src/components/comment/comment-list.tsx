@@ -286,7 +286,7 @@ export function CommentList({
           comment={comment}
           postAuthorId={postAuthorId}
           onReply={(commentId) => {
-            // This will be handled by parent
+            // Parent handles reply via modal
           }}
           onDelete={onDelete}
           onLike={onLike}
@@ -309,7 +309,7 @@ interface CommentFormProps {
 }
 
 export function CommentForm({
-  postId,
+  postId: _postId,
   parentId,
   placeholder = '写下你的评论...',
   onSubmit,

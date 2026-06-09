@@ -254,7 +254,7 @@ export async function adminRoutes(fastify: FastifyInstance) {
 
       // Build where clause based on filters
       let whereClause;
-      const whereParams: any[] = [];
+      const whereParams: (string | number)[] = [];
       
       if (search && status) {
         whereClause = sql`(name LIKE ? OR tagline LIKE ?) AND status = ?`;
@@ -921,9 +921,6 @@ export async function adminRoutes(fastify: FastifyInstance) {
         comments: 0,
         agents: 0,
       }));
-
-      // Helper to extract hour from timestamp
-      const getHour = (date: Date) => date.getHours();
 
       // Get posts by hour (last 30 days)
       const thirtyDaysAgo = new Date();

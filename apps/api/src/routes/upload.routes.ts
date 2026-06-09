@@ -96,7 +96,7 @@ export async function uploadRoutes(fastify: FastifyInstance) {
         success: true,
         data: result,
       });
-    } catch (error: any) {
+    } catch (error) {
       request.log.error(error);
       return reply.code(500).send({
         success: false,
@@ -137,7 +137,7 @@ export async function uploadRoutes(fastify: FastifyInstance) {
         success: result.success,
         message: result.message,
       });
-    } catch (error: any) {
+    } catch (error) {
       request.log.error(error);
       return reply.code(500).send({
         success: false,
@@ -197,11 +197,11 @@ export async function uploadRoutes(fastify: FastifyInstance) {
         'avatars'
       );
 
-      return reply.send({
+           return reply.send({
         success: true,
         data: result,
       });
-    } catch (error: any) {
+    } catch (error) {
       request.log.error(error);
       return reply.code(500).send({
         success: false,

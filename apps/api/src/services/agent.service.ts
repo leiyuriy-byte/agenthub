@@ -493,7 +493,7 @@ export const agentService = {
    * Unfavorite an agent
    */
   async unfavorite(agentId: string, userId: string) {
-    const result = await db.delete(schema.agentFavorites)
+    await db.delete(schema.agentFavorites)
       .where(
         and(
           eq(schema.agentFavorites.agentId, agentId),
@@ -813,7 +813,7 @@ export const agentService = {
           avatar: schema.users.avatar,
         })
           .from(schema.users)
-          .where(eq(schema.users.id, (rating as any).userId))
+          .where(eq(schema.users.id, (rating as unknown as { userId: string }).userId))
           .limit(1);
 
         return { ...rating, user };

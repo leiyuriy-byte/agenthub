@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Agent, AgentCategory, Post } from '@/lib/api';
 import { HomeClient } from './home-client';
 
 // Server Component - 在服务端获取数据
@@ -32,9 +33,9 @@ async function fetchApi<T>(endpoint: string): Promise<T> {
 async function getHomeData() {
   try {
     const [featuredRes, categoriesRes, postsRes] = await Promise.all([
-      fetchApi<{ success: boolean; data?: unknown[] }>('/api/agents/featured?limit=6'),
-      fetchApi<{ success: boolean; data?: unknown[] }>('/api/agents/categories'),
-      fetchApi<{ success: boolean; data?: { posts: unknown[] } }>('/api/posts?limit=4&sortBy=likeCount&sortOrder=desc'),
+      fetchApi<{ success: boolean; data?: Agent[] }>('/api/agents/featured?limit=6'),
+      fetchApi<{ success: boolean; data?: AgentCategory[] }>('/api/agents/categories'),
+      fetchApi<{ success: boolean; data?: { posts: Post[] } }>('/api/posts?limit=4&sortBy=likeCount&sortOrder=desc'),
     ]);
 
     return {

@@ -49,7 +49,7 @@ export function Footer() {
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2 rounded-lg text-foreground hover:bg-accent transition-colors"
+                  className="p-2 min-h-[44px] min-w-[44px] rounded-lg text-foreground hover:bg-accent transition-colors flex items-center justify-center"
                   aria-label={link.label}
                 >
                   <link.icon className="h-4 w-4" />
@@ -60,13 +60,13 @@ export function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h2 className="font-semibold text-sm mb-4">快速链接</h2>
+            <h3 className="font-semibold text-sm mb-4">快速链接</h3>
             <ul className="space-y-2">
               {quickLinks.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-foreground transition-colors min-h-[44px] flex items-center"
+                    className="text-sm text-foreground transition-colors min-h-[44px] min-w-[44px] flex items-center"
                   >
                     {link.label}
                   </Link>
@@ -77,13 +77,13 @@ export function Footer() {
 
           {/* Resources */}
           <div>
-            <h2 className="font-semibold text-sm mb-4">资源</h2>
+            <h3 className="font-semibold text-sm mb-4">资源</h3>
             <ul className="space-y-2">
               {resources.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-foreground transition-colors min-h-[44px] flex items-center"
+                    className="text-sm text-foreground transition-colors min-h-[44px] min-w-[44px] flex items-center"
                   >
                     {link.label}
                   </Link>
@@ -94,7 +94,7 @@ export function Footer() {
 
           {/* Newsletter / CTA */}
           <div>
-            <h2 className="font-semibold text-sm mb-4">保持更新</h2>
+            <h3 className="font-semibold text-sm mb-4">保持更新</h3>
             <p className="text-sm text-muted-foreground mb-4">
               订阅我们的 newsletter，获取最新 Agent 和技术讨论。
             </p>
@@ -113,19 +113,19 @@ export function Footer() {
           <div className="flex items-center gap-6">
             <Link
               href="/privacy"
-              className="text-xs text-foreground transition-colors min-h-[44px] flex items-center"
+              className="text-xs text-foreground transition-colors min-h-[44px] min-w-[44px] flex items-center"
             >
               隐私政策
             </Link>
             <Link
               href="/terms"
-              className="text-xs text-foreground transition-colors min-h-[44px] flex items-center"
+              className="text-xs text-foreground transition-colors min-h-[44px] min-w-[44px] flex items-center"
             >
               服务条款
             </Link>
             <Link
               href="/api-docs"
-              className="text-xs text-foreground transition-colors min-h-[44px] flex items-center"
+              className="text-xs text-foreground transition-colors min-h-[44px] min-w-[44px] flex items-center"
             >
               API 文档
             </Link>

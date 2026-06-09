@@ -45,17 +45,13 @@ const agentFormSchema = z.object({
 
 type AgentFormData = z.infer<typeof agentFormSchema>;
 
-interface ScreenshotItem {
-  id: string;
-  url: string;
-  caption?: string;
-}
+
 
 export default function EditAgentPage() {
   const router = useRouter();
   const params = useParams();
   const id = params?.id as string;
-  const { user, checkAuth } = useAuthStore();
+  const { checkAuth } = useAuthStore();
   const [agent, setAgent] = useState<Agent | null>(null);
   const [categories, setCategories] = useState<AgentCategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -76,8 +72,7 @@ export default function EditAgentPage() {
     docsUrl: '',
     status: 'draft',
   });
-  const [screenshots, setScreenshots] = useState<ScreenshotItem[]>([]);
-  const [newScreenshots, setNewScreenshots] = useState<ScreenshotItem[]>([]);
+
 
   // Check auth and fetch agent
   useEffect(() => {

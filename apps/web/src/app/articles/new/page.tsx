@@ -17,7 +17,6 @@ export default function NewArticlePage() {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
   const [categories, setCategories] = useState<ArticleCategory[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [title, setTitle] = useState('');
@@ -27,7 +26,7 @@ export default function NewArticlePage() {
   const [categoryId, setCategoryId] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
-  const [status, setStatus] = useState<'draft' | 'published'>('draft');
+  const [status] = useState<'draft' | 'published'>('draft');
 
   useEffect(() => {
     // Fetch categories

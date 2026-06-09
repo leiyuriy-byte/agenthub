@@ -295,7 +295,12 @@ export const agentCommentService = {
         schema.agentComments,
         eq(schema.agentCommentLikes.commentId, schema.agentComments.id)
       )
-      .where(eq(schema.agentComments.agentId, agentId));
+      .where(
+        and(
+          eq(schema.agentComments.agentId, agentId),
+          eq(schema.agentCommentLikes.userId, userId)
+        )
+      );
 
     return likes.map((l) => l.commentId);
   },

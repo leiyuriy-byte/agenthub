@@ -50,7 +50,7 @@ export default function ConversationPage() {
       } else {
         setError(response.error || 'Failed to load conversation');
       }
-    } catch (_err) {
+    } catch {
       setError('Failed to load conversation');
     }
   };
@@ -66,7 +66,7 @@ export default function ConversationPage() {
       } else {
         setError(response.error || 'Failed to load messages');
       }
-    } catch (_err) {
+    } catch {
       setError('Failed to load messages');
     } finally {
       setIsLoading(false);
@@ -86,7 +86,7 @@ export default function ConversationPage() {
         setMessages(prev => [...prev, ...(data.messages ?? [])]);
         setHasMore((data.messages?.length ?? 0) === 50);
       }
-    } catch (_err) {
+    } catch {
       console.error('Failed to load more messages');
     }
   };
@@ -123,7 +123,7 @@ export default function ConversationPage() {
       } else {
         setError(response.error || 'Failed to send message');
       }
-    } catch (_err) {
+    } catch {
       setError('Failed to send message');
     } finally {
       setIsSending(false);

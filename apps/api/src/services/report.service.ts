@@ -120,7 +120,7 @@ class ReportService {
    * List reports with filtering
    */
   async list(params: ReportListParams): Promise<{ reports: ReportWithDetails[]; total: number }> {
-    const { limit = 20, offset = 0, status, targetType, search } = params;
+    const { limit = 20, offset = 0, status, targetType } = params;
 
     const conditions: SQL[] = [];
 
@@ -137,8 +137,6 @@ class ReportService {
       .select({ count: sql<number>`count(*)` })
       .from(reports)
       .where(conditions.length > 0 ? and(...conditions) : undefined);
-
-    const totalCount = countResult?.count ?? 0;
 
     // Get paginated results
     const reportList = await db

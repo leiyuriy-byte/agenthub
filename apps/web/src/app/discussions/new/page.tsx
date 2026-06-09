@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 import { MarkdownEditor } from '@/components/markdown/markdown-editor';
 
-const postTypes = [
+const postTypes: Array<{ key: 'normal' | 'question' | 'poll' | 'share'; label: string; icon: React.ComponentType<{ className?: string }>; description: string }> = [
   { key: 'normal', label: '讨论', icon: MessageSquare, description: '发起一般性讨论' },
   { key: 'question', label: '问答', icon: HelpCircle, description: '提出问题寻求帮助' },
   { key: 'share', label: '分享', icon: Share2, description: '分享有趣的内容或资源' },
@@ -241,7 +241,7 @@ export default function NewPostPage() {
                   return (
                     <button
                       key={type.key}
-                      onClick={() => setFormData((prev) => ({ ...prev, type: type.key as any }))}
+                      onClick={() => setFormData((prev) => ({ ...prev, type: type.key }))}
                       className={cn(
                         'flex flex-col items-center gap-2 p-4 rounded-lg border transition-all text-center',
                         isSelected

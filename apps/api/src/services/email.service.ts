@@ -11,19 +11,6 @@
  */
 import nodemailer, { Transporter, SendMailOptions } from 'nodemailer';
 
-// Email configuration
-interface EmailConfig {
-  host: string;
-  port: number;
-  secure: boolean;
-  auth: {
-    user: string;
-    pass: string;
-  };
-  from: string;
-  fromName: string;
-}
-
 // Transporter singleton
 let transporter: Transporter | null = null;
 

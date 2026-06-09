@@ -51,7 +51,7 @@ interface ScreenshotItem {
 
 export default function NewAgentPage() {
   const router = useRouter();
-  const { user, checkAuth } = useAuthStore();
+  const { checkAuth } = useAuthStore();
   const [categories, setCategories] = useState<AgentCategory[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSavingDraft, setIsSavingDraft] = useState(false);
@@ -70,7 +70,7 @@ export default function NewAgentPage() {
   });
   const [screenshots, setScreenshots] = useState<ScreenshotItem[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isDraft, setIsDraft] = useState(true);
+
 
   // Check auth
   useEffect(() => {

@@ -315,7 +315,7 @@ export async function getLeaderboard(type: 'total' | 'weekly' | 'monthly' = 'tot
     username: user!.username,
     displayName: user!.displayName,
     avatar: user!.avatar,
-    points: type === 'total' ? user.points : (user as any).totalPoints || user.points,
+    points: type === 'total' ? user.points : (user as unknown as { totalPoints: number }).totalPoints || user.points,
     level: calculateLevel(user.points),
     levelName: LEVEL_NAMES[calculateLevel(user.points)],
   }));

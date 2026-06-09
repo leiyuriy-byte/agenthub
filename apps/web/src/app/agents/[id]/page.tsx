@@ -11,7 +11,7 @@ import { Button } from '@agenthub/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@agenthub/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@agenthub/ui/card';
 import { Input } from '@agenthub/ui/input';
-import { agentApi, Agent, reportApi, agentCommentApi } from '@/lib/api';
+import { agentApi, Agent, agentCommentApi, AgentComment } from '@/lib/api';
 import { formatRelativeTime, formatNumber, cn } from '@/lib/utils';
 import {
   ArrowLeft,
@@ -104,14 +104,10 @@ export default function AgentDetailPage() {
   // Version tab state ('detail' | 'compare')
   const [versionTab, setVersionTab] = useState<'detail' | 'compare'>('detail');
 
-  // Report state
-  const [showReportModal, setShowReportModal] = useState(false);
-  const [reportReason, setReportReason] = useState('');
-  const [isReporting, setIsReporting] = useState(false);
-  const [reportSuccess, setReportSuccess] = useState(false);
+
 
   // Comments state
-  const [comments, setComments] = useState<any[]>([]);
+  const [comments, setComments] = useState<AgentComment[]>([]);
   const [commentsTotal, setCommentsTotal] = useState(0);
   const [isLoadingComments, setIsLoadingComments] = useState(false);
   const [commentSortBy, setCommentSortBy] = useState<'newest' | 'popular'>('newest');
@@ -410,38 +406,6 @@ export default function AgentDetailPage() {
       navigator.clipboard.writeText(window.location.href);
       // Could show toast here
     }
-  };
-
-  // Report functionality
-  const handleReport = async () => {
-    if (!isLoggedIn) {
-      window.location.href = '/login';
-      return;
-    }
-
-    if (!reportReason.trim() || reportReason.length < 10) {
-      toast.error('请填写至少 10 个字符的举报原因');
-      return;
-    }
-
-    setIsReporting(true);
-
-    const response = await reportApi.create({
-      targetType: 'agent',
-      targetId: id,
-      reason: reportReason,
-    });
-
-    if (response.success) {
-      setReportSuccess(true);
-      setShowReportModal(false);
-      setReportReason('');
-      toast.success('举报已提交，感谢您的反馈');
-    } else {
-      toast.error(response.error || '举报提交失败');
-    }
-
-    setIsReporting(false);
   };
 
   // Lightbox functions
@@ -849,7 +813,7 @@ export default function AgentDetailPage() {
                                       features.forEach((feature: string) => {
                                         allFeatures[version.id]![feature] = true;
                                       });
-                                    } catch (e) {
+                                    } catch {
                                       allFeatures[version.id]![version.features] = true;
                                     }
                                   }
@@ -861,7 +825,7 @@ export default function AgentDetailPage() {
                                     try {
                                       const features = JSON.parse(version.features);
                                       features.forEach((f: string) => featureSet.add(f));
-                                    } catch (e) {
+                                    } catch {
                                       featureSet.add(version.features);
                                     }
                                   }
@@ -1335,7 +1299,7 @@ export default function AgentDetailPage() {
             </Card>
           ) : (
             <div className="space-y-4">
-              {comments.map((comment: any) => (
+              {comments.map((comment: AgentComment) => (
                 <Card key={comment.id}>
                   <CardContent className="pt-4">
                     <div className="flex gap-3">
@@ -1446,7 +1410,7 @@ export default function AgentDetailPage() {
                         {/* Nested Replies */}
                         {comment.replies && comment.replies.length > 0 && (
                           <div className="mt-4 space-y-3 pl-4 border-l-2">
-                            {comment.replies.map((reply: any) => (
+                            {comment.replies.map((reply: AgentComment) => (
                               <div key={reply.id} className="flex gap-2">
                                 <Link href={`/users/${reply.author?.username}`}>
                                   <Avatar className="h-8 w-8">
