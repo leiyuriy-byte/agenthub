@@ -27,6 +27,10 @@
 - 讨论区页面：频道筛选按钮添加 aria-pressed 和 aria-label
 - 讨论区页面：排序按钮组添加 role="group" 和 aria-label
 
+## Git 状态 ⚠️
+- 本地 commit `7a1cd2d` 已创建，待 push（GitHub 连接超时）
+- 需要 `git push origin master` 推送到远程
+
 ## 待开发 📋
 - 可访问性修复（颜色对比度、触摸目标尺寸、aria-label）
 - 移动端真机测试（需在真机上验证 UI 响应式）
@@ -35,9 +39,9 @@
 ## 构建状态
 - ✅ `pnpm build` 成功（38 routes）
 - ✅ TypeScript 编译无错误
-- ⚠️ 96 lint warnings（未使用变量 + any 类型）
+- ⚠️ lint warnings 减少（UI 组件尺寸调整后）
 - ✅ 数据库正常
-- ✅ Git 已推送 origin/master（commit 5f582d0）
+- ⚠️ Git push 待完成（本地 commit 7a1cd2d，GitHub 连接超时）
 
 ## 遇到的问题 ⚠️
 - Lighthouse 可访问性问题：颜色对比度不足、触摸目标尺寸偏小、aria-label 缺失
