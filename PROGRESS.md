@@ -20,7 +20,7 @@
 
 ## Git 状态 ⚠️
 - ✅ working tree clean
-- ⚠️ GitHub unreachable (port 443 empty reply), commit `f55007a` saved locally (1 commit ahead of `origin/master`)
+- ⚠️ GitHub unreachable (connection timed out), commit `521eb15` saved locally (2 commits ahead of `origin/master`)
 
 ## 待开发 📋
 - 移动端真机测试（需在真机上验证 UI 响应式）
