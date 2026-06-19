@@ -31,6 +31,7 @@
 ## 遇到的问题 ⚠️
 - 图片CDN待配置（本地存储，生产环境建议 S3/OSS）
 - 移动端真机测试待完成
+- TypeScript 类型错误：`comment-list.tsx:288` — `onReply` 签名不匹配（非阻塞，构建正常）
 
 ---
 
@@ -43,7 +44,8 @@
 | 2026-06-19 06:05 | ✅ | ✅ | ✅ (push `6e67d14` → `origin/master`) | ALL SYSTEMS NOMINAL |
 | 2026-06-19 04:13 | ✅ | ✅ | ✅ (Everything up-to-date, `88e6d27`) | ALL SYSTEMS NOMINAL |
 | 2026-06-19 14:14 | ✅ | ✅ | ⚠️ (GitHub port 443 timeout, commit `4e46cc6` saved locally) | BUILD PASS | GITHUB UNREACHABLE |
-| 2026-06-19 22:16 | ✅ | ✅ | ⚠️ (GitHub auth failed, 7 commits ahead of `origin/master`, `fe46b1e` saved locally) | BUILD PASS | GITHUB AUTH ISSUE |
+| 2026-06-20 00:02 | ✅ | ✅ | ⚠️ (GitHub auth failed, 8 commits ahead of `origin/master`, `c1de340` saved locally) | BUILD PASS | GITHUB AUTH ISSUE |
+| 2026-06-20 00:04 | ✅ | ⚠️ | ⚠️ (GitHub auth failed, 8 commits ahead, TS error `comment-list.tsx:288`) | BUILD PASS | TS TYPE ERROR |
 | 2026-06-19 20:16 | ✅ | ✅ | ⚠️ (GitHub port 443 timeout, 5 commits ahead of `origin/master`, `ead098b` saved locally) | BUILD PASS | GITHUB UNREACHABLE |
 | 2026-06-19 18:08 | ✅ | ✅ | ⚠️ (GitHub port 443 timeout, 4 commits ahead of `origin/master`, `e99302c` saved locally) | BUILD PASS | GITHUB UNREACHABLE |
 | 2026-06-19 02:01 | ✅ | ✅ | ✅ (working tree clean, `e33a25c` up to date) | ALL SYSTEMS NOMINAL |
