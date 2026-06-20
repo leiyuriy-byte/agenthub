@@ -24,10 +24,10 @@ import rehypeSanitize from 'rehype-sanitize';
 interface CommentItemProps {
   comment: Comment;
   postAuthorId: string;
-  onReply: (commentId: string) => void;
-  onDelete: (commentId: string) => void;
-  onLike: (commentId: string) => void;
-  onAccept?: (commentId: string) => void;
+  onReply: (commentId: string | null, content: string) => Promise<void>;
+  onDelete: (commentId: string) => Promise<void>;
+  onLike: (commentId: string) => Promise<void>;
+  onAccept?: (commentId: string) => Promise<void>;
   isPostAuthor: boolean;
   isSubmitting: boolean;
 }
@@ -63,7 +63,7 @@ function CommentItem({
 
   const handleReply = async () => {
     if (!replyText.trim()) return;
-    onReply(comment.id);
+    onReply(comment.id, replyText);
   };
 
   return (
