@@ -1,6 +1,48 @@
 # AgentHub 开发任务
 
-> 最后更新：2026-06-18 12:04
+> 最后更新：2026-06-20 16:12
+
+---
+
+## 项目状态：⚠️ 发现 TypeScript 错误，需修复后验证
+
+---
+
+## 第 9 轮任务（2026-06-20）
+
+### 问题修复
+- **TypeScript 错误：`apps/web/src/components/comment/comment-list.tsx:288`**
+  - 错误信息：`Type '(commentId: string | null, content: string) => Promise<void>' is not assignable to type '(commentId: string) => void'`
+  - 原因：`CommentItem` 组件的 `onAccept` prop 类型是 `(commentId: string) => void`，但实际传入的 `onAccept` 函数签名为 `(commentId: string) => Promise<void>` 且内部实现可能有参数不匹配
+  - 修复方案：检查 `CommentItem` 中 `onAccept` 的调用方式，确认传入参数数量是否与类型定义一致；如果 `CommentItem` 调用时只传 1 个参数但 `onAccept` 类型定义要求 2 个参数，需要对齐类型定义
+  - 验收标准：`npx tsc --noEmit -p apps/web/tsconfig.json` 无错误
+
+### 已完成（历史）
+- [x] 项目初始化（Next.js + Fastify + TypeScript）
+- [x] 用户系统（注册/登录/OAuth/个人主页/等级积分）
+- [x] Agent 展示（CRUD/分类/搜索/排行榜/版本管理）
+- [x] 社区交流（讨论区/帖子/评论/问答/投票）
+- [x] 实时通讯（私信/群组/WebSocket）
+- [x] 评价与反馈（评分/评论/用户反馈）
+- [x] 内容管理（文章/资源/活动，含文章目录自动生成）
+- [x] 后台管理（仪表盘/用户/内容/审核/统计）
+- [x] 安全加固（XSS/速率限制/输入校验）
+- [x] SEO 优化（metadata/sitemap/robots）
+- [x] Lighthouse 性能优化 ✅ (100%)
+- [x] GDPR 合规（数据导出/账号删除）
+- [x] 邮件通知（SMTP 集成，欢迎/密码重置/通知邮件）
+- [x] 可访问性优化（触摸目标尺寸 44px、aria-label）
+- [x] GitHub push 同步
+
+### 待完成
+1. [高优先级] 修复 `comment-list.tsx` TypeScript 类型错误
+2. [中优先级] 移动端真机测试（需在真机上验证 UI 响应式）
+3. [低优先级] 图片 CDN 配置（当前为本地存储，生产环境建议配置 S3/OSS）
+
+### 上线前检查清单
+- [ ] TypeScript 编译无错误
+- [ ] 移动端真机测试通过
+- [ ] 图片 CDN 配置（可选，生产建议）
 
 ---
 

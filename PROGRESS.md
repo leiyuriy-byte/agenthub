@@ -1,5 +1,5 @@
 # AgentHub 开发进度
-最后更新：2026-06-20 02:01
+最后更新：2026-06-20 16:12
 
 ## 已完成 ✅
 - 项目初始化（Next.js + Fastify + TypeScript）
@@ -31,11 +31,12 @@
 ## 遇到的问题 ⚠️
 - 图片CDN待配置（本地存储，生产环境建议 S3/OSS）
 - 移动端真机测试待完成
+- ⚠️ TypeScript 错误：`comment-list.tsx:288` — `onAccept` 类型不匹配（1 arg expected, 2 received），需修复后 Build 才完全干净
 
 ## Cron 巡检记录
 | 时间 | Build | TypeScript | Git | 状态 |
 |------|-------|------------|-----|------|
-| 2026-06-20 08:10 | ✅ | ✅ | ✅ (working tree clean, `f6ff041` up to date) | ALL SYSTEMS NOMINAL |
+| 2026-06-20 16:12 | ✅ | ⚠️ | ✅ (working tree clean, `7eaafde` up to date) | BUILD PASS | TS TYPE ERROR in comment-list.tsx:288 |
 | 2026-06-20 14:16 | ✅ | ✅ | ✅ (push `6161812` → `origin/master`, working tree clean) | ALL SYSTEMS NOMINAL |
 | 2026-06-20 10:01 | ✅ | ✅ | ✅ (push `9f5249c` → `origin/master`, working tree clean) | ALL SYSTEMS NOMINAL |
 | 2026-06-20 08:07 | ✅ | ✅ | ✅ (push `ebf81e2` → `origin/master`, working tree clean) | ALL SYSTEMS NOMINAL |
