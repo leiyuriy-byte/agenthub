@@ -4,18 +4,16 @@
 
 ---
 
-## 项目状态：⚠️ 发现 TypeScript 错误，需修复后验证
+## 项目状态：✅ TypeScript 错误已修复，GitHub push 待网络恢复
 
 ---
 
 ## 第 9 轮任务（2026-06-20）
 
 ### 问题修复
-- **TypeScript 错误：`apps/web/src/components/comment/comment-list.tsx:288`**
-  - 错误信息：`Type '(commentId: string | null, content: string) => Promise<void>' is not assignable to type '(commentId: string) => void'`
-  - 原因：`CommentItem` 组件的 `onAccept` prop 类型是 `(commentId: string) => void`，但实际传入的 `onAccept` 函数签名为 `(commentId: string) => Promise<void>` 且内部实现可能有参数不匹配
-  - 修复方案：检查 `CommentItem` 中 `onAccept` 的调用方式，确认传入参数数量是否与类型定义一致；如果 `CommentItem` 调用时只传 1 个参数但 `onAccept` 类型定义要求 2 个参数，需要对齐类型定义
-  - 验收标准：`npx tsc --noEmit -p apps/web/tsconfig.json` 无错误
+- **TypeScript 错误：`apps/web/src/components/comment/comment-list.tsx:288`** ✅ 已修复
+  - 修复方案：更新 `CommentItemProps` 接口，将 `onReply`/`onDelete`/`onLike`/`onAccept` 类型改为 `Promise<void>` 返回类型，并将 `onReply` 签名改为 `(commentId: string | null, content: string) => Promise<void>`
+  - 验收标准：`npx tsc --noEmit -p apps/web/tsconfig.json` 无错误 ✅
 
 ### 已完成（历史）
 - [x] 项目初始化（Next.js + Fastify + TypeScript）
@@ -35,7 +33,7 @@
 - [x] GitHub push 同步
 
 ### 待完成
-1. [高优先级] 修复 `comment-list.tsx` TypeScript 类型错误
+1. [高优先级] 修复 `comment-list.tsx` TypeScript 类型错误 ✅ 已修复
 2. [中优先级] 移动端真机测试（需在真机上验证 UI 响应式）
 3. [低优先级] 图片 CDN 配置（当前为本地存储，生产环境建议配置 S3/OSS）
 

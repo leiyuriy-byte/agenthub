@@ -28,10 +28,14 @@
 
 ## 构建状态
 - ✅ `pnpm build` 成功（38 routes）
+## Git 状态 ✅
+- ⚠️ GitHub push failed: Empty reply from server
+- ✅ Commit `988b0e3` saved locally ("fix: update comment-list.tsx prop types to async handlers")
+- ⚠️ Working tree clean, 1 commit ahead of `origin/master`
 ## 遇到的问题 ⚠️
 - 图片CDN待配置（本地存储，生产环境建议 S3/OSS）
 - 移动端真机测试待完成
-- ⚠️ TypeScript 错误：`comment-list.tsx:288` — `onAccept` 类型不匹配（1 arg expected, 2 received），需修复后 Build 才完全干净
+- GitHub 网络不稳定（port 443 empty reply）
 
 ## Cron 巡检记录
 | 时间 | Build | TypeScript | Git | 状态 |
