@@ -48,6 +48,7 @@
 - 邮件通知（SMTP 集成，欢迎/密码重置/通知邮件）
 - 可访问性优化（触摸目标尺寸 44px、aria-label）
 - GitHub push 同步（本地分支与 origin/master 同步）
+- 构建验证（38 routes，Build 成功）
 
 ## Git 状态 ✅
 - ✅ working tree clean
