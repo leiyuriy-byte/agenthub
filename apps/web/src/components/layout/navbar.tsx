@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
+// Framer-motion removed for performance - using CSS animations instead
+// import { motion, AnimatePresence } from 'framer-motion';
 import { useAuthStore, User, notificationApi, messageApi, pointsApi, searchApi } from '@/lib/api';
 import { Button } from '@agenthub/ui/button';
 import { Input } from '@agenthub/ui/input';
@@ -250,9 +251,9 @@ export function Navbar() {
               className="w-full pl-10 pr-4 bg-muted/50 border-transparent focus:border-primary focus:bg-background transition-all"
             />
             {/* Search Autocomplete Dropdown */}
-            <AnimatePresence>
+            
               {showSearchDropdown && searchResults && (
-                <motion.div
+                <div
                   initial={{ opacity: 0, y: -8 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
@@ -341,9 +342,9 @@ export function Navbar() {
                       )}
                     </>
                   )}
-                </motion.div>
+                </div>
               )}
-            </AnimatePresence>
+            
           </div>
         </form>
 
@@ -421,9 +422,9 @@ export function Navbar() {
                   <ChevronDown className="h-4 w-4 text-muted-foreground hidden sm:block" />
                 </button>
 
-                <AnimatePresence>
+                
                   {isUserMenuOpen && (
-                    <motion.div
+                    <div
                       initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 8 }}
@@ -469,9 +470,9 @@ export function Navbar() {
                           退出登录
                         </button>
                       </div>
-                    </motion.div>
+                    </div>
                   )}
-                </AnimatePresence>
+                
               </div>
             </>
           ) : (
@@ -502,9 +503,9 @@ export function Navbar() {
       </div>
 
       {/* Mobile Menu */}
-      <AnimatePresence>
+      
         {isMobileMenuOpen && (
-          <motion.div
+          <div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
@@ -555,9 +556,9 @@ export function Navbar() {
                 </Link>
               )}
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
+      
     </header>
   );
 }
