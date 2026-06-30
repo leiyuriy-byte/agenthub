@@ -1,7 +1,7 @@
 # AgentHub 开发进度
-最后更新：2026-06-30 22:30
+最后更新：2026-06-30 22:36
 
-| 2026-06-30 22:34 | ✅ | ✅ | ✅ (Build ✅ 38 routes | TS ✅ (web+api, exit 0) | Git ✅ commit pending | Lighthouse ⚠️ Performance 45% → 已尝试多轮优化) |
+| 2026-06-30 22:36 | ✅ | ✅ | ✅ (Build ✅ 38 routes | TS ✅ (web+api, exit 0) | Git ✅ push `3ca71ad` → origin/master | Lighthouse ⚠️ Performance 45% → 已移除首屏 framer-motion) |
 
 ## Git 状态 ✅
 - ⏳ GitHub push 超时（commit `553e6e7` saved locally）
