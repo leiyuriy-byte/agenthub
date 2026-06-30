@@ -46,7 +46,9 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: '10mb',
     },
-    optimizePackageImports: ['lucide-react', 'framer-motion', '@radix-ui/react-icons'],
+    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
+    // Optimize Package Imports - disable framer-motion tree-shaking as it doesn't work well
+    // We'll use dynamic imports instead
   },
   
   // Webpack config
@@ -63,34 +65,49 @@ const nextConfig = {
         ...config.optimization,
         splitChunks: {
           chunks: 'all',
+          maxSize: 200000, // Split chunks at 200KB
           cacheGroups: {
-            // Separate vendor chunks for better caching
-            vendor: {
-              test: /[\\/]node_modules[\\/]/,
-              name: 'vendors',
+            // Separate React and related
+            react: {
+              test: /[\\/]node_modules[\\/](react|react-dom|scheduler)[\\/]/,
+              name: 'react',
               chunks: 'all',
-              priority: 10,
+              priority: 40,
             },
-            // Separate framer-motion for better code splitting
+            // Separate framer-motion - largest dependency
             framerMotion: {
               test: /[\\/]node_modules[\\/]framer-motion[\\/]/,
               name: 'framer-motion',
-              chunks: 'all',
-              priority: 20,
+              chunks: 'async',
+              priority: 30,
             },
-            // Separate lucide for better code splitting
+            // Separate lucide icons
             lucide: {
               test: /[\\/]node_modules[\\/]lucide-react[\\/]/,
               name: 'lucide',
               chunks: 'all',
-              priority: 20,
+              priority: 25,
             },
             // Separate React Query
             reactQuery: {
               test: /[\\/]node_modules[\\/]@tanstack[\\/]react-query/,
               name: 'react-query',
               chunks: 'all',
+              priority: 25,
+            },
+            // Separate recharts
+            recharts: {
+              test: /[\\/]node_modules[\\/]recharts[\\/]/,
+              name: 'recharts',
+              chunks: 'async',
               priority: 20,
+            },
+            // Other vendors
+            vendor: {
+              test: /[\\/]node_modules[\\/]/,
+              name: 'vendors',
+              chunks: 'all',
+              priority: 10,
             },
           },
         },
