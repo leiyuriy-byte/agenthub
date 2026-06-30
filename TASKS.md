@@ -1,40 +1,32 @@
 # AgentHub 开发任务
 
-> 最后更新：2026-06-30 20:04
+> 最后更新：2026-06-30 22:36
 
 ---
 
-## 项目状态：⚠️ 功能完成，性能严重不达标，需调优
+## 项目状态：⚠️ 功能完成，性能待优化
 
 ---
 
-## 第 8 轮任务（2026-06-30）
+## 第 9 轮任务（2026-06-30）
+
 
 ### 背景
-Lighthouse Performance 仅 45%（目标 90+），根因：First Load JS 458 kB，大量冗余 JS 未 tree-shaking。
+Lighthouse Performance 仅 45%（目标 90+），根因：First Load JS 458 kB。
 
 ### 已完成优化
-1. ✅ **JS Bundle 优化** — 拆分 vendors chunk，启用 tree-shaking
-   - First Load JS: 458 kB（优化配置已应用）
-2. ✅ **代码分割** — 配置动态加载（framer-motion, recharts, lucide 单独 chunks）
-3. 🔄 **主线程负载优化** — 进行中（recharts 改为 async chunk）
-4. ⏳ **LCP 优化** — 待测试验证
+1. ✅ **移除首屏 framer-motion** — navbar 改用 CSS 动画
+2. ✅ **代码分割** — 配置动态加载（framer-motion, recharts 单独 chunks）
+3. ⏳ **继续优化** — 评估其他优化方案
 
-### 优化项（必须修复）
-1. **JS Bundle 优化** — 拆分 vendors chunk，启用 tree-shaking，移除未使用导出
-   - 验收标准：vendors chunk < 200 kB，First Load JS < 250 kB
-2. **代码分割（Code Splitting）** — 非核心路由组件改为动态 import
-   - 验收标准：Lighthouse Performance 指标 ≥ 80%
-3. **主线程负载优化** — 迁移重型计算组件（排行榜、统计图表）为客户端动态加载
-   - 验收标准：mainthread-work-breakdown 0 分 → 1 分
-4. **LCP 优化** — 优化 Largest Contentful Paint，首屏关键资源优先加载
-   - 验收标准：LCP < 2.5s
-
-### 新功能
+### 待优化
 - [ ] 移动端真机测试（需在真机上验证 UI 响应式）
 
+- [ ] 图片 CDN 配置（生产环境建议 S3/OSS）
+
+
 ### 优先级
-1. 优化项 1-4（必须修复，性能达标方可上线）
+1. 性能优化（进行中）
 2. 新功能（可选，上线后处理）
 
 ---
