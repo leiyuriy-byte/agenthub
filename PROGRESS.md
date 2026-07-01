@@ -73,6 +73,13 @@
 
 ---
 
+## 2026-07-01 12:02 更新
+- ✅ 修复 TypeScript 编译错误（navbar.tsx 中 framer-motion props）
+- ✅ 构建验证通过（38 routes）
+- ✅ 推送到 GitHub
+
+---
+
 ## 📋 待完成（可选）
 - 移动端真机测试（需在真机上验证 UI 响应式）
 - 图片 CDN 配置（本地存储，生产环境建议 S3/OSS）
