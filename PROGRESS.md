@@ -1,5 +1,5 @@
 # AgentHub 开发进度
-最后更新：2026-07-01 18:02
+最后更新：2026-07-01 22:02
 
 | 2026-07-01 18:02 | ✅ | ✅ | ✅ (Build ✅ 38 routes | TS ✅ (web+api, exit 0) | Git ✅ up-to-date, working tree clean) | ALL SYSTEMS NOMINAL | |
 
@@ -63,8 +63,8 @@
 - 响应式设计（Tailwind CSS 断点实现，md/lg 等）
 
 ## 待开发 📋
-- 移动端真机测试（需在真机上验证 UI 响应式）
-- 图片 CDN 配置（当前为本地存储，生产环境建议配置 S3/OSS）
+- [ ] 移动端真机测试（需在真机上验证 UI 响应式）
+- [ ] 图片 CDN 配置（当前为本地存储，生产环境建议配置 S3/OSS）
 
 ## 构建状态
 - ✅ `pnpm build` 成功（38 routes）
