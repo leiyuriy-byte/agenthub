@@ -254,10 +254,7 @@ export function Navbar() {
             
               {showSearchDropdown && searchResults && (
                 <div
-                  initial={{ opacity: 0, y: -8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  className="absolute top-full mt-2 w-full rounded-xl border bg-background shadow-lg overflow-hidden z-50"
+                  className="absolute top-full mt-2 w-full rounded-xl border bg-background shadow-lg overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200"
                 >
                   {isSearching ? (
                     <div className="p-4 text-center text-muted-foreground">
@@ -425,11 +422,7 @@ export function Navbar() {
                 
                   {isUserMenuOpen && (
                     <div
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 8 }}
-                      transition={{ duration: 0.15 }}
-                      className="absolute right-0 mt-2 w-56 rounded-xl border bg-background p-1 shadow-lg"
+                      className="absolute right-0 mt-2 w-56 rounded-xl border bg-background p-1 shadow-lg animate-in fade-in slide-in-from-top-2 duration-150"
                     >
                       <div className="px-3 py-2 border-b">
                         <p className="font-medium text-sm truncate">{user.displayName || user.username}</p>
@@ -506,10 +499,7 @@ export function Navbar() {
       
         {isMobileMenuOpen && (
           <div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden border-t bg-background"
+            className="md:hidden border-t bg-background animate-in slide-in-from-top-2 duration-200"
             role="navigation"
             aria-label="移动端导航菜单"
           >
