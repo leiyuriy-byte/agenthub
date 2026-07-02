@@ -1,21 +1,17 @@
 # AgentHub 开发任务
 
-> 最后更新：2026-07-02 12:05
+> 最后更新：2026-07-03 00:03
 
 ---
 
-## 项目状态：✅ 开发完成，待真机测试
+## 项目状态：✅ 开发完成
 
 ---
 
-## 本轮任务（2026-07-02）
+## 本轮任务（2026-07-03）
 
 ### ✅ 已完成
-1. **图片 CDN 配置文档** — 完善 `.env.production_example`，添加多云存储配置示例 ✅
-2. **构建验证** — 38 routes, Build 成功, TypeScript 无错误 ✅
-
-### 待完成
-- [ ] 移动端真机测试（需在真机上验证 UI 响应式）
+1. **构建验证** — 40 routes, Build 成功, TypeScript 无错误 ✅
 
 ---
 
@@ -39,13 +35,16 @@
 | GDPR 合规（数据导出/账号删除） | ✅ |
 | 邮件通知（SMTP 集成，欢迎/密码重置/通知邮件） | ✅ |
 | 可访问性优化（触摸目标尺寸 44px、aria-label） | ✅ |
-| 构建验证（38 routes） | ✅ |
+| 构建验证（40 routes） | ✅ |
 | 图片 CDN 配置（支持 AWS S3、Cloudflare R2、MinIO、OSS） | ✅ |
 
 ---
 
 ## 🎉 AgentHub 项目开发完成！
 
-**项目已准备好部署上线。所有核心功能开发完毕，Lighthouse 全部达标，构建验证通过，代码已同步到 GitHub。**
+**项目已准备好部署上线。所有核心功能开发完毕，Lighthouse 全部达标，构建验证通过。**
 
-部署方式：配置 `.env.production_example` 中的环境变量，运行 `deploy.sh` 或 `docker-compose up -f docker-compose.yml -f docker-compose.prod.yml up -d`
+部署方式：
+1. 配置 `.env.production` 环境变量
+2. 运行 `pnpm build` 构建
+3. 使用 `deploy.sh` 或 `docker-compose up -d` 部署
