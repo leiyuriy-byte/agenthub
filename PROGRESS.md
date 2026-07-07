@@ -41,4 +41,6 @@
 - ✅ 待部署状态
 
 ## 遇到的问题 ⚠️
-- 构建验证：系统内存不足（3.5GB总量，已用3GB），Next.js 构建被 OOM killer 终止。TypeScript 编译检查通过，无语法错误。
+- 构建验证：系统内存不足（3.5GB 总量），Next.js 构建被 OOM killer 终止（exit code 137）
+- TypeScript 编译检查通过，无语法错误 ✅
+- 解决方案：部署时使用更大内存的服务器（建议 4GB+）
