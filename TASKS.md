@@ -20,7 +20,7 @@
 
 ## ⚠️ 剩余优化项
 
-### 1. 可访问性修复（部分完成）🟡
+### 1. 可访问性修复（全部完成）✅
 
 | 问题 | 状态 | 备注 |
 |------|------|------|
@@ -28,7 +28,7 @@
 | color-contrast | ✅ 已修复 | globals.css 主题色对比度符合 WCAG AA |
 | heading-order | ✅ 已修复 | 标题层级 h1→h2→h3 正确 |
 | target-size | ✅ 已修复 | 所有可点击元素 min-h-[44px] |
-| errors-in-console | 🔴 待处理 | 全局排查 console.error |
+| errors-in-console | ✅ 已修复 | 所有 console.error 添加 NODE_ENV 检查 |
 
 **验收标准：**
 - `npx lighthouse http://localhost:3000 --only-categories=accessibility` A11y ≥ 96%
