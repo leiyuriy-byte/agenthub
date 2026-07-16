@@ -14,20 +14,21 @@
 
 ### ✅ 已完成
 1. **项目全部核心功能** — 用户系统、Agent 展示、社区交流、实时通讯、评价反馈、内容管理、后台管理、安全加固、SEO、Lighthouse 性能优化
+2. **可访问性优化** — button-name、heading-order、target-size 修复
 
 ---
 
-## ⚠️ 必须修复的优化项（第8轮）
+## ⚠️ 剩余优化项
 
-### 1. 可访问性修复（最高优先级）🔴
+### 1. 可访问性修复（部分完成）🟡
 
-| 问题 | Lighthouse 得分 | 修复方案 |
-|------|---------------|----------|
-| button-name | 0% | 所有 IconButton 添加 `aria-label` 或 `aria-labelledby` |
-| color-contrast | 0% | 检查 globals.css 主题色，确保前景/背景对比度 ≥ 4.5:1（WCAG AA）|
-| heading-order | 0% | 全文检查 h1→h2→h3 层级，禁止跳级（如 h1 直接跳 h3）|
-| target-size | 0% | 所有可点击元素 ≥ 44×44px（含移动端）|
-| errors-in-console | 0% | 全局排查 console.error，修复或移除无效调用 |
+| 问题 | 状态 | 备注 |
+|------|------|------|
+| button-name | ✅ 已修复 | 添加 aria-label/aria-pressed/aria-selected 到 44 个按钮 |
+| color-contrast | ✅ 已修复 | globals.css 主题色对比度符合 WCAG AA |
+| heading-order | ✅ 已修复 | 标题层级 h1→h2→h3 正确 |
+| target-size | ✅ 已修复 | 所有可点击元素 min-h-[44px] |
+| errors-in-console | 🔴 待处理 | 全局排查 console.error |
 
 **验收标准：**
 - `npx lighthouse http://localhost:3000 --only-categories=accessibility` A11y ≥ 96%

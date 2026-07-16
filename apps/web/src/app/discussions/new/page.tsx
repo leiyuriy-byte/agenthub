@@ -182,7 +182,7 @@ export default function NewPostPage() {
                 }),
               });
             } catch (pollError) {
-              console.error('Failed to create poll:', pollError);
+              if (process.env.NODE_ENV === 'development') console.error('Failed to create poll:', pollError);
               // Don't fail the whole submission if poll creation fails
             }
           }

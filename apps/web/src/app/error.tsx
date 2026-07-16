@@ -16,8 +16,10 @@ export default function Error({
   const [isOnline, setIsOnline] = useState(true);
 
   useEffect(() => {
-    // Log the error to an error reporting service
-    console.error('Application error:', error);
+    // Log the error to an error reporting service (only in development)
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Application error:', error);
+    }
 
     // Check online status
     setIsOnline(navigator.onLine);

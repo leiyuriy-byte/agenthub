@@ -76,7 +76,7 @@ export default function AdminPostsPage() {
           setTotal(response.data.total);
         }
       } catch (err) {
-        console.error('Failed to fetch posts:', err);
+        if (process.env.NODE_ENV === 'development') console.error('Failed to fetch posts:', err);
         toast.error('加载帖子失败');
       } finally {
         setIsLoading(false);

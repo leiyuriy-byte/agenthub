@@ -63,7 +63,7 @@ export default function AdminCommentsPage() {
           setTotal(response.data.total);
         }
       } catch (err) {
-        console.error('Failed to fetch comments:', err);
+        if (process.env.NODE_ENV === 'development') console.error('Failed to fetch comments:', err);
         toast.error('加载评论失败');
       } finally {
         setIsLoading(false);

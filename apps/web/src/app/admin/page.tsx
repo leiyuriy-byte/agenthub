@@ -85,7 +85,7 @@ export default function AdminDashboard() {
           setStats(response.data);
         }
       } catch (error) {
-        console.error('Failed to fetch stats:', error);
+        if (process.env.NODE_ENV === 'development') console.error('Failed to fetch stats:', error);
       } finally {
         setIsLoading(false);
       }

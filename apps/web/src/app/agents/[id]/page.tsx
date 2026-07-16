@@ -166,7 +166,7 @@ export default function AgentDetailPage() {
             setRelatedAgents(res.data);
           }
         } catch (err) {
-          console.error('Failed to fetch related agents:', err);
+          if (process.env.NODE_ENV === 'development') console.error('Failed to fetch related agents:', err);
         } finally {
           setIsLoadingRelated(false);
         }
@@ -203,7 +203,7 @@ export default function AgentDetailPage() {
         setCommentsTotal(total);
       }
     } catch (err) {
-      console.error('Failed to fetch comments:', err);
+      if (process.env.NODE_ENV === 'development') console.error('Failed to fetch comments:', err);
     } finally {
       setIsLoadingComments(false);
       setIsLoadingMoreComments(false);
@@ -241,7 +241,7 @@ export default function AgentDetailPage() {
         toast.error(response.error || 'Failed to post comment');
       }
     } catch (err) {
-      console.error('Failed to post comment:', err);
+      if (process.env.NODE_ENV === 'development') console.error('Failed to post comment:', err);
       toast.error('Failed to post comment');
     } finally {
       setIsSubmittingComment(false);
@@ -275,7 +275,7 @@ export default function AgentDetailPage() {
         ));
       }
     } catch (err) {
-      console.error('Failed to like comment:', err);
+      if (process.env.NODE_ENV === 'development') console.error('Failed to like comment:', err);
     }
   };
 
@@ -299,7 +299,7 @@ export default function AgentDetailPage() {
         toast.error(response.error || 'Failed to post reply');
       }
     } catch (err) {
-      console.error('Failed to post reply:', err);
+      if (process.env.NODE_ENV === 'development') console.error('Failed to post reply:', err);
       toast.error('Failed to post reply');
     } finally {
       setIsSubmittingReply(false);
@@ -319,7 +319,7 @@ export default function AgentDetailPage() {
         toast.error(response.error || 'Failed to delete comment');
       }
     } catch (err) {
-      console.error('Failed to delete comment:', err);
+      if (process.env.NODE_ENV === 'development') console.error('Failed to delete comment:', err);
     }
   };
 

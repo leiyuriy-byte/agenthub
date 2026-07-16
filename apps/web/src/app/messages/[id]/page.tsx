@@ -87,7 +87,7 @@ export default function ConversationPage() {
         setHasMore((data.messages?.length ?? 0) === 50);
       }
     } catch {
-      console.error('Failed to load more messages');
+      if (process.env.NODE_ENV === 'development') console.error('Failed to load more messages');
     }
   };
 

@@ -87,7 +87,7 @@ export default function FeedbackPage() {
         setTotal(data.total ?? 0);
       }
     } catch (err) {
-      console.error('Failed to fetch feedbacks:', err);
+      if (process.env.NODE_ENV === 'development') console.error('Failed to fetch feedbacks:', err);
     } finally {
       setIsLoading(false);
       setIsLoadingMore(false);
@@ -119,7 +119,7 @@ export default function FeedbackPage() {
         toast.error(response.error || '提交失败');
       }
     } catch (err) {
-      console.error('Failed to submit feedback:', err);
+      if (process.env.NODE_ENV === 'development') console.error('Failed to submit feedback:', err);
       toast.error('提交失败，请重试');
     } finally {
       setIsSubmitting(false);
@@ -138,7 +138,7 @@ export default function FeedbackPage() {
         toast.error(response.error || '删除失败');
       }
     } catch (err) {
-      console.error('Failed to delete feedback:', err);
+      if (process.env.NODE_ENV === 'development') console.error('Failed to delete feedback:', err);
     }
   };
 

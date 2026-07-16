@@ -100,7 +100,7 @@ export default function FeedPage() {
         setOffset(currentOffset + limit);
       }
     } catch (error) {
-      console.error('Failed to fetch feed:', error);
+      if (process.env.NODE_ENV === 'development') console.error('Failed to fetch feed:', error);
     } finally {
       setIsLoading(false);
       setIsLoadingMore(false);

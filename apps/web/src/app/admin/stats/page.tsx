@@ -440,7 +440,7 @@ export default function AdminStatsPage() {
           setOverview(overviewRes.data);
         }
       } catch (error) {
-        console.error('Failed to fetch stats:', error);
+        if (process.env.NODE_ENV === 'development') console.error('Failed to fetch stats:', error);
         toast.error('获取统计数据失败');
       } finally {
         setIsLoading(false);

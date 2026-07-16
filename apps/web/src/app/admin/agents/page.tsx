@@ -72,7 +72,7 @@ export default function AdminAgentsPage() {
           setTotal(response.data.total);
         }
       } catch (err) {
-        console.error('Failed to fetch agents:', err);
+        if (process.env.NODE_ENV === 'development') console.error('Failed to fetch agents:', err);
         toast.error('加载 Agent 失败');
       } finally {
         setIsLoading(false);

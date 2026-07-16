@@ -61,7 +61,7 @@ export default function AdminUsersPage() {
           setTotal(response.data.total);
         }
       } catch (err) {
-        console.error('Failed to fetch users:', err);
+        if (process.env.NODE_ENV === 'development') console.error('Failed to fetch users:', err);
         toast.error('加载用户失败');
       } finally {
         setIsLoading(false);

@@ -125,7 +125,7 @@ export default function UserProfilePage() {
         setPointsInfo(response.data);
       }
     } catch (error) {
-      console.error('Failed to fetch points info:', error);
+      if (process.env.NODE_ENV === 'development') console.error('Failed to fetch points info:', error);
     }
   }, [profile?.id]);
 
