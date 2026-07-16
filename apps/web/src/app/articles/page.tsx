@@ -130,14 +130,16 @@ export default function ArticlesPage() {
         </div>
 
         {/* Category Pills */}
-        <div className="mb-6 flex flex-wrap gap-2">
+        <div className="mb-6 flex flex-wrap gap-2" role="tablist" aria-label="文章分类筛选">
           <button
             onClick={() => {
               setSelectedCategory('');
               setPage(1);
             }}
+            aria-selected={selectedCategory === ''}
+            role="tab"
             className={cn(
-              'rounded-full px-4 py-1.5 text-sm font-medium transition-colors',
+              'rounded-full px-4 py-1.5 text-sm font-medium transition-colors min-h-[44px]',
               selectedCategory === ''
                 ? 'bg-primary text-primary-foreground'
                 : 'bg-muted text-muted-foreground hover:bg-muted/80'
@@ -152,8 +154,11 @@ export default function ArticlesPage() {
                 setSelectedCategory(category.id);
                 setPage(1);
               }}
+              aria-selected={selectedCategory === category.id}
+              role="tab"
+              aria-label={`筛选${category.name}分类`}
               className={cn(
-                'rounded-full px-4 py-1.5 text-sm font-medium transition-colors',
+                'rounded-full px-4 py-1.5 text-sm font-medium transition-colors min-h-[44px]',
                 selectedCategory === category.id
                   ? 'bg-primary text-primary-foreground'
                   : 'bg-muted text-muted-foreground hover:bg-muted/80'

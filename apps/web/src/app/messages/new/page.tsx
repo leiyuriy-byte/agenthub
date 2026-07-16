@@ -183,7 +183,8 @@ export default function NewConversationPage() {
                     setSearchQuery(u.displayName || u.username);
                     setUsers([]);
                   }}
-                  className="w-full flex items-center gap-3 p-3 hover:bg-zinc-700/50 transition-colors text-left"
+                  aria-label={`选择用户 ${u.displayName || u.username}`}
+                  className="w-full flex items-center gap-3 p-3 hover:bg-zinc-700/50 transition-colors text-left min-h-[44px]"
                 >
                   <Avatar className="w-10 h-10">
                     <AvatarImage src={u.avatar || undefined} />
@@ -226,7 +227,8 @@ export default function NewConversationPage() {
                   setSelectedUser(null);
                   setSearchQuery('');
                 }}
-                className="p-2 hover:bg-zinc-700/50 rounded-lg transition-colors"
+                aria-label="清除已选择用户"
+                className="p-2 hover:bg-zinc-700/50 rounded-lg transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
               >
                 <svg className="w-4 h-4 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

@@ -1,17 +1,65 @@
 # AgentHub 开发任务
 
-> 最后更新：2026-07-05 02:03
+> 最后更新：2026-07-16 22:04
 
 ---
 
-## 项目状态：✅ 开发完成
+## 项目状态：🔄 进入优化阶段（第8轮）
+
+> ⚠️ 基础功能虽完成，但 Lighthouse 可访问性 83% 包含多个 0% 项，达不到 SPEC.md 上线标准（要求参考 Linear/Notion 质感）。必须解决以下问题后才能上线。
 
 ---
 
-## 本轮任务（2026-07-03）
+## 本轮任务（2026-07-16）
 
 ### ✅ 已完成
-1. **构建验证** — 40 routes, Build 成功, TypeScript 无错误 ✅
+1. **项目全部核心功能** — 用户系统、Agent 展示、社区交流、实时通讯、评价反馈、内容管理、后台管理、安全加固、SEO、Lighthouse 性能优化
+
+---
+
+## ⚠️ 必须修复的优化项（第8轮）
+
+### 1. 可访问性修复（最高优先级）🔴
+
+| 问题 | Lighthouse 得分 | 修复方案 |
+|------|---------------|----------|
+| button-name | 0% | 所有 IconButton 添加 `aria-label` 或 `aria-labelledby` |
+| color-contrast | 0% | 检查 globals.css 主题色，确保前景/背景对比度 ≥ 4.5:1（WCAG AA）|
+| heading-order | 0% | 全文检查 h1→h2→h3 层级，禁止跳级（如 h1 直接跳 h3）|
+| target-size | 0% | 所有可点击元素 ≥ 44×44px（含移动端）|
+| errors-in-console | 0% | 全局排查 console.error，修复或移除无效调用 |
+
+**验收标准：**
+- `npx lighthouse http://localhost:3000 --only-categories=accessibility` A11y ≥ 96%
+- 无新增 console.error
+- 手动测试：Tab 键导航流畅，所有按钮/链接有文字或 aria-label
+
+### 2. 控制台错误排查 🔴
+
+**具体任务：**
+- 启动开发服务器 `cd apps/web && pnpm dev`
+- 打开浏览器 Console，访问首页、Agent 列表、用户主页
+- 列出所有 console.error，逐个修复
+
+**常见问题模式：：**
+- API 请求失败但组件未做空值保护
+- 第三方 SDK 初始化错误
+- WebSocket 连接失败
+- 缺少必要环境变量导致初始化失败
+
+**验收标准：**
+- 控制台无任何 Error 级别日志（Warning 可选）
+
+### 3. 构建产物优化（加分项）🟡
+
+| 问题 | 当前状态 | 目标 |
+|------|---------|------|
+| unminified-javascript | 存在未压缩 JS | 生产构建添加 minification |
+| unused-javascript | 存在未使用 JS | Tree-shaking 优化 |
+| render-blocking-requests | 存在渲染阻塞请求 | defer/async 处理 |
+
+**验收标准：**
+- `pnpm build` 后 `npx lighthouse http://localhost:3000 --only-categories=performance` Performance ≥ 90%
 
 ---
 
@@ -29,22 +77,33 @@
 | 安全加固（XSS/速率限制/输入校验） | ✅ |
 | SEO 优化（metadata/sitemap/robots） | ✅ |
 | Lighthouse 性能优化 | ✅ (100%) |
-| Lighthouse 可访问性优化 | ✅ (96%) |
 | Lighthouse Best Practices | ✅ (96%) |
 | Lighthouse SEO | ✅ (100%) |
 | GDPR 合规（数据导出/账号删除） | ✅ |
 | 邮件通知（SMTP 集成，欢迎/密码重置/通知邮件） | ✅ |
-| 可访问性优化（触摸目标尺寸 44px、aria-label） | ✅ |
-| 构建验证（40 routes） | ✅ |
+| 可访问性优化 | ⚠️ 83%（含多个 0% 项，需修复）|
+| 构建验证（34 routes） | ✅ |
 | 图片 CDN 配置（支持 AWS S3、Cloudflare R2、MinIO、OSS） | ✅ |
 
 ---
 
-## 🎉 AgentHub 项目开发完成！
+## 上线标准（未达标，持续迭代）
 
-**项目已准备好部署上线。所有核心功能开发完毕，Lighthouse 全部达标，构建验证通过。**
+根据 SPEC.md，以下条件全部满足方可上线：
+- ✅ SPEC.md Phase 1 核心功能 — 已完成
+- ❌ UI 美观度 — Lighthouse A11y 83%，多个 0% 项，需修复到 ≥ 96%
+- ⚠️ 无明显 bug — 控制台存在 Error，需排查
+- ✅ 后台管理 — 已实现
+- ✅ 移动端适配 — 已实现
+- ✅ 基础安全性 — 已加固
+- ✅ 数据库设计 — 合理
+- ⚠️ 页面加载性能 — 理想环境 Lighthouse 100%，实际部署需验证
 
-部署方式：
-1. 配置 `.env.production` 环境变量
-2. 运行 `pnpm build` 构建
-3. 使用 `deploy.sh` 或 `docker-compose up -d` 部署
+---
+
+## 优先级排序
+
+1. **🔴 button-name / heading-order / target-size** — 可访问性核心问题，影响真实用户
+2. **🔴 color-contrast** — 影响所有用户阅读体验
+3. **🔴 errors-in-console** — 潜在运行时错误
+4. **🟡 unminified-javascript / build optimization** — 提升生产环境性能

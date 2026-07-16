@@ -133,15 +133,17 @@ export default function ActivitiesPage() {
         </div>
 
         {/* Filter Tabs */}
-        <div className="mb-6 flex flex-wrap gap-2">
+        <div className="mb-6 flex flex-wrap gap-2" role="tablist" aria-label="活动状态筛选">
           <button
             onClick={() => {
               setShowUpcomingOnly(true);
               setSelectedStatus('');
               setPage(1);
             }}
+            aria-selected={showUpcomingOnly && selectedStatus === ''}
+            role="tab"
             className={cn(
-              'rounded-full px-4 py-1.5 text-sm font-medium transition-colors',
+              'rounded-full px-4 py-1.5 text-sm font-medium transition-colors min-h-[44px]',
               showUpcomingOnly && selectedStatus === ''
                 ? 'bg-primary text-primary-foreground'
                 : 'bg-muted text-muted-foreground hover:bg-muted/80'
@@ -155,8 +157,10 @@ export default function ActivitiesPage() {
               setShowUpcomingOnly(false);
               setPage(1);
             }}
+            aria-selected={selectedStatus === 'ongoing'}
+            role="tab"
             className={cn(
-              'rounded-full px-4 py-1.5 text-sm font-medium transition-colors',
+              'rounded-full px-4 py-1.5 text-sm font-medium transition-colors min-h-[44px]',
               selectedStatus === 'ongoing'
                 ? 'bg-primary text-primary-foreground'
                 : 'bg-muted text-muted-foreground hover:bg-muted/80'
@@ -170,8 +174,10 @@ export default function ActivitiesPage() {
               setShowUpcomingOnly(false);
               setPage(1);
             }}
+            aria-selected={selectedStatus === 'ended'}
+            role="tab"
             className={cn(
-              'rounded-full px-4 py-1.5 text-sm font-medium transition-colors',
+              'rounded-full px-4 py-1.5 text-sm font-medium transition-colors min-h-[44px]',
               selectedStatus === 'ended'
                 ? 'bg-primary text-primary-foreground'
                 : 'bg-muted text-muted-foreground hover:bg-muted/80'
@@ -182,14 +188,16 @@ export default function ActivitiesPage() {
         </div>
 
         {/* Type Tabs */}
-        <div className="mb-6 flex flex-wrap gap-2">
+        <div className="mb-6 flex flex-wrap gap-2" role="tablist" aria-label="活动类型筛选">
           <button
             onClick={() => {
               setSelectedType('');
               setPage(1);
             }}
+            aria-selected={selectedType === ''}
+            role="tab"
             className={cn(
-              'rounded-full px-4 py-1.5 text-sm font-medium transition-colors flex items-center gap-1.5',
+              'rounded-full px-4 py-1.5 text-sm font-medium transition-colors flex items-center gap-1.5 min-h-[44px]',
               selectedType === ''
                 ? 'bg-primary text-primary-foreground'
                 : 'bg-muted text-muted-foreground hover:bg-muted/80'
@@ -202,8 +210,10 @@ export default function ActivitiesPage() {
               setSelectedType('online');
               setPage(1);
             }}
+            aria-selected={selectedType === 'online'}
+            role="tab"
             className={cn(
-              'rounded-full px-4 py-1.5 text-sm font-medium transition-colors flex items-center gap-1.5',
+              'rounded-full px-4 py-1.5 text-sm font-medium transition-colors flex items-center gap-1.5 min-h-[44px]',
               selectedType === 'online'
                 ? 'bg-primary text-primary-foreground'
                 : 'bg-muted text-muted-foreground hover:bg-muted/80'
@@ -217,8 +227,10 @@ export default function ActivitiesPage() {
               setSelectedType('offline');
               setPage(1);
             }}
+            aria-selected={selectedType === 'offline'}
+            role="tab"
             className={cn(
-              'rounded-full px-4 py-1.5 text-sm font-medium transition-colors flex items-center gap-1.5',
+              'rounded-full px-4 py-1.5 text-sm font-medium transition-colors flex items-center gap-1.5 min-h-[44px]',
               selectedType === 'offline'
                 ? 'bg-primary text-primary-foreground'
                 : 'bg-muted text-muted-foreground hover:bg-muted/80'

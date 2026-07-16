@@ -130,7 +130,7 @@ function SearchContent() {
           </form>
 
           {/* Type Filter Tabs */}
-          <div className="flex gap-2 mt-4">
+          <div className="flex gap-2 mt-4" role="tablist" aria-label="搜索类型筛选">
             {(['all', 'agents', 'posts', 'users'] as SearchType[]).map((type) => (
               <button
                 key={type}
@@ -141,7 +141,9 @@ function SearchContent() {
                     performSearch();
                   }
                 }}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                aria-selected={searchType === type}
+                role="tab"
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] ${
                   searchType === type
                     ? 'bg-primary text-primary-foreground'
                     : 'bg-muted hover:bg-muted/80 text-muted-foreground'

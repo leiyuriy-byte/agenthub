@@ -157,11 +157,13 @@ export default function NotificationsPage() {
           </div>
           <div className="flex gap-2">
             {/* Filter */}
-            <div className="flex border rounded-lg overflow-hidden">
+            <div className="flex border rounded-lg overflow-hidden" role="tablist" aria-label="通知筛选">
               <button
                 onClick={() => setFilter('all')}
+                aria-selected={filter === 'all'}
+                role="tab"
                 className={cn(
-                  'px-3 py-1.5 text-sm transition-colors',
+                  'px-3 py-1.5 text-sm transition-colors min-h-[44px]',
                   filter === 'all'
                     ? 'bg-primary text-primary-foreground'
                     : 'bg-background hover:bg-accent'
@@ -171,8 +173,10 @@ export default function NotificationsPage() {
               </button>
               <button
                 onClick={() => setFilter('unread')}
+                aria-selected={filter === 'unread'}
+                role="tab"
                 className={cn(
-                  'px-3 py-1.5 text-sm transition-colors',
+                  'px-3 py-1.5 text-sm transition-colors min-h-[44px]',
                   filter === 'unread'
                     ? 'bg-primary text-primary-foreground'
                     : 'bg-background hover:bg-accent'

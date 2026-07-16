@@ -245,7 +245,8 @@ export default function ConversationPage() {
             >
               <button
                 onClick={loadMoreMessages}
-                className="text-sm text-zinc-500 hover:text-zinc-400 transition-colors"
+                aria-label="加载更多消息"
+                className="text-sm text-zinc-500 hover:text-zinc-400 transition-colors min-h-[44px] px-4"
               >
                 加载更多
               </button>

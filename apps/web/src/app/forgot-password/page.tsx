@@ -114,7 +114,8 @@ export default function ForgotPasswordPage() {
                     setIsSubmitted(false);
                     setFormData({ email: '' });
                   }}
-                  className="w-full text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  aria-label="重新发送验证码"
+                  className="w-full text-sm text-muted-foreground hover:text-foreground transition-colors min-h-[44px]"
                 >
                   重新发送
                 </button>

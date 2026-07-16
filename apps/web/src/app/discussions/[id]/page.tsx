@@ -833,7 +833,7 @@ export default function PostDetailPage() {
                 </h2>
                 <button
                   onClick={() => setShowReportModal(false)}
-                  className="p-1 hover:bg-muted rounded"
+                  className="p-1 hover:bg-muted rounded min-h-[44px] min-w-[44px] flex items-center justify-center"
                   aria-label="关闭举报弹窗"
                 >
                   <XIcon className="h-5 w-5" />
@@ -863,8 +863,9 @@ export default function PostDetailPage() {
                       <button
                         key={reason}
                         onClick={() => setReportReason(reason)}
+                        aria-pressed={reportReason === reason}
                         className={cn(
-                          'px-3 py-1.5 text-sm rounded-full border transition-colors',
+                          'px-3 py-1.5 text-sm rounded-full border transition-colors min-h-[44px]',
                           reportReason === reason
                             ? 'border-primary bg-primary/10 text-primary'
                             : 'border-input hover:bg-muted'

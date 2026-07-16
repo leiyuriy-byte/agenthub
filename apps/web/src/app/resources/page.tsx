@@ -134,14 +134,16 @@ export default function ResourcesPage() {
         </div>
 
         {/* Type Pills */}
-        <div className="mb-4 flex flex-wrap gap-2">
+        <div className="mb-4 flex flex-wrap gap-2" role="tablist" aria-label="资源类型筛选">
           <button
             onClick={() => {
               setSelectedType('');
               setPage(1);
             }}
+            aria-selected={selectedType === ''}
+            role="tab"
             className={cn(
-              'rounded-full px-4 py-1.5 text-sm font-medium transition-colors',
+              'rounded-full px-4 py-1.5 text-sm font-medium transition-colors min-h-[44px]',
               selectedType === ''
                 ? 'bg-primary text-primary-foreground'
                 : 'bg-muted text-muted-foreground hover:bg-muted/80'
@@ -156,8 +158,11 @@ export default function ResourcesPage() {
                 setSelectedType(type);
                 setPage(1);
               }}
+              aria-selected={selectedType === type}
+              role="tab"
+              aria-label={`筛选${typeLabels[type]}类型`}
               className={cn(
-                'rounded-full px-4 py-1.5 text-sm font-medium transition-colors flex items-center gap-1.5',
+                'rounded-full px-4 py-1.5 text-sm font-medium transition-colors flex items-center gap-1.5 min-h-[44px]',
                 selectedType === type
                   ? 'bg-primary text-primary-foreground'
                   : 'bg-muted text-muted-foreground hover:bg-muted/80'
@@ -170,14 +175,16 @@ export default function ResourcesPage() {
         </div>
 
         {/* Category Pills */}
-        <div className="mb-6 flex flex-wrap gap-2">
+        <div className="mb-6 flex flex-wrap gap-2" role="tablist" aria-label="资源分类筛选">
           <button
             onClick={() => {
               setSelectedCategory('');
               setPage(1);
             }}
+            aria-selected={selectedCategory === ''}
+            role="tab"
             className={cn(
-              'rounded-full px-4 py-1.5 text-sm font-medium transition-colors',
+              'rounded-full px-4 py-1.5 text-sm font-medium transition-colors min-h-[44px]',
               selectedCategory === ''
                 ? 'bg-primary text-primary-foreground'
                 : 'bg-muted text-muted-foreground hover:bg-muted/80'
@@ -192,8 +199,11 @@ export default function ResourcesPage() {
                 setSelectedCategory(category.id);
                 setPage(1);
               }}
+              aria-selected={selectedCategory === category.id}
+              role="tab"
+              aria-label={`筛选${category.name}分类`}
               className={cn(
-                'rounded-full px-4 py-1.5 text-sm font-medium transition-colors',
+                'rounded-full px-4 py-1.5 text-sm font-medium transition-colors min-h-[44px]',
                 selectedCategory === category.id
                   ? 'bg-primary text-primary-foreground'
                   : 'bg-muted text-muted-foreground hover:bg-muted/80'

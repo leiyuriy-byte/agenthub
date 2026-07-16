@@ -698,7 +698,7 @@ export default function AgentDetailPage() {
                     )}
                   </div>
                   {/* Thumbnail strip */}
-                  <div className="flex gap-2 overflow-x-auto pb-2">
+                  <div className="flex gap-2 overflow-x-auto pb-2" role="listbox" aria-label="截图预览">
                     {agent.screenshots.map((screenshot, index) => (
                       <button
                         key={screenshot.id}
@@ -706,6 +706,7 @@ export default function AgentDetailPage() {
                           setSelectedScreenshot(screenshot.url);
                           openLightbox(index);
                         }}
+                        aria-label={`查看截图 ${index + 1}`}
                         className={cn(
                           'flex-shrink-0 w-24 h-16 rounded-md overflow-hidden border-2 transition-all',
                           selectedScreenshot === screenshot.url
@@ -1058,6 +1059,7 @@ export default function AgentDetailPage() {
                           <button
                             key={star}
                             onClick={() => setRatingValue(star)}
+                            aria-label={`给 ${star} 星`}
                             className="p-1 hover:scale-110 transition-transform"
                           >
                             <Star
@@ -1346,6 +1348,7 @@ export default function AgentDetailPage() {
                           <button
                             onClick={() => handleLikeComment(comment.id)}
                             disabled={!isLoggedIn}
+                            aria-label={comment.isLiked ? "取消点赞" : "点赞"}
                             className={cn(
                               "flex items-center gap-1 text-sm transition-colors",
                               comment.isLiked ? "text-primary" : "text-muted-foreground hover:text-primary",
@@ -1358,6 +1361,7 @@ export default function AgentDetailPage() {
                           {isLoggedIn && (
                             <button
                               onClick={() => setReplyToComment(comment.id)}
+                              aria-label="回复此评论"
                               className="text-sm text-muted-foreground hover:text-primary transition-colors"
                             >
                               回复
@@ -1366,6 +1370,7 @@ export default function AgentDetailPage() {
                           {comment.authorId === userId && (
                             <button
                               onClick={() => handleDeleteComment(comment.id)}
+                              aria-label="删除评论"
                               className="text-sm text-muted-foreground hover:text-destructive transition-colors"
                             >
                               删除
@@ -1560,7 +1565,8 @@ export default function AgentDetailPage() {
           {/* Close button */}
           <button
             onClick={closeLightbox}
-            className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors z-10"
+            aria-label="关闭预览"
+            className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors z-10 min-h-[44px] min-w-[44px] flex items-center justify-center"
           >
             <X className="h-6 w-6 text-white" />
           </button>
@@ -1573,7 +1579,8 @@ export default function AgentDetailPage() {
                   e.stopPropagation();
                   prevScreenshot();
                 }}
-                className="absolute left-4 p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                aria-label="上一张截图"
+                className="absolute left-4 p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
               >
                 <ChevronLeft className="h-6 w-6 text-white" />
               </button>
@@ -1582,7 +1589,8 @@ export default function AgentDetailPage() {
                   e.stopPropagation();
                   nextScreenshot();
                 }}
-                className="absolute right-4 p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                aria-label="下一张截图"
+                className="absolute right-4 p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
               >
                 <ChevronRight className="h-6 w-6 text-white" />
               </button>

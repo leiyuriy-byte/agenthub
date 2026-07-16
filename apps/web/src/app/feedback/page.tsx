@@ -323,7 +323,8 @@ export default function FeedbackPage() {
                           </div>
                           <button
                             onClick={() => handleDelete(feedback.id)}
-                            className="p-2 text-muted-foreground hover:text-destructive transition-colors"
+                            aria-label="删除反馈"
+                            className="p-2 text-muted-foreground hover:text-destructive transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>

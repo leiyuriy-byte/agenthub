@@ -242,8 +242,10 @@ export default function NewPostPage() {
                     <button
                       key={type.key}
                       onClick={() => setFormData((prev) => ({ ...prev, type: type.key }))}
+                      aria-pressed={isSelected}
+                      aria-label={`选择${type.label}类型`}
                       className={cn(
-                        'flex flex-col items-center gap-2 p-4 rounded-lg border transition-all text-center',
+                        'flex flex-col items-center gap-2 p-4 rounded-lg border transition-all text-center min-h-[44px]',
                         isSelected
                           ? 'border-primary bg-primary/5 text-primary'
                           : 'border-border hover:border-muted-foreground/50 hover:bg-muted/50'
@@ -331,7 +333,8 @@ export default function NewPostPage() {
                       <button
                         type="button"
                         onClick={() => removeTag(tag)}
-                        className="ml-1 rounded-sm hover:bg-muted-foreground/20"
+                        aria-label={`移除标签${tag}`}
+                        className="ml-1 rounded-sm hover:bg-muted-foreground/20 min-h-[44px] min-w-[44px] flex items-center justify-center"
                       >
                         <X className="h-3 w-3" />
                       </button>

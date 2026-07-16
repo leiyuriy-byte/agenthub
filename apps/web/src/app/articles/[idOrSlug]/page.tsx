@@ -266,12 +266,13 @@ export default function ArticleDetailPage() {
                   <List className="h-4 w-4" />
                   目录 ({toc.length} 项)
                 </summary>
-                <nav className="border-t px-4 py-3 space-y-1">
+                <nav className="border-t px-4 py-3 space-y-1" aria-label="文章目录">
                   {toc.map((item) => (
                     <button
                       key={item.id}
                       onClick={() => scrollToHeading(item.id)}
-                      className="block w-full text-left text-sm text-muted-foreground hover:text-foreground transition-colors py-0.5"
+                      aria-label={`跳转到：${item.text}`}
+                      className="block w-full text-left text-sm text-muted-foreground hover:text-foreground transition-colors py-0.5 min-h-[44px]"
                       style={{ paddingLeft: `${(item.level - 1) * 12}px` }}
                     >
                       <span className="line-clamp-2">{item.text}</span>
@@ -324,12 +325,13 @@ export default function ArticleDetailPage() {
                 <List className="h-4 w-4" />
                 目录
               </div>
-              <nav className="space-y-1">
+              <nav className="space-y-1" aria-label="文章目录">
                 {toc.map((item) => (
                   <button
                     key={item.id}
                     onClick={() => scrollToHeading(item.id)}
-                    className="block w-full text-left text-sm text-muted-foreground hover:text-foreground transition-colors py-0.5"
+                    aria-label={`跳转到：${item.text}`}
+                    className="block w-full text-left text-sm text-muted-foreground hover:text-foreground transition-colors py-0.5 min-h-[44px]"
                     style={{ paddingLeft: `${(item.level - 1) * 12}px` }}
                   >
                     <span className="line-clamp-2">{item.text}</span>
