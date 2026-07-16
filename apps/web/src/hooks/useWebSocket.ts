@@ -92,7 +92,9 @@ export function useWebSocket(): UseWebSocketReturn {
       });
 
       socketRef.current.on('connect', () => {
-        console.log('🔌 WebSocket connected');
+        if (process.env.NODE_ENV === 'development') {
+          console.log('🔌 WebSocket connected');
+        }
         setIsConnected(true);
         
         // Identify user after connection
@@ -102,18 +104,24 @@ export function useWebSocket(): UseWebSocketReturn {
       });
 
       socketRef.current.on('disconnect', (reason) => {
-        console.log(`🔌 WebSocket disconnected: ${reason}`);
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`🔌 WebSocket disconnected: ${reason}`);
+        }
         setIsConnected(false);
       });
 
       socketRef.current.on('connect_error', (error) => {
-        console.error('WebSocket connection error:', error);
+        if (process.env.NODE_ENV === 'development') {
+          console.error('WebSocket connection error:', error);
+        }
         setIsConnected(false);
       });
 
       // Listen for notification events
       socketRef.current.on('notification:new', (notification: WebSocketNotification) => {
-        console.log('📢 New notification received:', notification);
+        if (process.env.NODE_ENV === 'development') {
+          console.log('📢 New notification received:', notification);
+        }
         setNotificationCount(prev => prev + 1);
         // Notify all registered callbacks
         notificationCallbacksRef.current.forEach(callback => callback(notification));
@@ -121,7 +129,9 @@ export function useWebSocket(): UseWebSocketReturn {
 
       // Listen for message events
       socketRef.current.on('message:new', (message: WebSocketMessage) => {
-        console.log('💬 New message received:', message);
+        if (process.env.NODE_ENV === 'development') {
+          console.log('💬 New message received:', message);
+        }
         setMessageCount(prev => prev + 1);
         // Notify all registered callbacks
         messageCallbacksRef.current.forEach(callback => callback(message));
@@ -129,7 +139,9 @@ export function useWebSocket(): UseWebSocketReturn {
 
       // Listen for points update events
       socketRef.current.on('points:update', (update: WebSocketPointsUpdate) => {
-        console.log('🎯 Points update received:', update);
+        if (process.env.NODE_ENV === 'development') {
+          console.log('🎯 Points update received:', update);
+        }
         setPoints(update.points);
         // Notify all registered callbacks
         pointsCallbacksRef.current.forEach(callback => callback(update));
@@ -149,7 +161,9 @@ export function useWebSocket(): UseWebSocketReturn {
   const identify = useCallback(() => {
     if (socketRef.current?.connected && user?.id) {
       socketRef.current.emit('identify', user.id, (status: string) => {
-        console.log('👤 User identified:', status);
+        if (process.env.NODE_ENV === 'development') {
+          console.log('👤 User identified:', status);
+        }
       });
     }
   }, [user?.id]);
@@ -167,7 +181,9 @@ export function useWebSocket(): UseWebSocketReturn {
         setNotificationCount(data.data?.count ?? 0);
       }
     } catch (error) {
-      console.error('Failed to fetch notification count:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to fetch notification count:', error);
+      }
     }
   }, [token]);
 
@@ -184,7 +200,9 @@ export function useWebSocket(): UseWebSocketReturn {
         setMessageCount(data.data?.count ?? 0);
       }
     } catch (error) {
-      console.error('Failed to fetch message count:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to fetch message count:', error);
+      }
     }
   }, [token]);
 

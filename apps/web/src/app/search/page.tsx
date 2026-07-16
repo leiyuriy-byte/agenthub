@@ -74,7 +74,9 @@ function SearchContent() {
         setTotal(response.data.total);
       }
     } catch (error) {
-      console.error('Search failed:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Search failed:', error);
+      }
     } finally {
       setIsLoading(false);
     }

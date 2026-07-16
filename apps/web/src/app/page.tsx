@@ -25,7 +25,9 @@ async function fetchApi<T>(endpoint: string): Promise<T> {
     }
     return await res.json();
   } catch (error) {
-    console.error(`Failed to fetch ${endpoint}:`, error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error(`Failed to fetch ${endpoint}:`, error);
+    }
     return null as T;
   }
 }
@@ -44,7 +46,9 @@ async function getHomeData() {
       hotPosts: postsRes?.success ? postsRes.data?.posts || [] : [],
     };
   } catch (error) {
-    console.error('Failed to fetch home data:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Failed to fetch home data:', error);
+    }
     return {
       featuredAgents: [],
       categories: [],

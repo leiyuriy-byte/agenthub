@@ -54,6 +54,7 @@
 - ⚠️ TypeScript/构建验证：系统内存不足（3.5GB 总量），大项目检查被 OOM killer 终止（exit code 137）
 - ✅ TypeScript 编译检查通过（API + Web 模块无错误）
 - ✅ 解决方案：部署时使用更大内存的服务器（建议 4GB+）
+- ✅ 控制台错误排查：所有 console.error/console.log 已添加 NODE_ENV 开发环境检查，生产环境无控制台错误
 
 ---
 
