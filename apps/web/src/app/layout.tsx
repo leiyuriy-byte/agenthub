@@ -1,24 +1,33 @@
 import type { Metadata, Viewport } from 'next';
+import { Suspense } from 'react';
 import { dynamic } from 'next/dynamic';
 import { ThemeProvider } from '@/providers/theme-provider';
 import { QueryProvider } from '@/providers/query-provider';
 import { Toaster } from '@/components/ui/sonner';
+import { NavbarStatic } from '@/components/layout/navbar-static';
 import { NavbarSkeleton } from '@/components/layout/navbar-skeleton';
 import { Footer } from '@/components/layout/footer';
 import './globals.css';
 
-// Dynamic import for Navbar - non-blocking render
-// This allows the page to render immediately while Navbar JS loads in background
-const Navbar = dynamic(
-  () => import('@/components/layout/navbar').then((mod) => mod.Navbar),
+/**
+ * NavbarClient - 动态导入的客户端交互组件
+ * 
+ * 关键优化：
+ * - ssr: false - 完全客户端渲染，不阻塞服务端
+ * - loading: NavbarSkeleton - 加载时显示骨架屏
+ * 
+ * 用户认证状态由客户端组件通过 useAuthStore 管理
+ * 服务端不进行 session 检查，让客户端处理
+ */
+const NavbarClient = dynamic(
+  () => import('@/components/layout/navbar-client').then((mod) => mod.NavbarClient),
   {
-    ssr: false, // Disable SSR for interactive parts
-    loading: () => <NavbarSkeleton />, // Show skeleton while loading
+    ssr: false,
+    loading: () => <NavbarSkeleton />,
   }
 );
 
-// Note: Using system fonts to avoid Google Fonts network issues in restricted environments
-// For production deployment with proper network access, add: import { Inter, JetBrains_Mono } from 'next/font/google';
+// Note: Using system fonts to avoid Google Fonts network issues
 // --font-sans and --font-mono are defined in globals.css
 
 export const metadata: Metadata = {
@@ -68,7 +77,7 @@ export const viewport: Viewport = {
   maximumScale: 5,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -79,7 +88,18 @@ export default function RootLayout({
         <QueryProvider>
           <ThemeProvider defaultTheme="dark" storageKey="agenthub-theme">
             <div className="flex flex-col min-h-screen">
-              <Navbar />
+              {/* 
+                Islands Architecture 优化：
+                1. NavbarStatic - 服务端渲染，Logo + 导航 + 搜索（立即显示，LCP 最优）
+                2. NavbarClient - 客户端水合，用户菜单 + 通知 + 移动端菜单
+                
+                服务端不检查 session，认证状态由客户端管理
+              */}
+              <NavbarStatic user={null} />
+              <Suspense fallback={<NavbarSkeleton />}>
+                <NavbarClient user={null} />
+              </Suspense>
+              
               <main className="flex-1">
                 {children}
               </main>

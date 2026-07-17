@@ -1,6 +1,6 @@
 # AgentHub 开发任务
 
-> 最后更新：2026-07-17 22:10
+> 最后更新：2026-07-18 02:03
 
 ---
 
@@ -12,10 +12,10 @@
 - **未使用 JS: 140 KiB** — 资源未优化
 
 ### 根因
-1. Navbar 是 'use client' 组件，在 layout 中阻塞渲染
-2. Navbar 在 mount 时发起 3+ 个 API 调用（auth、notifications、check-in）
+1. Navbar 是 'use client' 组件，在 layout 中使用 `ssr: false`
+2. 整个导航栏需要等待 JS 加载完成才能渲染
 3. 客户端 hydration 等待 Navbar 加载完成
-4. 未使用 dynamic import 优化组件加载
+4. 未使用 Islands Architecture 优化
 
 ---
 
@@ -23,21 +23,21 @@
 
 ### P0 - 核心性能修复
 
-- [ ] **1. 优化 Navbar 加载策略**
-  - [ ] 1.1 将 Navbar 改为服务端渲染 + 客户端交互岛屿模式
-  - [ ] 1.2 移除 Navbar 中的同步 API 调用，改为 Suspense 异步加载
-  - [ ] 1.3 使用 `dynamic()` 动态导入非关键组件
+- [x] **1. Islands Architecture 优化**
+  - [x] 1.1 创建 NavbarStatic 服务端组件（纯静态 HTML）
+  - [x] 1.2 创建 NavbarClient 客户端交互组件
+  - [x] 1.3 更新 layout.tsx 使用 Islands 模式
 
-- [ ] **2. 优化首页渲染**
-  - [ ] 2.1 确保首页关键内容 SSR 完整渲染
-  - [ ] 2.2 添加 loading.tsx 骨架屏
-  - [ ] 2.3 移除阻塞渲染的客户端依赖
-
-- [ ] **3. JavaScript 优化**
-  - [ ] 3.1 分析并移除未使用的依赖
-  - [ ] 3.2 使用 dynamic import 延迟加载非首屏组件
+- [ ] **2. 验证优化效果**
+  - [ ] 2.1 完整构建测试（需要 4GB+ 内存服务器）
+  - [ ] 2.2 Lighthouse Performance 测试
 
 ### P1 - 次要优化
+
+- [ ] **3. JavaScript 优化**
+  - [x] 3.1 首页 framer-motion 已移除（使用纯 CSS 动画）
+  - [ ] 3.2 使用 dynamic import 延迟加载非首屏组件
+  - [ ] 3.3 其他页面 framer-motion 优化（32 个文件）
 
 - [ ] **4. 图片优化**
   - [ ] 4.1 配置 next/image 优化
@@ -59,20 +59,29 @@
 
 ## 技术方案
 
-### Navbar 优化方案
+### Islands Architecture（已完成 ✅）
 ```typescript
-// 方案：将 Navbar 拆分为 Server + Client 部分
-// layout.tsx (Server Component):
-<NavbarServer /> // 仅渲染不阻塞的静态部分
-
-// 动态导入客户端交互部分
-const NavbarClient = dynamic(() => import('@/components/layout/navbar-client'), {
-  ssr: false,
-  loading: () => <NavbarSkeleton />
-});
+// layout.tsx:
+<NavbarStatic /> {/* 服务端渲染，立即显示 */}
+<Suspense fallback={<NavbarSkeleton />}>
+  <NavbarClient /> {/* 客户端动态加载 */}
+</Suspense>
 ```
 
-### 首页优化方案
+### NavbarStatic（已完成 ✅）
+- 服务端组件，纯静态 HTML
+- Logo + 导航链接 + 搜索框
+- 无客户端交互，无 hydration 开销
+- 立即渲染，LCP 最优化
+
+### NavbarClient（已完成 ✅）
+- 客户端组件，动态导入
+- 用户菜单 + 通知 + 消息 + 签到
+- 移动端菜单
+- ssr: false + 骨架屏加载
+
+### 首页优化方案（已完成 ✅）
 - 确保 `page.tsx` 返回完整的 HTML（已完成 SSR）
 - 使用 `loading.tsx` 提供即时加载反馈
 - 将非关键交互组件改为动态导入
+- 首页 loading 使用纯 CSS 动画，移除 framer-motion
