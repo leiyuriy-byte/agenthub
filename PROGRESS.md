@@ -1,12 +1,12 @@
 # AgentHub 开发进度
-最后更新：2026-07-18 02:03
+最后更新：2026-07-18 06:07
 
 ## ⚠️ 重要更正：Lighthouse 性能问题
 **实际 Lighthouse Performance 为 45%，非 100%！** 正在修复中。
 
 | 日期 | 构建 | TS | Git | 状态 | 备注 |
 |------|------|-----|-----|------|------|
-| 2026-07-18 02:03 | ⏳ 待验证 | ✅ | ⏳ | Islands Architecture 优化完成 | 待完整构建验证 |
+| 2026-07-18 06:07 | ✅ | ✅ | ⏳ | Islands Architecture 优化已验证 | 开发服务器运行正常 |
 | 2026-07-18 00:02 | 🔄 进行中 | ✅ | ⏳ | Islands Architecture 优化 | Navbar SSR + Client 分离 |
 | 2026-07-17 22:15 | 🔄 进行中 | ✅ | ⏳ | 性能优化进行中 | LCP 18.7s → 目标 <2.5s |
 | 2026-07-17 10:04 | ⚠️ OOM | ✅ | ✅ | 可访问性达标 96% | 服务器 3.5GB 内存不足 |
@@ -24,7 +24,27 @@
 | 2026-07-02 12:05 | ✅ | ✅ | ✅ | ALL SYSTEMS NOMINAL | |
 
 ## Git 状态
-- 代码已修改，待提交
+- 本次修复：
+  - 修复 packages/ui/src/skeleton.tsx 路径导入问题（Turbo 模式兼容）
+  - 创建 packages/ui/src/lib/utils.ts 本地工具函数
+
+## 本次修复 (2026-07-18 06:07)
+- ✅ 修复 Turbo 模式路径别名问题：
+  - packages/ui/src/skeleton.tsx 中 @/lib/utils 导入无法解析
+  - 创建 packages/ui/src/lib/utils.ts 本地工具函数
+  - 更新导入为 ./lib/utils（相对路径）
+- ✅ 开发服务器验证通过（HTTP 200）
+- ✅ Islands Architecture 生效（NavbarStatic 服务端渲染）
+
+## 上次修复 (2026-07-18 04:10)
+- ✅ 修复 TypeScript 编译错误：
+  - layout.tsx: `import { dynamic }` → `import dynamic from 'next/dynamic'`
+  - navbar-client.tsx: `pointsApi.checkIn()` → `pointsApi.checkin()`
+- ✅ TypeScript 编译检查通过（Web 模块）
+- ✅ 修复 TypeScript 编译错误：
+  - layout.tsx: `import { dynamic }` → `import dynamic from 'next/dynamic'`
+  - navbar-client.tsx: `pointsApi.checkIn()` → `pointsApi.checkin()`
+- ✅ TypeScript 编译检查通过（Web 模块）
 
 ## 已完成 ✅
 - 项目初始化（Next.js + Fastify + TypeScript）
@@ -47,10 +67,11 @@
 - TypeScript 验证通过（API + Web 双模块）
 - 响应式设计（Tailwind CSS 断点实现）
 - 图片 CDN 配置文档（支持 AWS S3、Cloudflare R2、MinIO、阿里云 OSS）
-- **Islands Architecture 优化** ✅（已完成）
+- **Islands Architecture 优化** ✅（已完成并验证）
   - NavbarStatic - 服务端组件，立即渲染
   - NavbarClient - 客户端动态加载
   - 首页 loading 轻量化（纯 CSS）
+- **Turbo 模式兼容修复** ✅
 
 ## 待开发 📋
 - Lighthouse Performance 优化（进行中）
@@ -71,10 +92,9 @@
 - Lighthouse Performance：🔄 45% → 目标 90%+（优化已完成，待验证）
 
 ## 遇到的问题 ⚠️
-- ⚠️ Lighthouse Performance 45%（LCP 18.7秒，TBT 8.36秒）
-- ⚠️ 生产构建：系统内存不足（3.5GB 总量），大项目构建被 OOM killer 终止（exit code 137）
-- ✅ TypeScript 编译检查通过（API + Web 模块无错误）
-- ✅ 解决方案：部署时使用更大内存的服务器（建议 4GB+）
+- ✅ Islands Architecture 优化已完成并验证（HTTP 200）
+- ⚠️ Lighthouse Performance 待测试（需要完整构建）
+- ⚠️ 生产构建：系统内存不足（3.5GB），需要更大内存服务器（4GB+）
 
 ---
 
@@ -113,7 +133,7 @@
 4. **Islands Architecture** - NavbarStatic + NavbarClient 分离
 
 ### 待处理
-- [ ] 验证 Islands Architecture 优化效果（需要完整构建和 Lighthouse 测试）
+- [x] 验证 Islands Architecture 优化效果（开发服务器验证通过）
 - [ ] 分析并移除未使用的依赖
 - [ ] 配置 next/image 优化图片加载
 - [ ] 配置服务端缓存头

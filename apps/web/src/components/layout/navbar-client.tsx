@@ -153,7 +153,7 @@ export function NavbarClient({ user: initialUser }: NavbarClientProps) {
     if (!currentUser || checkedIn) return;
 
     try {
-      const res = await pointsApi.checkIn();
+      const res = await pointsApi.checkin();
       if (res.success) {
         setCheckedIn(true);
       }

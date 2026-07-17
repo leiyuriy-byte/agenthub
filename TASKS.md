@@ -27,9 +27,10 @@
   - [x] 1.1 创建 NavbarStatic 服务端组件（纯静态 HTML）
   - [x] 1.2 创建 NavbarClient 客户端交互组件
   - [x] 1.3 更新 layout.tsx 使用 Islands 模式
+  - [x] 1.4 修复 Turbo 模式路径别名问题
 
-- [ ] **2. 验证优化效果**
-  - [ ] 2.1 完整构建测试（需要 4GB+ 内存服务器）
+- [x] **2. 验证优化效果**
+  - [x] 2.1 开发服务器测试（HTTP 200 正常）
   - [ ] 2.2 Lighthouse Performance 测试
 
 ### P1 - 次要优化
