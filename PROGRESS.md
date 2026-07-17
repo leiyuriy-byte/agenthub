@@ -1,8 +1,12 @@
 # AgentHub 开发进度
-最后更新：2026-07-17 10:04
+最后更新：2026-07-17 22:15
+
+## ⚠️ 重要更正：Lighthouse 性能问题
+**实际 Lighthouse Performance 为 45%，非 100%！** 正在修复中。
 
 | 日期 | 构建 | TS | Git | 状态 | 备注 |
 |------|------|-----|-----|------|------|
+| 2026-07-17 22:15 | 🔄 进行中 | ✅ | ⏳ | 性能优化进行中 | LCP 18.7s → 目标 <2.5s |
 | 2026-07-17 10:04 | ⚠️ OOM | ✅ | ✅ | 可访问性达标 96% | 服务器 3.5GB 内存不足 |
 | 2026-07-16 22:10 | ✅ | ✅ | ✅ | 可访问性全部修复完成 | A11y 优化：button-name/aria/target-size/heading/console |  
 | 2026-07-16 22:06 | ✅ | ✅ | ✅ | 可访问性优化已推送 | button-name/aria-label/target-size/heading-order 修复 |
@@ -18,7 +22,7 @@
 | 2026-07-02 12:05 | ✅ | ✅ | ✅ | ALL SYSTEMS NOMINAL | |
 
 ## Git 状态 ✅
-- 代码已同步到远程仓库
+- 代码已修改，待提交
 
 ## 已完成 ✅
 - 项目初始化（Next.js + Fastify + TypeScript）
@@ -31,19 +35,26 @@
 - 后台管理（仪表盘/用户/内容/审核/统计）
 - 安全加固（XSS/速率限制/输入校验）
 - SEO 优化（metadata/sitemap/robots）
-- Lighthouse 性能优化 ✅ (100%)
+- Lighthouse Accessibility ✅ (96%)
 - Lighthouse Best Practices ✅ (96%)
 - Lighthouse SEO ✅ (100%)
-- Lighthouse Accessibility ✅ (96%)
+- Lighthouse Performance 🔄 优化中（当前 45%，目标 90%+）
 - GDPR 合规（数据导出/账号删除）
 - 邮件通知（SMTP 集成，欢迎/密码重置/通知邮件）
 - 可访问性优化（触摸目标尺寸 44px、aria-label、button-name、heading-order）
 - TypeScript 验证通过（API + Web 双模块）
 - 响应式设计（Tailwind CSS 断点实现）
 - 图片 CDN 配置文档（支持 AWS S3、Cloudflare R2、MinIO、阿里云 OSS）
+- **性能优化进行中**：
+  - Navbar 骨架屏 (navbar-skeleton.tsx) ✅
+  - Layout 动态导入 ✅
+  - 首页 loading 状态轻量化 ✅
 
 ## 待开发 📋
-- 无（项目开发完成）
+- Lighthouse Performance 优化（进行中）
+  - LCP: 18.7s → 目标 <2.5s
+  - TBT: 8.36s → 目标 <200ms
+  - 未使用 JS: 140 KiB
 
 ## 项目验证状态
 - TypeScript 编译：✅ 通过（Web + API）
@@ -52,29 +63,30 @@
 - UI 组件：✅ 完整
 - API 接口：✅ 完整
 - Lighthouse Accessibility：✅ 96%
-- Lighthouse Performance：✅ 100%
 - Lighthouse SEO：✅ 100%
 - Lighthouse Best Practices：✅ 96%
-- 构建：⚠️ 需要更大内存服务器（4GB+）
+- Lighthouse Performance：🔄 45% → 目标 90%+
 
 ## 遇到的问题 ⚠️
+- ⚠️ Lighthouse Performance 45%（LCP 18.7秒，TBT 8.36秒）
 - ⚠️ 生产构建：系统内存不足（3.5GB 总量），大项目构建被 OOM killer 终止（exit code 137）
 - ✅ TypeScript 编译检查通过（API + Web 模块无错误）
-- ✅ Lighthouse 可访问性达标 96%（超过 96% 目标）
 - ✅ 解决方案：部署时使用更大内存的服务器（建议 4GB+）
 
 ---
 
-## AgentHub 项目开发完成！🎉
+## 性能优化进度 (2026-07-17)
 
-所有核心功能开发完毕，TypeScript 验证通过，Lighthouse 全指标达标。项目已准备好部署上线。
+### 已完成 ✅
+1. **Navbar 骨架屏** - 创建 `navbar-skeleton.tsx`，纯静态 HTML，无需 JS 即时渲染
+2. **Layout 动态导入** - 使用 `next/dynamic` 动态加载 Navbar，ssr: false
+3. **首页 loading 轻量化** - 移除 framer-motion 依赖，使用纯 CSS 动画
 
-### 部署步骤：
-1. 配置 `.env.production` 环境变量
-2. 使用 4GB+ 内存服务器运行 `pnpm build` 构建
-3. 使用 `deploy.sh` 或 `docker-compose up -d` 部署
+### 进行中 🔄
+- 验证优化效果（需要完整构建和 Lighthouse 测试）
+- 考虑移除 framer-motion 依赖（28 个文件使用）
 
-### 服务器要求：
-- 内存：4GB+（避免 OOM）
-- Node.js 20+
-- pnpm 9+
+### 待处理
+- 分析并移除未使用的依赖
+- 配置 next/image 优化图片加载
+- 配置服务端缓存头

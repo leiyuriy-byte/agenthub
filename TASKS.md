@@ -1,48 +1,78 @@
 # AgentHub 开发任务
 
-> 最后更新：2026-07-17 10:04
+> 最后更新：2026-07-17 22:10
 
 ---
 
-## 项目状态：✅ 开发完成
+## 紧急修复：Lighthouse Performance 45% → 90%+
 
-所有核心功能开发完毕，Lighthouse 全指标达标，项目已准备好部署上线。
+### 问题诊断
+- **LCP: 18.7秒**（目标 < 2.5秒）— 首次内容绘制过慢
+- **TBT: 8.36秒**（目标 < 200ms）— 主线程阻塞严重
+- **未使用 JS: 140 KiB** — 资源未优化
 
----
-
-## 已完成功能清单
-
-| 模块 | 状态 | 备注 |
-|------|------|------|
-| 用户系统（注册/登录/OAuth/个人主页/等级积分） | ✅ | |
-| Agent 展示（CRUD/分类/搜索/排行榜/版本管理） | ✅ | |
-| 社区交流（讨论区/帖子/评论/问答/投票） | ✅ | |
-| 实时通讯（私信/群组/WebSocket） | ✅ | |
-| 评价与反馈（评分/评论/用户反馈） | ✅ | |
-| 内容管理（文章/资源/活动，含文章目录自动生成） | ✅ | |
-| 后台管理（仪表盘/用户/内容/审核/统计） | ✅ | |
-| 安全加固（XSS/速率限制/输入校验） | ✅ | |
-| SEO 优化（metadata/sitemap/robots） | ✅ | |
-| Lighthouse Performance | ✅ 100% | |
-| Lighthouse Best Practices | ✅ 96% | |
-| Lighthouse SEO | ✅ 100% | |
-| Lighthouse Accessibility | ✅ 96% | |
-| GDPR 合规（数据导出/账号删除） | ✅ | |
-| 邮件通知（SMTP 集成） | ✅ | |
-| TypeScript 验证 | ✅ | Web + API 双模块通过 |
-| 响应式设计 | ✅ | Tailwind CSS 断点 |
-| 图片 CDN 配置 | ✅ | 支持 S3/R2/MinIO/OSS |
+### 根因
+1. Navbar 是 'use client' 组件，在 layout 中阻塞渲染
+2. Navbar 在 mount 时发起 3+ 个 API 调用（auth、notifications、check-in）
+3. 客户端 hydration 等待 Navbar 加载完成
+4. 未使用 dynamic import 优化组件加载
 
 ---
 
-## 部署注意事项
+## 修复任务清单
 
-### 服务器要求
-- 内存：4GB+（当前 3.5GB 服务器无法完成构建）
-- Node.js 20+
-- pnpm 9+
+### P0 - 核心性能修复
 
-### 部署步骤
-1. 配置 `.env.production` 环境变量
-2. 使用 4GB+ 服务器运行 `pnpm build`
-3. 使用 `deploy.sh` 或 `docker-compose up -d`
+- [ ] **1. 优化 Navbar 加载策略**
+  - [ ] 1.1 将 Navbar 改为服务端渲染 + 客户端交互岛屿模式
+  - [ ] 1.2 移除 Navbar 中的同步 API 调用，改为 Suspense 异步加载
+  - [ ] 1.3 使用 `dynamic()` 动态导入非关键组件
+
+- [ ] **2. 优化首页渲染**
+  - [ ] 2.1 确保首页关键内容 SSR 完整渲染
+  - [ ] 2.2 添加 loading.tsx 骨架屏
+  - [ ] 2.3 移除阻塞渲染的客户端依赖
+
+- [ ] **3. JavaScript 优化**
+  - [ ] 3.1 分析并移除未使用的依赖
+  - [ ] 3.2 使用 dynamic import 延迟加载非首屏组件
+
+### P1 - 次要优化
+
+- [ ] **4. 图片优化**
+  - [ ] 4.1 配置 next/image 优化
+  - [ ] 4.2 添加图片懒加载
+
+- [ ] **5. 缓存策略**
+  - [ ] 5.1 配置 SWR/React Query 缓存
+  - [ ] 5.2 添加服务端缓存头
+
+---
+
+## 验证标准
+- [ ] Lighthouse Performance ≥ 90%
+- [ ] LCP < 2.5秒
+- [ ] TBT < 200ms
+- [ ] 无 TypeScript 编译错误
+
+---
+
+## 技术方案
+
+### Navbar 优化方案
+```typescript
+// 方案：将 Navbar 拆分为 Server + Client 部分
+// layout.tsx (Server Component):
+<NavbarServer /> // 仅渲染不阻塞的静态部分
+
+// 动态导入客户端交互部分
+const NavbarClient = dynamic(() => import('@/components/layout/navbar-client'), {
+  ssr: false,
+  loading: () => <NavbarSkeleton />
+});
+```
+
+### 首页优化方案
+- 确保 `page.tsx` 返回完整的 HTML（已完成 SSR）
+- 使用 `loading.tsx` 提供即时加载反馈
+- 将非关键交互组件改为动态导入

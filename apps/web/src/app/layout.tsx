@@ -1,10 +1,21 @@
 import type { Metadata, Viewport } from 'next';
+import { dynamic } from 'next/dynamic';
 import { ThemeProvider } from '@/providers/theme-provider';
 import { QueryProvider } from '@/providers/query-provider';
 import { Toaster } from '@/components/ui/sonner';
-import { Navbar } from '@/components/layout/navbar';
+import { NavbarSkeleton } from '@/components/layout/navbar-skeleton';
 import { Footer } from '@/components/layout/footer';
 import './globals.css';
+
+// Dynamic import for Navbar - non-blocking render
+// This allows the page to render immediately while Navbar JS loads in background
+const Navbar = dynamic(
+  () => import('@/components/layout/navbar').then((mod) => mod.Navbar),
+  {
+    ssr: false, // Disable SSR for interactive parts
+    loading: () => <NavbarSkeleton />, // Show skeleton while loading
+  }
+);
 
 // Note: Using system fonts to avoid Google Fonts network issues in restricted environments
 // For production deployment with proper network access, add: import { Inter, JetBrains_Mono } from 'next/font/google';

@@ -1,30 +1,14 @@
-'use client';
-
-import { Loader2 } from 'lucide-react';
-import { motion } from 'framer-motion';
-
+/**
+ * 首页加载状态
+ * 使用轻量级 CSS 动画，不使用 framer-motion 以提升性能
+ */
 export default function Loading() {
   return (
     <div className="min-h-[calc(100vh-200px)] flex items-center justify-center">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.2 }}
-        className="text-center"
-      >
-        {/* Logo animation */}
+      <div className="text-center">
+        {/* Simple logo animation using CSS */}
         <div className="relative w-16 h-16 mx-auto mb-6">
-          <motion.div
-            className="absolute inset-0 rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500"
-            animate={{
-              rotate: 360,
-            }}
-            transition={{
-              duration: 3,
-              repeat: Infinity,
-              ease: "linear",
-            }}
-          />
+          <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 animate-pulse" />
           <div className="absolute inset-0 rounded-2xl bg-background flex items-center justify-center">
             <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent dark:from-indigo-400 dark:to-purple-400">
               AH
@@ -34,34 +18,29 @@ export default function Loading() {
 
         {/* Loading indicator */}
         <div className="flex items-center justify-center gap-2 text-muted-foreground">
-          <Loader2 className="h-5 w-5 animate-spin" />
+          <svg
+            className="animate-spin h-5 w-5"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            />
+          </svg>
           <span className="text-sm">加载中...</span>
         </div>
-
-        {/* Progress dots */}
-        <motion.div
-          className="flex justify-center gap-1 mt-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-        >
-          {[0, 1, 2].map((i) => (
-            <motion.div
-              key={i}
-              className="w-2 h-2 rounded-full bg-primary"
-              animate={{
-                opacity: [0.3, 1, 0.3],
-                scale: [0.8, 1.2, 0.8],
-              }}
-              transition={{
-                duration: 1.2,
-                repeat: Infinity,
-                delay: i * 0.2,
-              }}
-            />
-          ))}
-        </motion.div>
-      </motion.div>
+      </div>
     </div>
   );
 }
