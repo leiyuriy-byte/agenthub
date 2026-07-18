@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@agenthub/ui/card';
 import { Button } from '@agenthub/ui/button';
 import { Input } from '@agenthub/ui/input';
@@ -280,10 +280,10 @@ export default function FeedbackPage() {
                 ) : (
                   <div className="space-y-4">
                     {feedbacks.map((feedback) => (
-                      <motion.div
+                      <div class="animate-slide-up"
                         key={feedback.id}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
+                        
+                        
                         className="p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
                       >
                         <div className="flex items-start justify-between gap-2">
@@ -329,7 +329,7 @@ export default function FeedbackPage() {
                             <Trash2 className="h-4 w-4" />
                           </button>
                         </div>
-                      </motion.div>
+                      </div>
                     ))}
 
                     {/* Load More */}

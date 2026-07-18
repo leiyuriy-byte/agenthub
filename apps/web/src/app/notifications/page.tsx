@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+
 import { Button } from '@agenthub/ui/button';
 import { Card, CardContent } from '@agenthub/ui/card';
 import { notificationApi, Notification, useAuthStore } from '@/lib/api';
@@ -222,7 +222,7 @@ export default function NotificationsPage() {
             ) : (
               <div className="divide-y">
                 {notifications.map((notification, index) => (
-                  <motion.div
+                  <div class="animate-slide-up"
                     key={notification.id}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -299,7 +299,7 @@ export default function NotificationsPage() {
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
-                  </motion.div>
+                  </div>
                 ))}
               </div>
             )}

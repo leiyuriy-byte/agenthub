@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
+
 import { searchApi, SearchAgent, SearchPost, SearchUser } from '@/lib/api';
 import { useAuthStore } from '@/stores/auth-store';
 import { Avatar, AvatarFallback, AvatarImage } from '@agenthub/ui/avatar';
@@ -198,7 +198,7 @@ function SearchContent() {
                 </div>
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                   {agents.map((agent, index) => (
-                    <motion.div
+                    <div class="animate-slide-up"
                       key={agent.id}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -237,7 +237,7 @@ function SearchContent() {
                           </CardContent>
                         </Card>
                       </Link>
-                    </motion.div>
+                    </div>
                   ))}
                 </div>
               </section>
@@ -253,7 +253,7 @@ function SearchContent() {
                 </div>
                 <div className="space-y-3">
                   {posts.map((post, index) => (
-                    <motion.div
+                    <div class="animate-slide-up"
                       key={post.id}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -291,7 +291,7 @@ function SearchContent() {
                           </CardContent>
                         </Card>
                       </Link>
-                    </motion.div>
+                    </div>
                   ))}
                 </div>
               </section>
@@ -307,7 +307,7 @@ function SearchContent() {
                 </div>
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                   {users.map((user, index) => (
-                    <motion.div
+                    <div class="animate-slide-up"
                       key={user.id}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -348,7 +348,7 @@ function SearchContent() {
                           </CardContent>
                         </Card>
                       </Link>
-                    </motion.div>
+                    </div>
                   ))}
                 </div>
               </section>

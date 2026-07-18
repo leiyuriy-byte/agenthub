@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+
 import { adminApi, AdminAgent } from '@/lib/api';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@agenthub/ui/button';
@@ -169,8 +169,8 @@ export default function AdminAgentsPage() {
         <div className="relative max-w-md flex-1 w-full">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="搜索 Agent..."
-            className="pl-10"
+            placeholder="搜索 Agent... className="
+            className="pl-10 className="
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
@@ -184,7 +184,7 @@ export default function AdminAgentsPage() {
             setStatusFilter(e.target.value);
             setPage(1);
           }}
-          className="border rounded-lg px-3 py-2 bg-background text-sm w-full sm:w-auto"
+          className="border rounded-lg px-3 py-2 bg-background text-sm w-full sm:w-auto className="
         >
           <option value="">全部状态</option>
           <option value="draft">草稿</option>
@@ -238,11 +238,11 @@ export default function AdminAgentsPage() {
                   </tr>
                 ) : (
                   agents.map((agent) => (
-                    <motion.tr
+                    <tr className="animate-fade-in"
                       key={agent.id}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="hover:bg-muted/50"
+                      
+                      
+                      className="hover:bg-muted/50 className="
                     >
                       <td className="px-4 md:px-6 py-4">
                         <div className="flex items-center gap-3">
@@ -322,13 +322,13 @@ export default function AdminAgentsPage() {
                             size="icon"
                             onClick={() => handleDeleteAgent(agent.id)}
                             disabled={actionLoading === agent.id}
-                            className="text-destructive hover:text-destructive"
+                            className="text-destructive hover:text-destructive className="
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
                       </td>
-                    </motion.tr>
+                    </tr>
                   ))
                 )}
               </tbody>

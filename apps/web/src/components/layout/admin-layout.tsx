@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
+
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@agenthub/ui/button';
 import {
@@ -62,14 +62,14 @@ export function AdminLayout({ children, onLogout }: AdminLayoutProps) {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <>
-            <motion.div
+            <div class="animate-slide-up"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="md:hidden fixed inset-0 bg-black/50 z-40"
               onClick={() => setIsMobileMenuOpen(false)}
             />
-            <motion.aside
+            <aside class="animate-slide-up"
               initial={{ x: -280 }}
               animate={{ x: 0 }}
               exit={{ x: -280 }}
@@ -124,7 +124,7 @@ export function AdminLayout({ children, onLogout }: AdminLayoutProps) {
                   退出登录
                 </Button>
               </div>
-            </motion.aside>
+            </aside>
           </>
         )}
       </AnimatePresence>

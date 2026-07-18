@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 // No routing needed
-import { motion } from 'framer-motion';
+
 import { z } from 'zod';
 import { Button } from '@agenthub/ui/button';
 import { Input } from '@agenthub/ui/input';
@@ -79,10 +79,10 @@ export default function ForgotPasswordPage() {
           <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-primary/5 rounded-full blur-3xl" />
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+        <div class="animate-slide-up"
+          
+          
+          
           className="w-full max-w-md"
         >
           <Card className="border-border/50 bg-card/50 backdrop-blur">
@@ -122,7 +122,7 @@ export default function ForgotPasswordPage() {
               </div>
             </CardContent>
           </Card>
-        </motion.div>
+        </div>
       </div>
     );
   }
@@ -135,10 +135,10 @@ export default function ForgotPasswordPage() {
         <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-primary/5 rounded-full blur-3xl" />
       </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+      <div class="animate-slide-up"
+        
+        
+        
         className="w-full max-w-md"
       >
         <Card className="border-border/50 bg-card/50 backdrop-blur">
@@ -200,7 +200,7 @@ export default function ForgotPasswordPage() {
             </div>
           </CardContent>
         </Card>
-      </motion.div>
+      </div>
     </div>
   );
 }

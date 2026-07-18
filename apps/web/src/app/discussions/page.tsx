@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+
 import { Button } from '@agenthub/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@agenthub/ui/card';
 import { Badge } from '@agenthub/ui/badge';
@@ -301,11 +301,11 @@ export default function DiscussionsPage() {
                 {posts.map((post, index) => {
                   const typeBadge = getTypeBadge(post.type);
                   return (
-                    <motion.div
+                    <div class="animate-slide-up"
                       key={post.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.03 }}
+                      
+                      
+                      
                     >
                       <Link href={`/discussions/${post.id}`}>
                         <Card className="transition-all hover:border-primary/50 hover:shadow-md">
@@ -402,7 +402,7 @@ export default function DiscussionsPage() {
                           </CardContent>
                         </Card>
                       </Link>
-                    </motion.div>
+                    </div>
                   );
                 })}
               </div>

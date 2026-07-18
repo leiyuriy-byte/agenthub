@@ -7,7 +7,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+
 import { Avatar, AvatarFallback, AvatarImage, Button, Textarea } from '@agenthub/ui';
 import { messageApi, User, userApi } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
@@ -136,13 +136,13 @@ export default function NewConversationPage() {
 
       <div className="max-w-2xl mx-auto px-4 py-6">
         {error && (
-          <motion.div
+          <div class="animate-slide-up"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             className="mb-4 p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm"
           >
             {error}
-          </motion.div>
+          </div>
         )}
 
         {/* Search user */}
@@ -170,7 +170,7 @@ export default function NewConversationPage() {
 
           {/* Search results */}
           {users.length > 0 && !selectedUser && (
-            <motion.div
+            <div class="animate-slide-up"
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               className="mt-2 bg-zinc-800/80 border border-zinc-700 rounded-xl overflow-hidden"
@@ -198,12 +198,12 @@ export default function NewConversationPage() {
                   </div>
                 </button>
               ))}
-            </motion.div>
+            </div>
           )}
 
           {/* Selected user */}
           {selectedUser && (
-            <motion.div
+            <div class="animate-slide-up"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               className="mt-2 flex items-center justify-between p-3 bg-zinc-800/50 border border-[#10b981]/30 rounded-xl"
@@ -234,7 +234,7 @@ export default function NewConversationPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
-            </motion.div>
+            </div>
           )}
         </div>
 

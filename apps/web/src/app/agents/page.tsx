@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
+
 import { Input } from '@agenthub/ui/input';
 import { Badge } from '@agenthub/ui/badge';
 import { Button } from '@agenthub/ui/button';
@@ -164,12 +164,10 @@ export default function AgentsPage() {
           <>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {agents.map((agent, index) => (
-                <motion.div
+                <div
                   key={agent.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  whileHover={{ y: -4 }}
+                  className="animate-slide-up"
+                  style={{ animationDelay: `${index * 0.05}s` }}
                 >
                   <Card className="overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-primary/50 hover:shadow-primary/10">
                     <Link href={`/agents/${agent.id}`}>
@@ -253,7 +251,7 @@ export default function AgentsPage() {
                       )}
                     </CardFooter>
                   </Card>
-                </motion.div>
+                </div>
               ))}
             </div>
 

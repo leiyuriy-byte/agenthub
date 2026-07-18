@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+
 import { Input } from '@agenthub/ui/input';
 import { Badge } from '@agenthub/ui/badge';
 import { Button } from '@agenthub/ui/button';
@@ -243,7 +243,7 @@ export default function ResourcesPage() {
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {filteredResources.map((resource, index) => (
-              <motion.div
+              <div class="animate-slide-up"
                 key={resource.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -317,7 +317,7 @@ export default function ResourcesPage() {
                     </CardFooter>
                   </Card>
                 </Link>
-              </motion.div>
+              </div>
             ))}
           </div>
         )}

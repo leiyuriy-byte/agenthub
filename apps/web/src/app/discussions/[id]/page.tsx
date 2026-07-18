@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+
 import { Button } from '@agenthub/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@agenthub/ui/card';
 import { Badge } from '@agenthub/ui/badge';
@@ -820,9 +820,9 @@ export default function PostDetailPage() {
       {/* Report Modal */}
       {showReportModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
+          <div class="animate-slide-up"
+            
+            
             className="bg-background rounded-xl shadow-xl max-w-md w-full mx-4"
           >
             <div className="p-6">
@@ -899,7 +899,7 @@ export default function PostDetailPage() {
                 </>
               )}
             </div>
-          </motion.div>
+          </div>
         </div>
       )}
     </div>

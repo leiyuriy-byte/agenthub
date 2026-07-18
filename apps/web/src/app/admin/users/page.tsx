@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+
 import Image from 'next/image';
 import { adminApi, AdminUser } from '@/lib/api';
 import { useAuthStore } from '@/stores/auth-store';
@@ -140,8 +140,8 @@ export default function AdminUsersPage() {
         <div className="relative max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="搜索用户..."
-            className="pl-10"
+            placeholder="搜索用户... className="
+            className="pl-10 className="
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
@@ -193,11 +193,11 @@ export default function AdminUsersPage() {
                   </tr>
                 ) : (
                   users.map((u) => (
-                    <motion.tr
+                    <tr className="animate-fade-in"
                       key={u.id}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="hover:bg-muted/50"
+                      
+                      
+                      className="hover:bg-muted/50 className="
                     >
                       <td className="px-4 md:px-6 py-4">
                         <div className="flex items-center gap-3">
@@ -224,7 +224,7 @@ export default function AdminUsersPage() {
                           value={u.role}
                           onChange={(e) => handleUpdateRole(u.id, e.target.value)}
                           disabled={actionLoading === u.id || u.id === user.id}
-                          className="text-sm border rounded px-2 py-1 bg-background w-full md:w-auto"
+                          className="text-sm border rounded px-2 py-1 bg-background w-full md:w-auto className="
                         >
                           <option value="user">用户</option>
                           <option value="moderator">版主</option>
@@ -245,12 +245,12 @@ export default function AdminUsersPage() {
                           size="icon"
                           onClick={() => handleDeleteUser(u.id)}
                           disabled={actionLoading === u.id || u.id === user.id}
-                          className="text-destructive hover:text-destructive"
+                          className="text-destructive hover:text-destructive className="
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </td>
-                    </motion.tr>
+                    </tr>
                   ))
                 )}
               </tbody>

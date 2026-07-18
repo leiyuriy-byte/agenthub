@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+
 import { adminApi, AdminComment } from '@/lib/api';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@agenthub/ui/button';
@@ -124,8 +124,8 @@ export default function AdminCommentsPage() {
         <div className="relative max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="搜索评论内容..."
-            className="pl-10"
+            placeholder="搜索评论内容... className="
+            className="pl-10 className="
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
@@ -177,11 +177,11 @@ export default function AdminCommentsPage() {
                   </tr>
                 ) : (
                   comments.map((comment) => (
-                    <motion.tr
+                    <tr className="animate-fade-in"
                       key={comment.id}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="hover:bg-muted/50"
+                      
+                      
+                      className="hover:bg-muted/50 className="
                     >
                       <td className="px-4 md:px-6 py-4">
                         <p className="text-sm line-clamp-2 max-w-[200px] md:max-w-xs">{comment.content}</p>
@@ -221,13 +221,13 @@ export default function AdminCommentsPage() {
                             size="icon"
                             onClick={() => handleDeleteComment(comment.id)}
                             disabled={actionLoading === comment.id}
-                            className="text-destructive hover:text-destructive"
+                            className="text-destructive hover:text-destructive className="
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
                       </td>
-                    </motion.tr>
+                    </tr>
                   ))
                 )}
               </tbody>

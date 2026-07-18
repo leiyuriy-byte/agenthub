@@ -27,7 +27,7 @@
 
 ## Git 状态
 - 代码已提交并推送至 master 分支
-- Commit: 6f81b65
+- Commit: 1fc08f5
 
 ## 本次修复 (2026-07-18 06:07)
 - ✅ 修复 Turbo 模式路径别名问题：
@@ -94,7 +94,8 @@
 
 ## 遇到的问题 ⚠️
 - ✅ Islands Architecture 优化已完成并验证（HTTP 200）
-- ⚠️ Lighthouse Performance 待测试（需要完整构建）
+- ✅ framer-motion 移除优化已完成（30个页面，CSS动画替代）
+- ⚠️ Lighthouse Performance 待完整测试
 - ⚠️ 生产构建：系统内存不足（3.5GB），需要更大内存服务器（4GB+）
 
 ---
@@ -139,7 +140,10 @@
 - [x] Lighthouse Performance 测试（已完成，LCP 18.7s → 6.7s）
 - [x] 配置服务端缓存头（已添加到 next.config.mjs）
 - [x] 配置 next/image 优化图片加载（已完成）
-- [ ] 减少 JavaScript 体积（framer-motion 延迟加载）
+- [x] 减少 JavaScript 体积（framer-motion 完全移除，CSS 动画替代）
+  - 创建 fade-in.tsx 组件库
+  - 添加 CSS 动画到 globals.css
+  - 30个页面已移除 framer-motion 依赖
 
 ---
 

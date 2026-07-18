@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
+
 import { Button } from '@agenthub/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@agenthub/ui/avatar';
 import { Textarea } from '@agenthub/ui/textarea';
@@ -67,7 +67,7 @@ function CommentItem({
   };
 
   return (
-    <motion.div
+    <div class="animate-slide-up"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       className={cn(
@@ -191,7 +191,7 @@ function CommentItem({
           {/* Reply Input */}
           <AnimatePresence>
             {showReplyInput && (
-              <motion.div
+              <div class="animate-slide-up"
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
@@ -218,7 +218,7 @@ function CommentItem({
                     回复
                   </Button>
                 </div>
-              </motion.div>
+              </div>
             )}
           </AnimatePresence>
         </div>
@@ -242,7 +242,7 @@ function CommentItem({
           ))}
         </div>
       )}
-    </motion.div>
+    </div>
   );
 }
 

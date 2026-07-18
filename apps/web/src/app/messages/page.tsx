@@ -7,7 +7,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+
 import { Avatar, AvatarFallback, AvatarImage } from '@agenthub/ui';
 import { messageApi, Conversation, ConversationParticipant } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
@@ -116,17 +116,17 @@ export default function MessagesPage() {
 
       <div className="max-w-4xl mx-auto px-4 py-6">
         {error && (
-          <motion.div
+          <div class="animate-slide-up"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             className="mb-4 p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm"
           >
             {error}
-          </motion.div>
+          </div>
         )}
 
         {conversations.length === 0 ? (
-          <motion.div
+          <div class="animate-slide-up"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="text-center py-16"
@@ -147,7 +147,7 @@ export default function MessagesPage() {
               </svg>
               新建对话
             </Link>
-          </motion.div>
+          </div>
         ) : (
           <div className="space-y-1">
             {conversations.map((conv, index) => {
@@ -157,7 +157,7 @@ export default function MessagesPage() {
               const hasUnread = (conv.unreadCount || 0) > 0;
               
               return (
-                <motion.div
+                <div class="animate-slide-up"
                   key={conv.id}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -201,7 +201,7 @@ export default function MessagesPage() {
                       </p>
                     </div>
                   </Link>
-                </motion.div>
+                </div>
               );
             })}
           </div>

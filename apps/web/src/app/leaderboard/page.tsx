@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+
 import { Avatar, AvatarFallback, AvatarImage } from '@agenthub/ui/avatar';
 import { Button } from '@agenthub/ui/button';
 import { Card, CardContent } from '@agenthub/ui/card';
@@ -116,7 +116,7 @@ export default function LeaderboardPage() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent" />
         <div className="container relative py-16">
           <div className="max-w-4xl mx-auto text-center">
-            <motion.div
+            <div class="animate-slide-up"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
             >
@@ -139,7 +139,7 @@ export default function LeaderboardPage() {
                   </Avatar>
                 </Card>
               )}
-            </motion.div>
+            </div>
           </div>
         </div>
       </div>
@@ -197,7 +197,7 @@ export default function LeaderboardPage() {
                   const isCurrentUser = entry.id === user?.id;
                   
                   return (
-                    <motion.div
+                    <div class="animate-slide-up"
                       key={entry.id}
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
@@ -255,7 +255,7 @@ export default function LeaderboardPage() {
                           </CardContent>
                         </Card>
                       </Link>
-                    </motion.div>
+                    </div>
                   );
                 })
               )}

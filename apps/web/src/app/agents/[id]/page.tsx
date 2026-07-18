@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
-import { motion } from 'framer-motion';
+
 import { Avatar, AvatarFallback, AvatarImage } from '@agenthub/ui/avatar';
 import { Badge } from '@agenthub/ui/badge';
 import { Button } from '@agenthub/ui/button';
@@ -1499,10 +1499,10 @@ export default function AgentDetailPage() {
             ) : (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {relatedAgents.slice(0, 6).map((relatedAgent) => (
-                  <motion.div
+                  <div class="animate-slide-up"
                     key={relatedAgent.id}
-                    whileHover={{ y: -4 }}
-                    transition={{ duration: 0.2 }}
+                    
+                    
                   >
                     <Link href={`/agents/${relatedAgent.id}`}>
                       <Card className="h-full transition-all duration-300 hover:shadow-xl hover:border-primary/50 group">
@@ -1545,7 +1545,7 @@ export default function AgentDetailPage() {
                         </CardFooter>
                       </Card>
                     </Link>
-                  </motion.div>
+                  </div>
                 ))}
               </div>
             )}
@@ -1555,10 +1555,10 @@ export default function AgentDetailPage() {
 
       {/* Lightbox Modal */}
       {lightboxOpen && agent?.screenshots && agent.screenshots.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+        <div class="animate-slide-up"
+          
+          
+          
           className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
           onClick={closeLightbox}
         >
@@ -1598,11 +1598,11 @@ export default function AgentDetailPage() {
           )}
 
           {/* Main image */}
-          <motion.div
+          <div class="animate-slide-up"
             key={lightboxIndex}
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.2 }}
+            
+            
+            
             className="max-w-[90vw] max-h-[90vh]"
             onClick={(e) => e.stopPropagation()}
           >
@@ -1628,8 +1628,8 @@ export default function AgentDetailPage() {
             <p className="text-center text-white/60 mt-2 text-sm">
               {lightboxIndex + 1} / {agent.screenshots.length}
             </p>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       )}
 
       {/* Footer */}

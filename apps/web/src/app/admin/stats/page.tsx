@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+
 import {
   LineChart,
   Line,
@@ -55,10 +55,10 @@ interface StatsCardProps {
 
 function StatsCard({ title, value, subtitle, icon: Icon, color }: StatsCardProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+    <div class="animate-slide-up className="
+      
+      
+      
     >
       <Card className="overflow-hidden">
         <CardContent className="p-6">
@@ -76,7 +76,7 @@ function StatsCard({ title, value, subtitle, icon: Icon, color }: StatsCardProps
           </div>
         </CardContent>
       </Card>
-    </motion.div>
+    </div>
   );
 }
 
@@ -95,12 +95,12 @@ function TrendChart({ data, title }: { data: TrendData[]; title: string }) {
             <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
               <XAxis
-                dataKey="date"
+                dataKey="date className="
                 tickFormatter={(value) => {
                   const date = new Date(value);
                   return `${date.getMonth() + 1}/${date.getDate()}`;
                 }}
-                className="text-xs"
+                className="text-xs className="
               />
               <YAxis className="text-xs" />
               <Tooltip
@@ -112,25 +112,25 @@ function TrendChart({ data, title }: { data: TrendData[]; title: string }) {
               />
               <Legend />
               <Line
-                type="monotone"
-                dataKey="users"
-                name="用户"
+                type="monotone className="
+                dataKey="users className="
+                name="用户 className="
                 stroke={COLORS.users}
                 strokeWidth={2}
                 dot={false}
               />
               <Line
-                type="monotone"
-                dataKey="agents"
-                name="Agent"
+                type="monotone className="
+                dataKey="agents className="
+                name="Agent className="
                 stroke={COLORS.agents}
                 strokeWidth={2}
                 dot={false}
               />
               <Line
-                type="monotone"
-                dataKey="posts"
-                name="帖子"
+                type="monotone className="
+                dataKey="posts className="
+                name="帖子 className="
                 stroke={COLORS.posts}
                 strokeWidth={2}
                 dot={false}
@@ -218,7 +218,7 @@ function PopularAgentsTable({ agents }: { agents: PopularAgent[] }) {
                         <img
                           src={agent.logo}
                           alt={agent.name}
-                          className="h-8 w-8 rounded object-cover"
+                          className="h-8 w-8 rounded object-cover className="
                         />
                       )}
                       <div>
@@ -301,12 +301,12 @@ function OverviewPanel({ overview }: { overview: OverviewStats }) {
               <PieChart>
                 <Pie
                   data={agentStatusData}
-                  cx="50%"
-                  cy="50%"
+                  cx="50% className="
+                  cy="50% className="
                   innerRadius={60}
                   outerRadius={80}
                   paddingAngle={5}
-                  dataKey="value"
+                  dataKey="value className="
                   label={({ name, value }) => `${name}: ${value}`}
                 >
                   {agentStatusData.map((entry, index) => (
@@ -532,22 +532,22 @@ export default function AdminStatsPage() {
           {/* Summary */}
           <div className="grid gap-4 md:grid-cols-3">
             <StatsCard
-              title="新增用户"
+              title="新增用户 className="
               value={trends.reduce((sum, t) => sum + t.users, 0)}
               icon={Users}
-              color="bg-blue-500"
+              color="bg-blue-500 className="
             />
             <StatsCard
-              title="新增 Agent"
+              title="新增 Agent className="
               value={trends.reduce((sum, t) => sum + t.agents, 0)}
               icon={BotIcon}
-              color="bg-purple-500"
+              color="bg-purple-500 className="
             />
             <StatsCard
-              title="新增帖子"
+              title="新增帖子 className="
               value={trends.reduce((sum, t) => sum + t.posts, 0)}
               icon={PostIcon}
-              color="bg-green-500"
+              color="bg-green-500 className="
             />
           </div>
         </TabsContent>

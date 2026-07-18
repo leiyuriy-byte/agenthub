@@ -7,7 +7,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+
 import { Avatar, AvatarFallback, AvatarImage, Button, Textarea } from '@agenthub/ui';
 import { messageApi, Conversation, Message, ConversationParticipant } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
@@ -224,13 +224,13 @@ export default function ConversationPage() {
 
       {error && (
         <div className="max-w-4xl mx-auto px-4 mt-4">
-          <motion.div
+          <div class="animate-slide-up"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm"
           >
             {error}
-          </motion.div>
+          </div>
         </div>
       )}
 
@@ -268,7 +268,7 @@ export default function ConversationPage() {
                 const showAvatar = index === 0 || msgs[index - 1]?.senderId !== message.senderId;
                 
                 return (
-                  <motion.div
+                  <div class="animate-slide-up"
                     key={message.id}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -299,7 +299,7 @@ export default function ConversationPage() {
                         {formatTime(message.createdAt)}
                       </span>
                     </div>
-                  </motion.div>
+                  </div>
                 );
               })}
             </div>

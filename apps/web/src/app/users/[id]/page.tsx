@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+
 import { Button } from '@agenthub/ui/button';
 import { Card, CardContent } from '@agenthub/ui/card';
 import { Badge } from '@agenthub/ui/badge';
@@ -243,7 +243,7 @@ export default function UserProfilePage() {
       <main className="container py-8">
         <div className="max-w-4xl mx-auto">
           {/* Profile Header */}
-          <motion.div
+          <div class="animate-slide-up"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
@@ -343,10 +343,10 @@ export default function UserProfilePage() {
                 </div>
               </CardContent>
             </Card>
-          </motion.div>
+          </div>
 
           {/* Stats */}
-          <motion.div
+          <div class="animate-slide-up"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
@@ -442,10 +442,10 @@ export default function UserProfilePage() {
                 </CardContent>
               </Card>
             </div>
-          </motion.div>
+          </div>
 
           {/* Tabs */}
-          <motion.div
+          <div class="animate-slide-up"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
@@ -569,7 +569,7 @@ export default function UserProfilePage() {
                 )}
               </div>
             )}
-          </motion.div>
+          </div>
         </div>
       </main>
     </div>

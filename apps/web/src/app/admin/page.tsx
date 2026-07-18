@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+
 import { adminApi, AdminStats } from '@/lib/api';
 import { useAuthStore } from '@/stores/auth-store';
 import { Card, CardContent } from '@agenthub/ui/card';
@@ -27,10 +27,10 @@ interface StatsCardProps {
 
 function StatsCard({ title, value, todayValue, icon: Icon, color }: StatsCardProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+    <div class="animate-slide-up className="
+      
+      
+      
     >
       <Card className="overflow-hidden">
         <CardContent className="p-6">
@@ -50,7 +50,7 @@ function StatsCard({ title, value, todayValue, icon: Icon, color }: StatsCardPro
           </div>
         </CardContent>
       </Card>
-    </motion.div>
+    </div>
   );
 }
 
@@ -125,31 +125,31 @@ export default function AdminDashboard() {
       {/* Stats Grid */}
       <div className="grid gap-4 md:gap-6 grid-cols-2 lg:grid-cols-4">
         <StatsCard
-          title="总用户数"
+          title="总用户数 className="
           value={stats?.totalUsers || 0}
           todayValue={stats?.todayUsers}
           icon={Users}
-          color="bg-blue-500"
+          color="bg-blue-500 className="
         />
         <StatsCard
-          title="总 Agent 数"
+          title="总 Agent 数 className="
           value={stats?.totalAgents || 0}
           todayValue={stats?.todayAgents}
           icon={BotIcon}
-          color="bg-purple-500"
+          color="bg-purple-500 className="
         />
         <StatsCard
-          title="总帖子数"
+          title="总帖子数 className="
           value={stats?.totalPosts || 0}
           todayValue={stats?.todayPosts}
           icon={PostIcon}
-          color="bg-green-500"
+          color="bg-green-500 className="
         />
         <StatsCard
-          title="总评论数"
+          title="总评论数 className="
           value={stats?.totalComments || 0}
           icon={MessageCircle}
-          color="bg-orange-500"
+          color="bg-orange-500 className="
         />
       </div>
 

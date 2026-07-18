@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+
 import { Button } from '@agenthub/ui/button';
 import { Card, CardContent } from '@agenthub/ui/card';
 import { Badge } from '@agenthub/ui/badge';
@@ -207,10 +207,10 @@ export default function AdminReportsPage() {
           </p>
         </div>
         <Button
-          variant="outline"
-          size="sm"
+          variant="outline className="
+          size="sm className="
           onClick={() => fetchReports(true)}
-          className="gap-2"
+          className="gap-2 className="
         >
           <RefreshCw className="h-4 w-4" />
           刷新
@@ -286,8 +286,8 @@ export default function AdminReportsPage() {
                         {report.targetDetails && (
                           <Link
                             href={report.targetDetails.url}
-                            target="_blank"
-                            className="font-medium hover:text-primary transition-colors flex items-center gap-1"
+                            target="_blank className="
+                            className="font-medium hover:text-primary transition-colors flex items-center gap-1 className="
                           >
                             {report.targetDetails.title}
                             <ExternalLink className="h-3 w-3" />
@@ -326,10 +326,10 @@ export default function AdminReportsPage() {
                       {report.status === 'pending' && (
                         <div className="flex flex-col gap-2">
                           <Button
-                            variant="outline"
-                            size="sm"
+                            variant="outline className="
+                            size="sm className="
                             onClick={() => setSelectedReport(report)}
-                            className="gap-1"
+                            className="gap-1 className="
                           >
                             <Eye className="h-4 w-4" />
                             查看
@@ -347,10 +347,10 @@ export default function AdminReportsPage() {
           {reports.length < total && (
             <div className="flex justify-center">
               <Button
-                variant="outline"
+                variant="outline className="
                 onClick={() => setPage((p) => p + 1)}
                 disabled={isLoadingMore}
-                className="gap-2"
+                className="gap-2 className="
               >
                 {isLoadingMore ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -366,10 +366,10 @@ export default function AdminReportsPage() {
       {/* Process Modal */}
       {selectedReport && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-background rounded-xl shadow-xl max-w-lg w-full mx-4"
+          <div class="animate-slide-up className="
+            
+            
+            className="bg-background rounded-xl shadow-xl max-w-lg w-full mx-4 className="
           >
             <div className="p-6">
               <h3 className="text-lg font-semibold mb-4">处理举报</h3>
@@ -389,8 +389,8 @@ export default function AdminReportsPage() {
                     <p className="text-sm text-muted-foreground">被举报内容</p>
                     <Link
                       href={selectedReport.targetDetails.url}
-                      target="_blank"
-                      className="font-medium hover:text-primary flex items-center gap-1"
+                      target="_blank className="
+                      className="font-medium hover:text-primary flex items-center gap-1 className="
                     >
                       {selectedReport.targetDetails.title}
                       <ExternalLink className="h-3 w-3" />
@@ -424,37 +424,37 @@ export default function AdminReportsPage() {
               {/* Actions */}
               <div className="grid grid-cols-2 gap-3">
                 <Button
-                  variant="outline"
+                  variant="outline className="
                   onClick={() => handleResolve(selectedReport, 'ignored')}
                   disabled={isProcessing}
-                  className="gap-2"
+                  className="gap-2 className="
                 >
                   <XCircle className="h-4 w-4" />
                   忽略
                 </Button>
                 <Button
-                  variant="outline"
+                  variant="outline className="
                   onClick={() => handleResolve(selectedReport, 'warning')}
                   disabled={isProcessing}
-                  className="gap-2"
+                  className="gap-2 className="
                 >
                   <AlertTriangle className="h-4 w-4" />
                   发送警告
                 </Button>
                 <Button
-                  variant="destructive"
+                  variant="destructive className="
                   onClick={() => handleResolve(selectedReport, 'deleted')}
                   disabled={isProcessing}
-                  className="gap-2"
+                  className="gap-2 className="
                 >
                   <Trash2 className="h-4 w-4" />
                   删除内容
                 </Button>
                 <Button
-                  variant="destructive"
+                  variant="destructive className="
                   onClick={() => handleResolve(selectedReport, 'banned')}
                   disabled={isProcessing}
-                  className="gap-2"
+                  className="gap-2 className="
                 >
                   <Ban className="h-4 w-4" />
                   封禁用户
@@ -463,14 +463,14 @@ export default function AdminReportsPage() {
 
               {/* Cancel */}
               <Button
-                variant="ghost"
-                className="w-full mt-3"
+                variant="ghost className="
+                className="w-full mt-3 className="
                 onClick={() => setSelectedReport(null)}
               >
                 取消
               </Button>
             </div>
-          </motion.div>
+          </div>
         </div>
       )}
     </div>

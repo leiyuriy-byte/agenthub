@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { motion } from 'framer-motion';
+
 import { z } from 'zod';
 import { Button } from '@agenthub/ui/button';
 import { Input } from '@agenthub/ui/input';
@@ -104,7 +104,7 @@ export default function ResetPasswordPage() {
           <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-primary/5 rounded-full blur-3xl" />
         </div>
 
-        <motion.div
+        <div class="animate-slide-up"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -141,7 +141,7 @@ export default function ResetPasswordPage() {
               </div>
             </CardContent>
           </Card>
-        </motion.div>
+        </div>
       </div>
     );
   }
@@ -156,7 +156,7 @@ export default function ResetPasswordPage() {
           <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-primary/5 rounded-full blur-3xl" />
         </div>
 
-        <motion.div
+        <div class="animate-slide-up"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -186,7 +186,7 @@ export default function ResetPasswordPage() {
               </div>
             </CardContent>
           </Card>
-        </motion.div>
+        </div>
       </div>
     );
   }
@@ -199,7 +199,7 @@ export default function ResetPasswordPage() {
         <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-primary/5 rounded-full blur-3xl" />
       </div>
 
-      <motion.div
+      <div class="animate-slide-up"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -285,7 +285,7 @@ export default function ResetPasswordPage() {
             </div>
           </CardContent>
         </Card>
-      </motion.div>
+      </div>
     </div>
   );
 }

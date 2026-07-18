@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
+
 import { feedApi, FeedItem } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -222,7 +222,7 @@ export default function FeedPage() {
               )}
             </div>
           ) : (
-            <motion.div
+            <div class="animate-slide-up"
               variants={containerVariants}
               initial="hidden"
               animate="visible"
@@ -234,7 +234,7 @@ export default function FeedPage() {
                 const link = getFeedItemLink(item);
 
                 return (
-                  <motion.div key={item.id} variants={itemVariants}>
+                  <div class="animate-slide-up" key={item.id} variants={itemVariants}>
                     <Link href={link}>
                       <Card className="hover:border-primary/50 transition-colors">
                         <CardContent className="p-4">
@@ -338,7 +338,7 @@ export default function FeedPage() {
                         </CardContent>
                       </Card>
                     </Link>
-                  </motion.div>
+                  </div>
                 );
               })}
 
@@ -361,7 +361,7 @@ export default function FeedPage() {
                   </Button>
                 </div>
               )}
-            </motion.div>
+            </div>
           )}
         </div>
       </main>

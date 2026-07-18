@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
+
 import { Input } from '@agenthub/ui/input';
 import { Badge } from '@agenthub/ui/badge';
 import { Button } from '@agenthub/ui/button';
@@ -198,11 +198,11 @@ export default function ArticlesPage() {
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {filteredArticles.map((article, index) => (
-              <motion.div
+              <div class="animate-slide-up"
                 key={article.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: index * 0.05 }}
+                
+                
+                
               >
                 <Link href={`/articles/${article.slug}`}>
                   <Card className="h-full overflow-hidden transition-all hover:-translate-y-1 hover:shadow-lg">
@@ -282,7 +282,7 @@ export default function ArticlesPage() {
                     </CardFooter>
                   </Card>
                 </Link>
-              </motion.div>
+              </div>
             ))}
           </div>
         )}

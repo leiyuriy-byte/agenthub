@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
+
 import { Input } from '@agenthub/ui/input';
 import { Badge } from '@agenthub/ui/badge';
 import { Button } from '@agenthub/ui/button';
@@ -108,10 +108,10 @@ export default function ActivitiesPage() {
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="搜索活动..."
+              placeholder="搜索活动... className="
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9"
+              className="pl-9 className="
             />
           </div>
 
@@ -123,7 +123,7 @@ export default function ActivitiesPage() {
                 setSortBy(e.target.value as SortOption);
                 setPage(1);
               }}
-              className="rounded-md border border-input bg-background px-3 py-2 text-sm"
+              className="rounded-md border border-input bg-background px-3 py-2 text-sm className="
             >
               <option value="startTime">按时间</option>
               <option value="createdAt">最新创建</option>
@@ -141,7 +141,7 @@ export default function ActivitiesPage() {
               setPage(1);
             }}
             aria-selected={showUpcomingOnly && selectedStatus === ''}
-            role="tab"
+            role="tab className="
             className={cn(
               'rounded-full px-4 py-1.5 text-sm font-medium transition-colors min-h-[44px]',
               showUpcomingOnly && selectedStatus === ''
@@ -158,7 +158,7 @@ export default function ActivitiesPage() {
               setPage(1);
             }}
             aria-selected={selectedStatus === 'ongoing'}
-            role="tab"
+            role="tab className="
             className={cn(
               'rounded-full px-4 py-1.5 text-sm font-medium transition-colors min-h-[44px]',
               selectedStatus === 'ongoing'
@@ -175,7 +175,7 @@ export default function ActivitiesPage() {
               setPage(1);
             }}
             aria-selected={selectedStatus === 'ended'}
-            role="tab"
+            role="tab className="
             className={cn(
               'rounded-full px-4 py-1.5 text-sm font-medium transition-colors min-h-[44px]',
               selectedStatus === 'ended'
@@ -195,7 +195,7 @@ export default function ActivitiesPage() {
               setPage(1);
             }}
             aria-selected={selectedType === ''}
-            role="tab"
+            role="tab className="
             className={cn(
               'rounded-full px-4 py-1.5 text-sm font-medium transition-colors flex items-center gap-1.5 min-h-[44px]',
               selectedType === ''
@@ -211,7 +211,7 @@ export default function ActivitiesPage() {
               setPage(1);
             }}
             aria-selected={selectedType === 'online'}
-            role="tab"
+            role="tab className="
             className={cn(
               'rounded-full px-4 py-1.5 text-sm font-medium transition-colors flex items-center gap-1.5 min-h-[44px]',
               selectedType === 'online'
@@ -228,7 +228,7 @@ export default function ActivitiesPage() {
               setPage(1);
             }}
             aria-selected={selectedType === 'offline'}
-            role="tab"
+            role="tab className="
             className={cn(
               'rounded-full px-4 py-1.5 text-sm font-medium transition-colors flex items-center gap-1.5 min-h-[44px]',
               selectedType === 'offline'
@@ -270,11 +270,11 @@ export default function ActivitiesPage() {
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {filteredActivities.map((activity, index) => (
-              <motion.div
+              <div class="animate-slide-up className="
                 key={activity.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: index * 0.05 }}
+                
+                
+                
               >
                 <Link href={`/activities/${activity.slug}`}>
                   <Card className="h-full overflow-hidden transition-all hover:-translate-y-1 hover:shadow-lg">
@@ -285,7 +285,7 @@ export default function ActivitiesPage() {
                           src={activity.coverImage}
                           alt={activity.title}
                           fill
-                          className="object-cover"
+                          className="object-cover className="
                         />
                         <div className={cn('absolute top-2 right-2 px-2 py-1 rounded-full text-xs text-white font-medium', statusColors[activity.status as ActivityStatus] || 'bg-gray-500')}>
                           {statusLabels[activity.status as ActivityStatus] || activity.status}
@@ -368,7 +368,7 @@ export default function ActivitiesPage() {
                     </CardFooter>
                   </Card>
                 </Link>
-              </motion.div>
+              </div>
             ))}
           </div>
         )}
@@ -377,7 +377,7 @@ export default function ActivitiesPage() {
         {totalPages > 1 && (
           <div className="mt-8 flex justify-center gap-2">
             <Button
-              variant="outline"
+              variant="outline className="
               disabled={page === 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
             >
@@ -387,7 +387,7 @@ export default function ActivitiesPage() {
               第 {page} / {totalPages} 页
             </span>
             <Button
-              variant="outline"
+              variant="outline className="
               disabled={page >= totalPages}
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             >
