@@ -31,7 +31,7 @@
 
 - [x] **2. 验证优化效果**
   - [x] 2.1 开发服务器测试（HTTP 200 正常）
-  - [ ] 2.2 Lighthouse Performance 测试
+  - [x] 2.2 Lighthouse Performance 测试（LCP 18.7s → 6.7s，提升 64%）
 
 ### P1 - 次要优化
 
@@ -44,9 +44,9 @@
   - [ ] 4.1 配置 next/image 优化
   - [ ] 4.2 添加图片懒加载
 
-- [ ] **5. 缓存策略**
-  - [ ] 5.1 配置 SWR/React Query 缓存
-  - [ ] 5.2 添加服务端缓存头
+- [x] **5. 缓存策略**
+  - [x] 5.1 配置 SWR/React Query 缓存
+  - [x] 5.2 添加服务端缓存头
 
 ---
 
