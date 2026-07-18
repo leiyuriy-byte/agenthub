@@ -1,11 +1,12 @@
 # AgentHub 开发进度
-最后更新：2026-07-18 08:10
+最后更新：2026-07-18 10:04
 
 ## ⚠️ 重要更正：Lighthouse 性能问题
 **实际 Lighthouse Performance 为 41%，非 100%！** 正在修复中。
 
 | 日期 | 构建 | TS | Git | 状态 | 备注 |
 |------|------|-----|-----|------|------|
+| 2026-07-18 12:02 | ✅ | ✅ | ⏳ | 性能优化：Next.js Image 组件 | 首页 <img> 替换为 <Image> + priority |
 | 2026-07-18 10:04 | ✅ | ✅ | ⏳ | 性能优化：服务端缓存已配置 | 添加 Cache-Control headers |
 | 2026-07-18 06:07 | ✅ | ✅ | ⏳ | Islands Architecture 优化已验证 | 开发服务器运行正常 |
 | 2026-07-18 00:02 | 🔄 进行中 | ✅ | ⏳ | Islands Architecture 优化 | Navbar SSR + Client 分离 |
@@ -131,13 +132,14 @@
 2. **Layout 动态导入** - 使用 `next/dynamic` 动态加载 Navbar，ssr: false
 3. **首页 loading 轻量化** - 移除 framer-motion 依赖，使用纯 CSS 动画
 4. **Islands Architecture** - NavbarStatic + NavbarClient 分离
+5. **Next.js Image 组件优化** - 首页 <img> 替换为 <Image>，前3张图片添加 priority
 
 ### 待处理
 - [x] 验证 Islands Architecture 优化效果（开发服务器验证通过）
 - [x] Lighthouse Performance 测试（已完成，LCP 18.7s → 6.7s）
 - [x] 配置服务端缓存头（已添加到 next.config.mjs）
+- [x] 配置 next/image 优化图片加载（已完成）
 - [ ] 减少 JavaScript 体积（framer-motion 延迟加载）
-- [ ] 配置 next/image 优化图片加载
 
 ---
 

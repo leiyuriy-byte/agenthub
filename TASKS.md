@@ -40,9 +40,9 @@
   - [ ] 3.2 使用 dynamic import 延迟加载非首屏组件
   - [ ] 3.3 其他页面 framer-motion 优化（32 个文件）
 
-- [ ] **4. 图片优化**
-  - [ ] 4.1 配置 next/image 优化
-  - [ ] 4.2 添加图片懒加载
+- [x] **4. 图片优化**
+  - [x] 4.1 配置 next/image 优化 ✅（首页 <img> 替换为 <Image>）
+  - [x] 4.2 添加图片懒加载 ✅（前3张图片 priority）
 
 - [x] **5. 缓存策略**
   - [x] 5.1 配置 SWR/React Query 缓存

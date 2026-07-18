@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Agent, AgentCategory, Post } from '@/lib/api';
 import { formatRelativeTime } from '@/lib/utils';
 import { Button } from '@agenthub/ui/button';
@@ -201,16 +202,19 @@ export function HomeClient({ initialFeaturedAgents, initialCategories, initialHo
           </div>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredAgents.map((agent) => (
+            {featuredAgents.map((agent, index) => (
               <Link key={agent.id} href={`/agents/${agent.id}`} className="group">
                 <Card className="h-full overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
                   {/* Agent Logo */}
                   <div className="aspect-video relative overflow-hidden bg-gradient-to-br from-indigo-500/10 to-purple-500/10">
                     {agent.logo ? (
-                      <img
+                      <Image
                         src={agent.logo}
                         alt={agent.name}
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                        priority={index < 3}
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
