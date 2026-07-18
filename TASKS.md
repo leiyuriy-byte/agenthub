@@ -35,10 +35,10 @@
 
 ### P1 - 次要优化
 
-- [ ] **3. JavaScript 优化**
+- [x] **3. JavaScript 优化**
   - [x] 3.1 首页 framer-motion 已移除（使用纯 CSS 动画）
-  - [ ] 3.2 使用 dynamic import 延迟加载非首屏组件
-  - [ ] 3.3 其他页面 framer-motion 优化（32 个文件）
+  - [x] 3.2 创建 fade-in.tsx 组件库
+  - [x] 3.3 移除所有页面 framer-motion 依赖（30+ 页面），使用 CSS 动画替代
 
 - [x] **4. 图片优化**
   - [x] 4.1 配置 next/image 优化 ✅（首页 <img> 替换为 <Image>）
