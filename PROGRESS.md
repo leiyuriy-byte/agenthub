@@ -29,6 +29,12 @@
 - 代码已提交并推送至 master 分支
 - Commit: 1fc08f5
 
+## 本次修复 (2026-07-19 08:10)
+- ✅ 简化 Hero 背景 - 移除复杂 blur 效果，减少渲染阻塞
+- ✅ Image 组件优化 - 添加 loading/placeholder/unoptimized 属性
+- ✅ Recharts 懒加载 - 创建 lazy-charts.tsx，后台统计页面使用
+- ✅ 开发服务器验证通过（HTTP 200）
+
 ## 本次修复 (2026-07-18 06:07)
 - ✅ 修复 Turbo 模式路径别名问题：
   - packages/ui/src/skeleton.tsx 中 @/lib/utils 导入无法解析

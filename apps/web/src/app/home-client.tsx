@@ -70,17 +70,8 @@ export function HomeClient({ initialFeaturedAgents, initialCategories, initialHo
     <div className="flex flex-col">
       {/* Hero Section */}
       <section className="relative overflow-hidden py-20 md:py-32">
-        {/* Enhanced Background Effects */}
-        <div className="absolute inset-0 -z-10">
-          {/* Main gradient orb */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[700px] bg-gradient-to-b from-indigo-500/30 via-purple-500/15 to-transparent rounded-full blur-3xl" />
-          {/* Secondary gradient */}
-          <div className="absolute bottom-0 right-0 w-[700px] h-[500px] bg-gradient-to-t from-pink-500/20 via-fuchsia-500/10 to-transparent rounded-full blur-3xl" />
-          {/* Tertiary accent */}
-          <div className="absolute top-1/4 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-cyan-500/10 to-transparent rounded-full blur-3xl" />
-          {/* Grid pattern overlay */}
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]" />
-        </div>
+        {/* 简化背景 - 减少渲染阻塞 */}
+        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-background to-background" />
 
         <div className="container relative z-10">
           {/* 简化版 Hero - 服务端渲染，无动画等待 */}
@@ -215,6 +206,9 @@ export function HomeClient({ initialFeaturedAgents, initialCategories, initialHo
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         className="object-cover transition-transform duration-300 group-hover:scale-105"
                         priority={index < 3}
+                        loading={index < 3 ? 'eager' : 'lazy'}
+                        placeholder="empty"
+                        unoptimized={false}
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
