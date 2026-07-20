@@ -22,21 +22,6 @@ import {
   Sparkles,
 } from 'lucide-react';
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
-};
-
 // Get icon and color for feed type
 const getFeedTypeInfo = (type: FeedItem['type']) => {
   switch (type) {
@@ -222,19 +207,14 @@ export default function FeedPage() {
               )}
             </div>
           ) : (
-            <div class="animate-slide-up"
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-              className="space-y-4"
-            >
+            <div className="animate-slide-up space-y-4">
               {feed.map((item) => {
                 const TypeInfo = getFeedTypeInfo(item.type);
                 const Icon = TypeInfo.icon;
                 const link = getFeedItemLink(item);
 
                 return (
-                  <div class="animate-slide-up" key={item.id} variants={itemVariants}>
+                  <div className="animate-slide-up" key={item.id}>
                     <Link href={link}>
                       <Card className="hover:border-primary/50 transition-colors">
                         <CardContent className="p-4">

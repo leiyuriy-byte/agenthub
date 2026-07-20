@@ -222,12 +222,7 @@ export default function NotificationsPage() {
             ) : (
               <div className="divide-y">
                 {notifications.map((notification, index) => (
-                  <div class="animate-slide-up"
-                    key={notification.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                    className={cn(
+                  <div className={cn(
                       'flex items-start gap-3 p-4 hover:bg-accent/50 transition-colors',
                       !notification.isRead && 'bg-primary/5'
                     )}

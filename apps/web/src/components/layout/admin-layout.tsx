@@ -52,29 +52,22 @@ export function AdminLayout({ children, onLogout }: AdminLayoutProps) {
         </Link>
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="p-2 text-muted-foreground hover:text-foreground"
+          
         >
-          {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          {isMobileMenuOpen ? <X className="p-2 text-muted-foreground hover:text-foreground h-6 w-6" /> : <Menu className="p-2 text-muted-foreground hover:text-foreground h-6 w-6" />}
         </button>
       </header>
 
       {/* Mobile Menu Overlay */}
-      <AnimatePresence>
+      
         {isMobileMenuOpen && (
           <>
-            <div class="animate-slide-up"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="md:hidden fixed inset-0 bg-black/50 z-40"
+            <div 
+              
               onClick={() => setIsMobileMenuOpen(false)}
             />
-            <aside class="animate-slide-up"
-              initial={{ x: -280 }}
-              animate={{ x: 0 }}
-              exit={{ x: -280 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="md:hidden fixed left-0 top-0 bottom-0 w-72 z-50 border-r bg-card"
+            <aside 
+              className="animate-slide-up md:hidden fixed inset-0 bg-black/50 z-40 animate-slide-up md:hidden fixed left-0 top-0 bottom-0 w-72 z-50 border-r bg-card"
             >
               <div className="p-6">
                 <Link href="/admin" className="flex items-center gap-2">
@@ -127,7 +120,7 @@ export function AdminLayout({ children, onLogout }: AdminLayoutProps) {
             </aside>
           </>
         )}
-      </AnimatePresence>
+      
 
       {/* Desktop Sidebar */}
       <aside className="hidden md:block w-64 min-h-screen border-r bg-card fixed left-0 top-0">

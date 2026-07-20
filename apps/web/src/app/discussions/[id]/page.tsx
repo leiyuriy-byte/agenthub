@@ -820,10 +820,7 @@ export default function PostDetailPage() {
       {/* Report Modal */}
       {showReportModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div class="animate-slide-up"
-            
-            
-            className="bg-background rounded-xl shadow-xl max-w-md w-full mx-4"
+          <div className="animate-slide-up bg-background rounded-xl shadow-xl max-w-md w-full mx-4"
           >
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">

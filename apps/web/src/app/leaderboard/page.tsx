@@ -116,9 +116,9 @@ export default function LeaderboardPage() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent" />
         <div className="container relative py-16">
           <div className="max-w-4xl mx-auto text-center">
-            <div class="animate-slide-up"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+            <div className="animate-slide-up"
+
+
             >
               <Trophy className="h-16 w-16 mx-auto mb-4 text-yellow-500" />
               <h1 className="text-4xl font-bold mb-4">积分排行榜</h1>
@@ -197,11 +197,11 @@ export default function LeaderboardPage() {
                   const isCurrentUser = entry.id === user?.id;
                   
                   return (
-                    <div class="animate-slide-up"
+                    <div className="animate-slide-up"
                       key={entry.id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.03 }}
+
+
+
                     >
                       <Link href={`/users/${entry.id}`}>
                         <Card className={cn(

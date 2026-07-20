@@ -67,10 +67,7 @@ function CommentItem({
   };
 
   return (
-    <div class="animate-slide-up"
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className={cn(
+    <div className={cn(
         'relative rounded-lg border p-4',
         comment.parentId && 'ml-8 border-l-2 border-muted pl-4',
         comment.isAccepted && 'border-green-500/30 bg-green-500/5'
@@ -189,13 +186,10 @@ function CommentItem({
           </div>
 
           {/* Reply Input */}
-          <AnimatePresence>
+          
             {showReplyInput && (
-              <div class="animate-slide-up"
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="mt-3"
+              <div 
+                className="animate-slide-up mt-3"
               >
                 <Textarea
                   placeholder={`回复 @${comment.author?.username}...`}
@@ -220,7 +214,7 @@ function CommentItem({
                 </div>
               </div>
             )}
-          </AnimatePresence>
+          
         </div>
       </div>
 

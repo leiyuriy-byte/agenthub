@@ -198,11 +198,11 @@ function SearchContent() {
                 </div>
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                   {agents.map((agent, index) => (
-                    <div class="animate-slide-up"
+                    <div className="animate-slide-up"
                       key={agent.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.05 }}
+
+
+
                     >
                       <Link href={`/agents/${agent.id}`}>
                         <Card className="hover:bg-muted/50 transition-colors h-full">
@@ -253,11 +253,11 @@ function SearchContent() {
                 </div>
                 <div className="space-y-3">
                   {posts.map((post, index) => (
-                    <div class="animate-slide-up"
+                    <div className="animate-slide-up"
                       key={post.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.05 }}
+
+
+
                     >
                       <Link href={`/discussions/${post.id}`}>
                         <Card className="hover:bg-muted/50 transition-colors">
@@ -307,11 +307,11 @@ function SearchContent() {
                 </div>
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                   {users.map((user, index) => (
-                    <div class="animate-slide-up"
+                    <div className="animate-slide-up"
                       key={user.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.05 }}
+
+
+
                     >
                       <Link href={`/users/${user.id}`}>
                         <Card className="hover:bg-muted/50 transition-colors">

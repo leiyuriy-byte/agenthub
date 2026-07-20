@@ -224,10 +224,8 @@ export default function ConversationPage() {
 
       {error && (
         <div className="max-w-4xl mx-auto px-4 mt-4">
-          <div class="animate-slide-up"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm"
+          <div 
+            className="animate-slide-up p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm"
           >
             {error}
           </div>
@@ -268,11 +266,7 @@ export default function ConversationPage() {
                 const showAvatar = index === 0 || msgs[index - 1]?.senderId !== message.senderId;
                 
                 return (
-                  <div class="animate-slide-up"
-                    key={message.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className={`flex gap-3 mb-4 ${isOwn ? 'flex-row-reverse' : ''}`}
+                  <div key={`flex gap-3 mb-4 ${isOwn ? 'flex-row-reverse' : ''}`}
                   >
                     {showAvatar ? (
                       <Link href={`/users/${message.sender.id}`}>

@@ -198,7 +198,7 @@ export default function ArticlesPage() {
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {filteredArticles.map((article, index) => (
-              <div class="animate-slide-up"
+              <div className="animate-slide-up"
                 key={article.id}
                 
                 

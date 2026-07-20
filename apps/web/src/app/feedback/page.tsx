@@ -280,11 +280,11 @@ export default function FeedbackPage() {
                 ) : (
                   <div className="space-y-4">
                     {feedbacks.map((feedback) => (
-                      <div class="animate-slide-up"
+                      <div 
                         key={feedback.id}
                         
                         
-                        className="p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
+                        className="animate-slide-up p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
                       >
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex-1 min-w-0">

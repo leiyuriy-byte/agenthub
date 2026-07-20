@@ -79,11 +79,7 @@ export default function ForgotPasswordPage() {
           <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-primary/5 rounded-full blur-3xl" />
         </div>
 
-        <div class="animate-slide-up"
-          
-          
-          
-          className="w-full max-w-md"
+        <div className="animate-slide-up w-full max-w-md"
         >
           <Card className="border-border/50 bg-card/50 backdrop-blur">
             <CardHeader className="text-center">
@@ -135,11 +131,7 @@ export default function ForgotPasswordPage() {
         <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-primary/5 rounded-full blur-3xl" />
       </div>
 
-      <div class="animate-slide-up"
-        
-        
-        
-        className="w-full max-w-md"
+      <div className="animate-slide-up w-full max-w-md"
       >
         <Card className="border-border/50 bg-card/50 backdrop-blur">
           <CardHeader className="text-center">

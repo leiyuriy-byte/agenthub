@@ -1499,7 +1499,7 @@ export default function AgentDetailPage() {
             ) : (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {relatedAgents.slice(0, 6).map((relatedAgent) => (
-                  <div class="animate-slide-up"
+                  <div className="animate-slide-up"
                     key={relatedAgent.id}
                     
                     
@@ -1555,11 +1555,11 @@ export default function AgentDetailPage() {
 
       {/* Lightbox Modal */}
       {lightboxOpen && agent?.screenshots && agent.screenshots.length > 0 && (
-        <div class="animate-slide-up"
+        <div 
           
           
           
-          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
+          className="animate-slide-up fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
           onClick={closeLightbox}
         >
           {/* Close button */}
@@ -1598,12 +1598,7 @@ export default function AgentDetailPage() {
           )}
 
           {/* Main image */}
-          <div class="animate-slide-up"
-            key={lightboxIndex}
-            
-            
-            
-            className="max-w-[90vw] max-h-[90vh]"
+          <div className="animate-slide-up max-w-[90vw] max-h-[90vh]"
             onClick={(e) => e.stopPropagation()}
           >
             {agent.screenshots[lightboxIndex] && (

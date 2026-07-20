@@ -243,11 +243,11 @@ export default function ResourcesPage() {
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {filteredResources.map((resource, index) => (
-              <div class="animate-slide-up"
+              <div className="animate-slide-up"
                 key={resource.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: index * 0.05 }}
+
+
+
               >
                 <Link href={`/resources/${resource.slug}`}>
                   <Card className="h-full overflow-hidden transition-all hover:-translate-y-1 hover:shadow-lg">

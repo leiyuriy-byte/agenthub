@@ -243,9 +243,9 @@ export default function UserProfilePage() {
       <main className="container py-8">
         <div className="max-w-4xl mx-auto">
           {/* Profile Header */}
-          <div class="animate-slide-up"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+          <div className="animate-slide-up"
+
+
           >
             <Card className="mb-6">
               <CardContent className="p-6">
@@ -346,10 +346,10 @@ export default function UserProfilePage() {
           </div>
 
           {/* Stats */}
-          <div class="animate-slide-up"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
+          <div className="animate-slide-up"
+
+
+
           >
             {/* Level & Points Card */}
             {(pointsInfo || profile.points > 0) && (
@@ -445,10 +445,10 @@ export default function UserProfilePage() {
           </div>
 
           {/* Tabs */}
-          <div class="animate-slide-up"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+          <div className="animate-slide-up"
+
+
+
           >
             <div className="flex border-b mb-6">
               {[

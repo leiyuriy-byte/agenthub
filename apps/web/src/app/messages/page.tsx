@@ -116,20 +116,14 @@ export default function MessagesPage() {
 
       <div className="max-w-4xl mx-auto px-4 py-6">
         {error && (
-          <div class="animate-slide-up"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-4 p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm"
+          <div className="animate-slide-up mb-4 p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm"
           >
             {error}
           </div>
         )}
 
         {conversations.length === 0 ? (
-          <div class="animate-slide-up"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-16"
+          <div className="animate-slide-up text-center py-16"
           >
             <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-zinc-800/50 flex items-center justify-center">
               <svg className="w-8 h-8 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -157,11 +151,11 @@ export default function MessagesPage() {
               const hasUnread = (conv.unreadCount || 0) > 0;
               
               return (
-                <div class="animate-slide-up"
+                <div className="animate-slide-up"
                   key={conv.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
+
+
+
                 >
                   <Link
                     href={`/messages/${conv.id}`}

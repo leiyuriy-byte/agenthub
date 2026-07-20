@@ -301,7 +301,7 @@ export default function DiscussionsPage() {
                 {posts.map((post, index) => {
                   const typeBadge = getTypeBadge(post.type);
                   return (
-                    <div class="animate-slide-up"
+                    <div className="animate-slide-up"
                       key={post.id}
                       
                       

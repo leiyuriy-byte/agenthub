@@ -136,10 +136,7 @@ export default function NewConversationPage() {
 
       <div className="max-w-2xl mx-auto px-4 py-6">
         {error && (
-          <div class="animate-slide-up"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-4 p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm"
+          <div className="animate-slide-up mb-4 p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm"
           >
             {error}
           </div>
@@ -170,10 +167,7 @@ export default function NewConversationPage() {
 
           {/* Search results */}
           {users.length > 0 && !selectedUser && (
-            <div class="animate-slide-up"
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mt-2 bg-zinc-800/80 border border-zinc-700 rounded-xl overflow-hidden"
+            <div className="animate-slide-up mt-2 bg-zinc-800/80 border border-zinc-700 rounded-xl overflow-hidden"
             >
               {users.map((u) => (
                 <button
@@ -203,10 +197,7 @@ export default function NewConversationPage() {
 
           {/* Selected user */}
           {selectedUser && (
-            <div class="animate-slide-up"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="mt-2 flex items-center justify-between p-3 bg-zinc-800/50 border border-[#10b981]/30 rounded-xl"
+            <div className="animate-slide-up mt-2 flex items-center justify-between p-3 bg-zinc-800/50 border border-[#10b981]/30 rounded-xl"
             >
               <div className="flex items-center gap-3">
                 <Avatar className="w-10 h-10">
