@@ -211,11 +211,8 @@ export default function AdminPostsPage() {
                   </tr>
                 ) : (
                   posts.map((post) => (
-                    <tr className="animate-fade-in"
+                    <tr className="animate-fade-in hover:bg-muted/50"
                       key={post.id}
-                      
-                      
-                      className="hover:bg-muted/50 className="
                     >
                       <td className="px-4 md:px-6 py-4">
                         <p className="font-medium line-clamp-1 max-w-[150px] md:max-w-none">{post.title}</p>

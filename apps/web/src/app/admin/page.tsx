@@ -27,11 +27,7 @@ interface StatsCardProps {
 
 function StatsCard({ title, value, todayValue, icon: Icon, color }: StatsCardProps) {
   return (
-    <div class="animate-slide-up className="
-      
-      
-      
-    >
+    <div className="animate-slide-up">
       <Card className="overflow-hidden">
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
@@ -119,7 +115,7 @@ export default function AdminDashboard() {
       {/* Page Header */}
       <div className="mb-8">
         <h1 className="text-2xl md:text-3xl font-bold tracking-tight">仪表盘</h1>
-        <p className="mt-2 text-muted-foreground">欢迎回来，这是系统概览</p>
+        <p className="mt-2 text-muted-foreground">欢迎回来,这是系统概览</p>
       </div>
 
       {/* Stats Grid */}

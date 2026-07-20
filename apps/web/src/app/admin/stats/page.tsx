@@ -55,11 +55,7 @@ interface StatsCardProps {
 
 function StatsCard({ title, value, subtitle, icon: Icon, color }: StatsCardProps) {
   return (
-    <div class="animate-slide-up className="
-      
-      
-      
-    >
+    <div className="animate-slide-up">
       <Card className="overflow-hidden">
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
@@ -112,25 +108,25 @@ function TrendChart({ data, title }: { data: TrendData[]; title: string }) {
               />
               <Legend />
               <Line
-                type="monotone className="
-                dataKey="users className="
-                name="用户 className="
+                type="monotone"
+                dataKey="users"
+                name="用户"
                 stroke={COLORS.users}
                 strokeWidth={2}
                 dot={false}
               />
               <Line
-                type="monotone className="
-                dataKey="agents className="
-                name="Agent className="
+                type="monotone"
+                dataKey="agents"
+                name="Agent"
                 stroke={COLORS.agents}
                 strokeWidth={2}
                 dot={false}
               />
               <Line
-                type="monotone className="
-                dataKey="posts className="
-                name="帖子 className="
+                type="monotone"
+                dataKey="posts"
+                name="帖子"
                 stroke={COLORS.posts}
                 strokeWidth={2}
                 dot={false}
@@ -154,7 +150,7 @@ function ActivityChart({ data }: { data: ActivityHour[] }) {
       <CardHeader>
         <CardTitle className="text-lg flex items-center gap-2">
           <Clock className="h-5 w-5" />
-          用户活跃时段（最近 30 天）
+          用户活跃时段(最近 30 天)
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -527,7 +523,7 @@ export default function AdminStatsPage() {
             ))}
           </div>
 
-          <TrendChart data={trends} title={`增长趋势（近 ${trendsDays} 天）`} />
+          <TrendChart data={trends} title={`增长趋势(近 ${trendsDays} 天)`} />
 
           {/* Summary */}
           <div className="grid gap-4 md:grid-cols-3">

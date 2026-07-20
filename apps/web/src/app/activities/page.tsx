@@ -270,7 +270,7 @@ export default function ActivitiesPage() {
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {filteredActivities.map((activity, index) => (
-              <div class="animate-slide-up className="
+              <div className="animate-slide-up"
                 key={activity.id}
                 
                 
@@ -285,7 +285,7 @@ export default function ActivitiesPage() {
                           src={activity.coverImage}
                           alt={activity.title}
                           fill
-                          className="object-cover className="
+                          className="object-cover"
                         />
                         <div className={cn('absolute top-2 right-2 px-2 py-1 rounded-full text-xs text-white font-medium', statusColors[activity.status as ActivityStatus] || 'bg-gray-500')}>
                           {statusLabels[activity.status as ActivityStatus] || activity.status}
@@ -377,7 +377,7 @@ export default function ActivitiesPage() {
         {totalPages > 1 && (
           <div className="mt-8 flex justify-center gap-2">
             <Button
-              variant="outline className="
+              variant="outline"
               disabled={page === 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
             >
@@ -387,7 +387,7 @@ export default function ActivitiesPage() {
               第 {page} / {totalPages} 页
             </span>
             <Button
-              variant="outline className="
+              variant="outline"
               disabled={page >= totalPages}
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             >

@@ -177,11 +177,8 @@ export default function AdminCommentsPage() {
                   </tr>
                 ) : (
                   comments.map((comment) => (
-                    <tr className="animate-fade-in"
+                    <tr className="animate-fade-in hover:bg-muted/50"
                       key={comment.id}
-                      
-                      
-                      className="hover:bg-muted/50 className="
                     >
                       <td className="px-4 md:px-6 py-4">
                         <p className="text-sm line-clamp-2 max-w-[200px] md:max-w-xs">{comment.content}</p>

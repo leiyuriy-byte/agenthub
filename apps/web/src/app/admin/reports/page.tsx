@@ -207,10 +207,10 @@ export default function AdminReportsPage() {
           </p>
         </div>
         <Button
-          variant="outline className="
-          size="sm className="
+          variant="outline"
+          size="sm"
           onClick={() => fetchReports(true)}
-          className="gap-2 className="
+          className="gap-2"
         >
           <RefreshCw className="h-4 w-4" />
           刷新
@@ -326,10 +326,10 @@ export default function AdminReportsPage() {
                       {report.status === 'pending' && (
                         <div className="flex flex-col gap-2">
                           <Button
-                            variant="outline className="
-                            size="sm className="
+                            variant="outline"
+                            size="sm"
                             onClick={() => setSelectedReport(report)}
-                            className="gap-1 className="
+                            className="gap-1"
                           >
                             <Eye className="h-4 w-4" />
                             查看
@@ -347,10 +347,10 @@ export default function AdminReportsPage() {
           {reports.length < total && (
             <div className="flex justify-center">
               <Button
-                variant="outline className="
+                variant="outline"
                 onClick={() => setPage((p) => p + 1)}
                 disabled={isLoadingMore}
-                className="gap-2 className="
+                className="gap-2"
               >
                 {isLoadingMore ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -366,11 +366,8 @@ export default function AdminReportsPage() {
       {/* Process Modal */}
       {selectedReport && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div class="animate-slide-up className="
+          <div className="animate-slide-up bg-background rounded-xl shadow-xl max-w-lg w-full mx-4">
             
-            
-            className="bg-background rounded-xl shadow-xl max-w-lg w-full mx-4 className="
-          >
             <div className="p-6">
               <h3 className="text-lg font-semibold mb-4">处理举报</h3>
 
@@ -424,37 +421,37 @@ export default function AdminReportsPage() {
               {/* Actions */}
               <div className="grid grid-cols-2 gap-3">
                 <Button
-                  variant="outline className="
+                  variant="outline"
                   onClick={() => handleResolve(selectedReport, 'ignored')}
                   disabled={isProcessing}
-                  className="gap-2 className="
+                  className="gap-2"
                 >
                   <XCircle className="h-4 w-4" />
                   忽略
                 </Button>
                 <Button
-                  variant="outline className="
+                  variant="outline"
                   onClick={() => handleResolve(selectedReport, 'warning')}
                   disabled={isProcessing}
-                  className="gap-2 className="
+                  className="gap-2"
                 >
                   <AlertTriangle className="h-4 w-4" />
                   发送警告
                 </Button>
                 <Button
-                  variant="destructive className="
+                  variant="destructive"
                   onClick={() => handleResolve(selectedReport, 'deleted')}
                   disabled={isProcessing}
-                  className="gap-2 className="
+                  className="gap-2"
                 >
                   <Trash2 className="h-4 w-4" />
                   删除内容
                 </Button>
                 <Button
-                  variant="destructive className="
+                  variant="destructive"
                   onClick={() => handleResolve(selectedReport, 'banned')}
                   disabled={isProcessing}
-                  className="gap-2 className="
+                  className="gap-2"
                 >
                   <Ban className="h-4 w-4" />
                   封禁用户
@@ -463,8 +460,8 @@ export default function AdminReportsPage() {
 
               {/* Cancel */}
               <Button
-                variant="ghost className="
-                className="w-full mt-3 className="
+                variant="ghost"
+                className="w-full mt-3"
                 onClick={() => setSelectedReport(null)}
               >
                 取消

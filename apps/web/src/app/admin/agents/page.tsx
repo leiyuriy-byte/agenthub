@@ -238,11 +238,8 @@ export default function AdminAgentsPage() {
                   </tr>
                 ) : (
                   agents.map((agent) => (
-                    <tr className="animate-fade-in"
+                    <tr className="animate-fade-in hover:bg-muted/50"
                       key={agent.id}
-                      
-                      
-                      className="hover:bg-muted/50 className="
                     >
                       <td className="px-4 md:px-6 py-4">
                         <div className="flex items-center gap-3">
