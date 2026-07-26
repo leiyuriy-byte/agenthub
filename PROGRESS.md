@@ -379,7 +379,7 @@
 - ✅ framer-motion 移除优化已完成（30个页面，CSS动画替代）
 - ✅ TypeScript 检查：开发服务器正常工作
 - ✅ TypeScript 错误全部修复：18个文件的 `class` 属性改为 `className`，移除 framer-motion 依赖
-- ⚠️ 生产构建：系统内存不足（3.5GB），需要更大内存服务器（4GB+）进行 Lighthouse Performance 完整测试
+- ⚠️ 开发服务器启动失败：系统内存不足（3.5GB/660MB available），Next.js 被 OOM Killer 终止，需要 4GB+ 内存服务器
 
 ---
 
